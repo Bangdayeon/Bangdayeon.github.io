@@ -6,6 +6,40 @@ export const CATEGORIES = ['dev', 'design', 'review', 'toon', 'travel', 'log'] a
 
 export type Category = (typeof CATEGORIES)[number];
 
+/**
+ * 화면에 내보낼 이름. 폴더 이름과 다르게 쓰고 싶을 때만 적는다.
+ *
+ * 폴더 이름은 그대로 URL 이 되므로 소문자 영문 · 숫자 · 하이픈만 쓸 수 있다
+ * (post-schema.ts 의 SUB). 그 제약은 주소에만 있는 것이지 화면에까지 있을
+ * 이유가 없어서, 한글이나 대소문자를 섞어 부르고 싶으면 여기 한 줄 적는다.
+ *
+ * 키는 카테고리 폴더 길 전체다 — 이름이 겹치는 하위 카테고리가 서로 다른
+ * 부모 아래에 생겨도 각자 다르게 부를 수 있다. 적지 않으면 폴더 이름을 그대로
+ * 쓴다. 이름만 바꾸는 것이므로 주소는 그대로고, 이미 걸린 링크도 안 깨진다.
+ */
+export const CATEGORY_LABEL: Record<string, string> = {
+  'dev/frontend/react': 'React',
+  'dev/frontend/state': '상태 관리',
+};
+
+/** 한 마디의 이름 — categoryLabel(['dev', 'frontend']) → 'frontend'. */
+export function categoryLabel(segments: string[]): string {
+  return CATEGORY_LABEL[segments.join('/')] ?? segments[segments.length - 1];
+}
+
+/**
+ * 글이 들어 있는 폴더 길 — 'dev' · 'dev / frontend / 상태 관리'.
+ *
+ * 목록 · 아카이브 · 상세가 같은 함수를 쓴다. 셋의 표기가 갈라지면 같은 글이
+ * 화면마다 다른 카테고리에 있는 것처럼 보인다.
+ *
+ * 마디마다 CATEGORY_LABEL 을 찾으므로 중간 칸만 별명이 있어도 된다.
+ */
+export function categoryPath(category: Category, subs: string[] = []): string {
+  const segments = [category, ...subs];
+  return segments.map((_, index) => categoryLabel(segments.slice(0, index + 1))).join(' / ');
+}
+
 export function isCategory(value: string): value is Category {
   return (CATEGORIES as readonly string[]).includes(value);
 }
@@ -22,7 +56,9 @@ export function isCategory(value: string): value is Category {
  *   fill    SVG 면 (/search 의 글 그래프 노드)
  *
  * 색은 의미를 혼자 짊어지지 않는다 — 도트 옆에는 항상 카테고리 이름이 텍스트로
- * 함께 있어야 한다. 좌측 네비 활성 표시는 색이 아니라 형태로 한다 (브리프 7장).
+ * 함께 있어야 한다. 좌측 네비 활성 도트도 이 dot 을 쓴다 (Sidebar 참고).
+ * 하위 카테고리는 자기 색을 따로 갖지 않고 맨 위 칸의 색을 물려받으므로,
+ * 여기 적을 것은 CATEGORIES 여섯 개뿐이다.
  */
 export const CATEGORY_COLOR: Record<
   Category,
@@ -65,3 +101,12 @@ export const CATEGORY_COLOR: Record<
     fill: 'fill-cat-log',
   },
 };
+
+/**
+ * 폴더 길의 맨 위 칸이 정하는 색. 하위 카테고리는 자기 색을 따로 갖지 않는다.
+ * 카테고리가 아니면 null — 부르는 쪽이 색 없이 그린다.
+ */
+export function categoryColor(segments: string[]) {
+  const root = segments[0];
+  return isCategory(root) ? CATEGORY_COLOR[root] : null;
+}

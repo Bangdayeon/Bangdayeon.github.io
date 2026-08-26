@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 
 import { getPostsByTag, getTagCounts } from '@/lib/posts';
 
+import { PageTitle } from '@/components/PageTitle';
 import { PostList } from '@/components/PostList';
 
 export const dynamicParams = false;
@@ -25,8 +26,7 @@ export default async function TagPage({ params }: Params) {
 
   return (
     <main className="mx-auto w-full max-w-[820px] px-6 py-10">
-      <h1 className="text-title-lg text-ink-strong mb-1">{name}</h1>
-      <p className="text-meta text-ink-muted mb-6">{posts.length}편</p>
+      <PageTitle title={name} meta={`${posts.length}편`} />
 
       <PostList posts={posts} emptyText="이 태그의 글이 없다." />
     </main>

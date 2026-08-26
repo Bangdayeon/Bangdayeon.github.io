@@ -1,6 +1,6 @@
-import Link from 'next/link';
-
 import { cn } from '@/lib/cn';
+
+import { LocaleLink as Link } from '@/components/LocaleLink';
 
 /** 한 쪽에 몇 편. 20편이면 스크롤 두어 번이라 아직 넘길 이유가 없다. */
 export const PAGE_SIZE = 20;

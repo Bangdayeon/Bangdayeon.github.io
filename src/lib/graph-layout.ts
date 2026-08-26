@@ -49,6 +49,11 @@ type SimLink = {
   kind: 'category' | 'related';
 };
 
+/** forceLink 콜백에서 두 끝은 이미 노드로 풀려 있다 (초기화 때 문자열 → 객체). */
+function isHub(end: string | SimNode) {
+  return typeof end !== 'string' && end.kind === 'category';
+}
+
 const WIDTH = 720;
 const HEIGHT = 520;
 const PADDING = 56;
@@ -56,13 +61,17 @@ const PADDING = 56;
 /**
  * 노드 반지름 — 카테고리 허브가 크고, 글은 related 가 많을수록 크다.
  *
- * 허브는 보통 크기의 글보다 두 배쯤, 가장 큰 글보다 조금 큰 선에서 멈춘다.
- * 그보다 키우면 위계가 아니라 덩어리가 되고 주변 글이 그 그늘에 들어간다.
+ * 맨 위 허브는 보통 크기의 글보다 두 배쯤, 가장 큰 글보다 조금 큰 선에서
+ * 멈춘다. 그보다 키우면 위계가 아니라 덩어리가 되고 주변 글이 그 그늘에 든다.
+ *
+ * 하위 카테고리 허브는 한 단 내려갈 때마다 작아지되 글보다는 크게 남는다 —
+ * 폴더 길이 깊어져도 "허브인지 글인지"가 크기로 먼저 읽혀야 한다.
  */
-export function nodeRadius(node: Pick<GraphNode, 'kind' | 'degree'>) {
-  return node.kind === 'category'
-    ? 9 + Math.min(node.degree, 8) * 0.5
-    : 4.5 + Math.min(node.degree, 5) * 0.9;
+export function nodeRadius(node: Pick<GraphNode, 'kind' | 'degree' | 'depth'>) {
+  if (node.kind !== 'category') return 4.5 + Math.min(node.degree, 5) * 0.9;
+
+  const base = 9 + Math.min(node.degree, 8) * 0.5;
+  return round(base * Math.max(0.75 ** (node.depth - 1), 0.6));
 }
 
 export function layoutGraph(graph: Graph): GraphLayout {
@@ -89,13 +98,19 @@ export function layoutGraph(graph: Graph): GraphLayout {
         .id(node => node.id)
         // 카테고리 선은 짧고 세게 당겨 글이 허브 주위에 뭉치게 하고,
         // related 선은 길고 느슨하게 둬서 뭉치들을 밀어내지 않게 한다.
-        .distance(link => (link.kind === 'category' ? 74 : 130))
+        // 허브끼리 잇는 선만 조금 길다 — 부모 둘레에 자식 무리가 들어설 자리다.
+        .distance(link =>
+          link.kind === 'related' ? 130 : isHub(link.source) && isHub(link.target) ? 104 : 74
+        )
         .strength(link => (link.kind === 'category' ? 0.9 : 0.18))
     )
-    // 허브끼리는 세게 밀어내 6개 무리가 서로 겹치지 않게 한다.
+    // 허브끼리는 세게 밀어내 6개 무리가 서로 겹치지 않게 한다. 하위 허브는
+    // 그보다 약하게 — 부모에게서 떨어져 나가지 않으면서 형제끼리만 벌어진다.
     .force(
       'charge',
-      forceManyBody<SimNode>().strength(node => (node.kind === 'category' ? -900 : -230))
+      forceManyBody<SimNode>().strength(node =>
+        node.kind === 'category' ? -900 * 0.62 ** (node.depth - 1) : -230
+      )
     )
     // 가운데로 모으는 힘을 x · y 로 나눠 세로를 조금 더 조인다. 하나로 묶으면
     // (forceCenter) 결과가 세로로 길쭉해져서 가로 720 짜리 상자에 여백만 남는다.
@@ -155,6 +170,7 @@ function fit(nodes: SimNode[]): PositionedNode[] {
     label: node.label,
     category: node.category,
     kind: node.kind,
+    depth: node.depth,
     href: node.href,
     degree: node.degree,
     x: round(((node.x ?? 0) - minX) * scale + offsetX),

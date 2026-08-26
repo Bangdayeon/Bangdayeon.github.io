@@ -39,14 +39,15 @@ src/
 │  └─ (route)/
 │     ├─ page.tsx                 /
 │     ├─ [category]/page.tsx      /{category}
-│     ├─ [category]/[slug]/page.tsx
+│     ├─ [category]/[...rest]/page.tsx
+│     │                            글 · 하위 카테고리 목록 · 쪽 넘김
 │     ├─ tags/page.tsx · tags/[tag]/page.tsx
 │     ├─ archive/page.tsx
 │     ├─ search/page.tsx        검색 · 최근 검색 · 태그 · 글 그래프
 │     └─ about/page.tsx
 ├─ components/ lib/ styles/ types/
 ├─ config/     images.json(★커밋 필수) · tag-alias.ts · id-redirects.json · nav.ts · site.ts
-├─ content/    MDX 정본 (Obsidian vault 겸용). 카테고리 = 폴더
+├─ content/    MDX 정본 (Obsidian vault 겸용). 카테고리 = 폴더, 하위 카테고리 = 폴더 안의 폴더
 └─ data/       빌드 산출물 (gitignore)
 
 public/        Next 제약으로 루트 고정
@@ -58,6 +59,8 @@ docs/          상세 명세
 경로 별칭은 `@/*` → `./src/*` 하나뿐입니다 (`@/lib/cn`, `@/config/tag-alias`).
 
 파일명 `YYYY-MM-DD-slug.mdx` → URL `/{category}/{slug}` (날짜 미포함).
+카테고리 폴더 안에 폴더를 더 파면 하위 카테고리가 됩니다 —
+`dev/nextjs/2026-08-20-slug.mdx` → `/dev/nextjs/slug`. 깊이 제한은 없습니다.
 
 ## 글 쓰기
 
@@ -100,9 +103,13 @@ docs/          상세 명세
 - 이어 읽을 글은 frontmatter가 아니라 본문 `[[위키링크]]`에서 나온다.
   Obsidian에서 글을 잇는 행위가 그대로 /search 그래프의 선이 된다.
   한쪽에서만 걸어도 양쪽에 생기고, 가리키는 글이 없으면 경고만 남고 원문이 그대로 남는다
-- 카테고리는 폴더로만 결정한다 (frontmatter에 `category` 없음)
+- 카테고리는 폴더로만 결정한다 (frontmatter에 `category` 없음).
+  카테고리 아래로 더 판 폴더는 전부 하위 카테고리이고, 좌측 네비에 자동으로 선다.
+  폴더 이름은 slug 와 같은 규칙이고 `page`만 못 쓴다 (쪽 넘김 경로와 겹친다)
+- 카테고리 화면과 좌측 네비의 (n) 은 그 폴더에 **직접** 든 글만 센다.
+  `dev/frontend/react` 의 글은 react 까지 들어가야 보인다 (폴더를 여는 것과 같다)
 - slug는 영문 소문자 + 하이픈
-- 발행 후 `post.id`(`category/slug`)를 바꾸지 않는다
+- 발행 후 `post.id`(`category/…/slug`)를 바꾸지 않는다 — 폴더를 옮기는 것도 id를 바꾸는 일이다
 - UI · 아이콘 · 애니메이션 라이브러리를 쓰지 않는다
   (예외 하나: 글 그래프의 좌표 계산에 쓰는 `d3-force`. 배치만 맡고 화면에서 돌지 않는다)
 - R2 이미지를 `next/image`에 물리지 않는다 (`<Img>` 직접 서빙)

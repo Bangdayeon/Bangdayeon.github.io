@@ -1,0 +1,108 @@
+{
+  "nav": {
+    "home": "",
+    "tags": "",
+    "archive": "",
+    "about": "",
+    "siteMenu": "",
+    "menuExpand": "",
+    "menuCollapse": "",
+    "submenu": "",
+    "expand": "",
+    "collapse": ""
+  },
+  "home": {
+    "title": "",
+    "total": "",
+    "viewAll": ""
+  },
+  "post": {
+    "draft": "",
+    "empty": "",
+    "relatedRegion": "",
+    "related": ""
+  },
+  "tags": {
+    "title": "",
+    "kinds": "",
+    "empty": "",
+    "postsEmpty": "",
+    "count": ""
+  },
+  "category": {
+    "parents": "",
+    "children": "",
+    "count": "",
+    "page": ""
+  },
+  "pagination": {
+    "region": "",
+    "prev": "",
+    "next": ""
+  },
+  "archive": {
+    "title": "",
+    "empty": "",
+    "total": "",
+    "yearJump": "",
+    "month": "",
+    "count": ""
+  },
+  "heatmap": {
+    "summary": "",
+    "noPost": "",
+    "dayCount": "",
+    "more": "",
+    "month": "",
+    "mon": "",
+    "wed": "",
+    "fri": ""
+  },
+  "search": {
+    "title": "",
+    "heading": "",
+    "placeholder": "",
+    "clear": "",
+    "graphRegion": "",
+    "graphLabel": "",
+    "noResult": "",
+    "resultRegion": "",
+    "resultCount": "",
+    "recentRegion": "",
+    "recent": "",
+    "clearAll": "",
+    "removeRecent": "",
+    "tagRegion": "",
+    "tags": ""
+  },
+  "settings": {
+    "menu": "",
+    "language": "",
+    "languageMenu": "",
+    "korean": "한국어",
+    "english": "English",
+    "theme": "",
+    "system": "",
+    "light": "",
+    "dark": "",
+    "color": "",
+    "vivid": "Vivid",
+    "soft": "Soft",
+    "neon": "Neon",
+    "neonDarkOnly": ""
+  },
+  "profile": {
+    "region": "",
+    "noViews": "",
+    "views": ""
+  },
+  "callout": {
+    "note": "",
+    "tip": "",
+    "danger": "",
+    "quote": ""
+  },
+  "about": {
+    "title": ""
+  }
+}

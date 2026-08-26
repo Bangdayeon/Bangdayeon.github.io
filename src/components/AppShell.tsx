@@ -2,6 +2,9 @@
 
 import { useState } from 'react';
 
+import type { NavNode } from '@/config/nav';
+import type { Profile } from '@/config/profile';
+
 import { Header } from '@/components/Header';
 import { Sidebar } from '@/components/Sidebar';
 
@@ -17,7 +20,21 @@ const NAV_ID = 'site-nav';
  *
  * 접힘 상태는 저장하지 않는다 — 새로고침하면 펼친 채로 시작한다.
  */
-export function AppShell({ siteName, children }: { siteName: string; children: React.ReactNode }) {
+export function AppShell({
+  siteName,
+  nav,
+  profile,
+  views,
+  children,
+}: {
+  siteName: string;
+  /** 좌측 메뉴. 카테고리 부분은 콘텐츠 폴더에서 자란다 (config/nav.ts). */
+  nav: NavNode[];
+  profile: Profile;
+  /** 사이트 전체 조회수. 집계 수단이 붙기 전까지는 null 이다 (layout 참고). */
+  views: number | null;
+  children: React.ReactNode;
+}) {
   const [navOpen, setNavOpen] = useState(true);
 
   return (
@@ -31,7 +48,7 @@ export function AppShell({ siteName, children }: { siteName: string; children: R
 
       {/* 3.5rem = 헤더 높이(h-14). Sidebar 의 sticky 기준점과 같은 값이다. */}
       <div className="flex min-h-[calc(100dvh-3.5rem)] flex-col md:flex-row">
-        <Sidebar id={NAV_ID} open={navOpen} />
+        <Sidebar id={NAV_ID} open={navOpen} nav={nav} profile={profile} views={views} />
         <div className="min-w-0 flex-1">{children}</div>
       </div>
     </>

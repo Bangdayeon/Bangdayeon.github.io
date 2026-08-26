@@ -28,7 +28,7 @@ draft: true
 - 항목
 
 > [!note] 콜아웃 (제목은 생략해도 된다)
-> 종류는 note · tip · warning · danger · quote 다섯 개.
+> 종류는 note · tip · danger · quote 네 개.
 
 이어 읽을 글은 [[2026-08-11-mdx-pipeline]] 처럼 잇는다.
 표시 문구를 바꾸려면 [[2026-08-11-mdx-pipeline|이렇게]].
@@ -49,12 +49,28 @@ const code = '코드블록도 된다';
 ```
 src/content/<카테고리>/YYYY-MM-DD-slug.mdx
             └ dev · design · review · toon · travel · log 여섯 개 중 하나
+
+src/content/<카테고리>/<하위 카테고리>/YYYY-MM-DD-slug.mdx
+                      └ 폴더를 더 파면 그대로 하위 카테고리가 된다
 ```
 
 - **카테고리는 폴더가 정한다.** frontmatter에 `category`를 적으면 빌드가 거부한다
-- **URL은 날짜를 뗀다** — `dev/2026-08-11-mdx-pipeline.mdx` → `/dev/mdx-pipeline`
+- **하위 카테고리도 폴더가 정한다.** 폴더를 만들고 글을 옮기면 좌측 네비에 바로 선다.
+  등록할 곳도, 지울 곳도 없다 — 글이 하나도 없는 폴더는 메뉴에 나타나지 않는다.
+  깊이 제한은 없고, 폴더 이름은 slug와 같은 규칙이다 (`page`만 못 쓴다 — 쪽 넘김이 이미 쓰는 말이다)
+- **URL은 날짜를 뗀다** — `dev/2026-08-11-mdx-pipeline.mdx` → `/dev/mdx-pipeline`,
+  `dev/nextjs/2026-08-20-app-router.mdx` → `/dev/nextjs/app-router`
 - **slug는 소문자 영문·숫자·하이픈만.** 한글 slug는 안 된다
-- **발행한 뒤에는 slug를 바꾸지 않는다.** URL이 곧 글의 주소이고, 바꾸면 밖에서 걸린 링크가 전부 깨진다
+- **화면에 다른 이름으로 부르고 싶으면** `src/lib/categories.ts`의 `CATEGORY_LABEL`에 한 줄 적는다
+  (`'dev/frontend/state': '상태 관리'`). 폴더 이름 = 주소, 이 표 = 화면에 나가는 이름이다.
+  적지 않으면 폴더 이름을 그대로 쓴다. 이름만 바꾸는 것이라 주소는 안 바뀌고 링크도 안 깨진다
+- **발행한 뒤에는 slug를 바꾸지 않는다.** URL이 곧 글의 주소이고, 바꾸면 밖에서 걸린 링크가 전부 깨진다.
+  **폴더를 옮기는 것도 같다** — 이미 발행한 글을 하위 카테고리로 내리면 주소가 바뀐다.
+  하위 카테고리는 새로 쓰는 글부터 쓰는 편이 안전하다 — 옮기면 옛 주소는 그대로 404다
+  (`src/config/id-redirects.json`은 자리만 있고 아직 어디에도 연결돼 있지 않다)
+- **카테고리를 누르면 그 폴더에 직접 든 글만 나온다.** 좌측 네비의 (n)도 같은 수다.
+  `dev/frontend/react`의 글을 보려면 react까지 들어가야 한다 — 폴더를 여는 것과 같다.
+  아래로 갈라지는 길은 목록 위의 하위 카테고리 칩과 좌측 네비의 `>`가 보여 준다
 
 ---
 
@@ -101,13 +117,28 @@ Obsidian 문법 그대로다. 제목은 생략할 수 있다.
 ```md
 > [!note] 참고
 > [!tip] 팁
-> [!warning] 주의
 > [!danger] 경고
 > [!quote] 인용
 ```
 
 Obsidian의 나머지 종류(`info` `success` `question` `bug` `example` …)는 뜻이 가까운
-다섯 개 중 하나로 접히고, 모르는 종류는 `note`로 떨어지며 로그에 남는다.
+네 개 중 하나로 접히고, 모르는 종류는 `note`로 떨어지며 로그에 남는다.
+`warning` `attention` `caution`은 `danger`로 접힌다 — 주의와 경고를 색 두 개로
+나눠 두면 쓸 때마다 어느 쪽인지 고르게 되어서 종류를 하나로 합쳤다.
+
+콜아웃 안에는 문단뿐 아니라 목록·표·코드블록도 넣을 수 있다. 인용 기호(`>`)를
+줄마다 붙이면 된다.
+
+````md
+> [!tip] 여러 줄 코드도 들어간다
+> 앞뒤로 설명을 붙여도 된다.
+>
+> ```ts
+> export function add(a: number, b: number) {
+>   return a + b;
+> }
+> ```
+````
 
 ### 그 밖
 

@@ -12,8 +12,14 @@ import { visit } from 'unist-util-visit';
  * 등록해 두면 된다. AST 노드 타입을 새로 들여올 필요가 없다.
  */
 
-/** 지원하는 다섯 종류. Obsidian 의 나머지 종류는 note 로 떨어진다. */
-export const CALLOUT_TYPES = ['note', 'tip', 'warning', 'danger', 'quote'] as const;
+/**
+ * 지원하는 네 종류. Obsidian 의 나머지 종류는 note 로 떨어진다.
+ *
+ * warning 은 뺐다 — danger 와 뜻이 겹치는데 화면에는 노랑/빨강 두 색으로
+ * 나뉘어 있어서, 쓰는 쪽이 매번 "이건 주의인가 경고인가"를 고르게 만들었다.
+ * 아래 ALIASES 가 danger 로 접어 준다.
+ */
+export const CALLOUT_TYPES = ['note', 'tip', 'danger', 'quote'] as const;
 
 export type CalloutType = (typeof CALLOUT_TYPES)[number];
 
@@ -28,8 +34,9 @@ const ALIASES: Record<string, CalloutType> = {
   check: 'tip',
   done: 'tip',
   question: 'tip',
-  attention: 'warning',
-  caution: 'warning',
+  warning: 'danger',
+  attention: 'danger',
+  caution: 'danger',
   failure: 'danger',
   fail: 'danger',
   missing: 'danger',

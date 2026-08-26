@@ -23,21 +23,31 @@ import { frontmatterSchema, parsePostPath } from '@/lib/post-schema';
 
 export const CONTENT_DIR = path.join(process.cwd(), 'src', 'content');
 
-/** `dev/2026-08-11-slug.mdx` 같은 상대 경로. 카테고리 폴더만 훑으므로
- *  .obsidian · .trash · _templates · page 는 자연히 빠진다. */
+/**
+ * `dev/2026-08-11-slug.mdx` · `dev/nextjs/2026-08-11-slug.mdx` 같은 상대 경로.
+ *
+ * 카테고리 폴더에서 시작해 아래로 내려간다 — 하위 카테고리는 폴더를 한 단 더
+ * 판 것일 뿐이라 따로 등록할 곳이 없다. 카테고리 폴더만 훑으므로 content 바로
+ * 아래의 .obsidian · .trash · _templates · page 는 자연히 빠지고, 그 안쪽에서도
+ * 점 · 밑줄로 시작하는 폴더는 건너뛴다.
+ */
 export function collectPostFiles(): string[] {
   const found: string[] = [];
 
-  for (const category of CATEGORIES) {
-    const dir = path.join(CONTENT_DIR, category);
-    if (!fs.existsSync(dir)) continue;
+  const walk = (relative: string) => {
+    const dir = path.join(CONTENT_DIR, relative);
+    if (!fs.existsSync(dir)) return;
 
     for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
-      if (!entry.isFile() || !entry.name.endsWith('.mdx')) continue;
-      if (entry.name.startsWith('.')) continue;
-      found.push(`${category}/${entry.name}`);
+      if (entry.name.startsWith('.') || entry.name.startsWith('_')) continue;
+
+      if (entry.isDirectory()) walk(`${relative}/${entry.name}`);
+      else if (entry.isFile() && entry.name.endsWith('.mdx'))
+        found.push(`${relative}/${entry.name}`);
     }
-  }
+  };
+
+  for (const category of CATEGORIES) walk(category);
 
   return found.sort();
 }
@@ -77,6 +87,7 @@ export function parsePostFile(relativePath: string): ParsedPost | { error: strin
     post: {
       id: meta.id,
       category: meta.category,
+      subs: meta.subs,
       slug: meta.slug,
       title: parsed.data.title,
       date: parsed.data.date,

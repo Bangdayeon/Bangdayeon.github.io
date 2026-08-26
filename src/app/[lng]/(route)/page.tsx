@@ -1,7 +1,7 @@
-import Link from 'next/link';
-
 import { getAllPosts } from '@/lib/posts';
 
+import { LocaleLink as Link } from '@/components/LocaleLink';
+import { PageTitle } from '@/components/PageTitle';
 import { PostList } from '@/components/PostList';
 
 /** 홈에 세울 최신 글. 그 뒤는 아카이브가 맡는다. */
@@ -12,8 +12,7 @@ export default function HomePage() {
 
   return (
     <main className="mx-auto w-full max-w-[820px] px-6 py-10">
-      <h1 className="text-title-lg text-ink-strong mb-1">최근 글</h1>
-      <p className="text-meta text-ink-muted mb-6">전체 {posts.length}편</p>
+      <PageTitle title="최근 글" meta={`전체 ${posts.length}편`} />
 
       <PostList posts={posts.slice(0, LATEST)} />
 

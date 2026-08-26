@@ -86,7 +86,7 @@ export function loadPosts(): Post[] {
  * 안 바꿨을 수도 있어서 못 찾으면 폴더를 뒤져 slug 로 찾는다.
  */
 export function loadBody(post: Post): string | null {
-  const dir = path.join(CONTENT_DIR, post.category);
+  const dir = path.join(CONTENT_DIR, post.category, ...post.subs);
   const guess = path.join(dir, `${post.date}-${post.slug}.mdx`);
   if (fs.existsSync(guess)) return body(guess);
 

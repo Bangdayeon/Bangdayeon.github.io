@@ -1,7 +1,7 @@
-import type { Graph, GraphLink, GraphNode, Post } from '@/types/post';
+import type { CategoryNode, Graph, GraphLink, GraphNode, Post } from '@/types/post';
 
 import type { Category } from '@/lib/categories';
-import { CATEGORIES } from '@/lib/categories';
+import { CATEGORIES, categoryLabel } from '@/lib/categories';
 import { loadBody, loadPosts } from '@/lib/content/source';
 
 /**
@@ -19,8 +19,8 @@ export function getAllPosts(): Post[] {
   return loadPosts();
 }
 
-export function getPost(category: string, slug: string): Post | null {
-  return getAllPosts().find(post => post.category === category && post.slug === slug) ?? null;
+export function getPostById(id: string): Post | null {
+  return getAllPosts().find(post => post.id === id) ?? null;
 }
 
 /** 글 본문(MDX 원문). 파일이 사라졌으면 null. */
@@ -28,8 +28,81 @@ export function getPostBody(post: Post): string | null {
   return loadBody(post);
 }
 
-export function getPostsByCategory(category: Category): Post[] {
-  return getAllPosts().filter(post => post.category === category);
+/** 글이 들어 있는 폴더 — ['dev'] 또는 ['dev', 'nextjs']. */
+function dirOf(post: Post): string[] {
+  return [post.category, ...post.subs];
+}
+
+/**
+ * 이 폴더에 **직접** 들어 있는 글만. 최신순.
+ *
+ * getPostsIn(['dev', 'frontend']) 은 dev/frontend/*.mdx 만 준다 —
+ * dev/frontend/react 의 글은 react 까지 들어가야 나온다. 폴더를 열면 그 폴더의
+ * 내용물이 나오는 것과 같다. 좌측 네비의 (n) 도 같은 수를 센다.
+ */
+export function getPostsIn(segments: string[]): Post[] {
+  return getAllPosts().filter(post => {
+    const dir = dirOf(post);
+    return dir.length === segments.length && segments.every((name, index) => dir[index] === name);
+  });
+}
+
+/**
+ * 카테고리 트리. 맨 위 여섯 개는 글이 없어도 서고, 하위 카테고리는 글이
+ * 들어 있는 폴더만 나타난다 — 빈 폴더는 카테고리가 아니라 그냥 빈 폴더다.
+ *
+ * count 는 그 폴더에 직접 들어 있는 글 수다 (getPostsIn 과 같은 기준).
+ * 하위 카테고리 글은 하위의 몫이라 부모에 겹쳐 세지 않는다.
+ */
+export function getCategoryTree(): CategoryNode[] {
+  const paths = new Set<string>(CATEGORIES);
+  const counts = new Map<string, number>();
+
+  for (const post of getAllPosts()) {
+    const dir = dirOf(post);
+
+    // 글이 든 폴더에만 한 편을 얹는다. 다만 조상 폴더는 마디로 세워 둬야
+    // 한다 — dev/frontend 에 글이 하나도 없어도 그 아래 react 로 내려가는
+    // 길은 있어야 하기 때문이다 (그때 dev/frontend 는 0 편이다).
+    for (let depth = 1; depth <= dir.length; depth += 1) {
+      paths.add(dir.slice(0, depth).join('/'));
+    }
+    counts.set(dir.join('/'), (counts.get(dir.join('/')) ?? 0) + 1);
+  }
+
+  const build = (segments: string[]): CategoryNode => {
+    const path = segments.join('/');
+
+    return {
+      segments,
+      path,
+      label: categoryLabel(segments),
+      href: `/${path}`,
+      count: counts.get(path) ?? 0,
+      children: [...paths]
+        .filter(
+          child => child.startsWith(`${path}/`) && child.split('/').length === segments.length + 1
+        )
+        .sort()
+        .map(child => build(child.split('/'))),
+    };
+  };
+
+  return CATEGORIES.map(category => build([category]));
+}
+
+/** 경로에 해당하는 마디. 없으면 null (라우트가 404 로 보낸다). */
+export function getCategoryNode(segments: string[]): CategoryNode | null {
+  let found: CategoryNode | null = null;
+  let level = getCategoryTree();
+
+  for (const name of segments) {
+    found = level.find(node => node.segments[node.segments.length - 1] === name) ?? null;
+    if (!found) return null;
+    level = found.children;
+  }
+
+  return found;
 }
 
 export function getPostsByTag(tag: string): Post[] {
@@ -102,12 +175,17 @@ export function getRelatedPosts(post: Post, limit = 4): Post[] {
 /**
  * 글 그래프.
  *
- * 카테고리 6개가 허브로 서고 그 아래 글이 매달린다 (실선). 글끼리는 본문의
- * 위키링크로 이어진다 (점선). 선이 두 종류지만 굵기 · 점선으로 구분되고,
- * 카테고리 선은 "소속", 위키링크 선은 "이어 읽기"라 뜻이 겹치지 않는다.
+ * 폴더 트리가 그대로 뼈대가 된다 — 카테고리 여섯 개가 허브로 서고, 하위
+ * 카테고리는 그 아래 한 단 작은 허브로 매달리고, 글은 자기가 실제로 들어 있는
+ * 폴더에 붙는다 (실선). dev/frontend/react 의 글이라면
+ * dev → frontend → react → 글 이 한 줄로 이어진다.
+ *
+ * 글끼리는 본문의 위키링크로 이어진다 (점선). 선이 두 종류지만 굵기 · 점선으로
+ * 구분되고, 실선은 "소속", 점선은 "이어 읽기"라 뜻이 겹치지 않는다.
  *
  * 카테고리당 perCategory 개까지만 올린다 — 전부 올리면 글이 늘수록 그림이
- * 아니라 실타래가 된다. 밀려난 글은 검색과 카테고리 페이지에 있다.
+ * 아니라 실타래가 된다. 상한은 맨 위 카테고리 기준이라 하위 카테고리가 몇 개로
+ * 갈라지든 그림의 크기는 그대로다. 밀려난 글은 검색과 카테고리 페이지에 있다.
  */
 export function getGraph(perCategory: number): Graph {
   const all = getAllPosts();
@@ -125,11 +203,12 @@ export function getGraph(perCategory: number): Graph {
     if (posts.length > 0) chosen.set(category, posts);
   }
 
-  const included = new Set([...chosen.values()].flat().map(post => post.id));
+  const picked = [...chosen.values()].flat();
+  const included = new Set(picked.map(post => post.id));
 
   // 글끼리의 선을 먼저 센다 — 노드 반지름이 이 수를 쓴다.
   const seen = new Set<string>();
-  for (const post of [...chosen.values()].flat()) {
+  for (const post of picked) {
     for (const target of post.related) {
       // 상한 밖으로 밀린 글로 향하는 선은 그리지 않는다. 깨진 참조는 이미
       // 빌드가 걸러 내므로 여기서는 조용히 넘어간다.
@@ -145,30 +224,68 @@ export function getGraph(perCategory: number): Graph {
     }
   }
 
-  for (const [category, posts] of chosen) {
-    const hubId = `category:${category}`;
+  /**
+   * 허브는 고른 글이 실제로 들어 있는 폴더와 그 조상들만 세운다. 글이 하나도
+   * 안 걸린 하위 카테고리는 그리지 않는다 — 아무것도 안 매달린 점이 된다.
+   *
+   * degree 는 자기에게 바로 매달린 것의 수(직속 글 + 바로 아래 허브)다.
+   * 반지름에만 쓰인다.
+   */
+  const hubs = new Map<string, { category: Category; degree: number }>();
+  const hubId = (path: string) => `category:${path}`;
+
+  for (const post of picked) {
+    const dir = [post.category, ...post.subs];
+    for (let depth = 1; depth <= dir.length; depth += 1) {
+      const path = dir.slice(0, depth).join('/');
+      const before = hubs.get(path);
+      // 자기 폴더의 글만 센다. 자식 허브 몫은 아래에서 한 번에 얹는다.
+      const mine = depth === dir.length ? 1 : 0;
+      hubs.set(path, { category: post.category, degree: (before?.degree ?? 0) + mine });
+    }
+  }
+
+  // 자식 허브도 "매달린 것"이다. 글이 하나도 없는 중간 폴더(dev/frontend)가
+  // 점처럼 작아지지 않게, 아래로 갈라지는 수를 degree 에 더한다.
+  for (const path of [...hubs.keys()]) {
+    const parent = path.split('/').slice(0, -1).join('/');
+    const hub = hubs.get(parent);
+    if (hub) hub.degree += 1;
+  }
+
+  for (const [path, hub] of [...hubs].sort(([a], [b]) => a.localeCompare(b))) {
+    const segments = path.split('/');
+    const parent = segments.slice(0, -1).join('/');
 
     nodes.push({
-      id: hubId,
-      label: category.toUpperCase(),
-      category,
+      id: hubId(path),
+      label: categoryLabel(segments),
+      category: hub.category,
       kind: 'category',
-      href: `/${category}`,
-      degree: posts.length,
+      depth: segments.length,
+      href: `/${path}`,
+      degree: hub.degree,
     });
 
-    for (const post of posts) {
-      nodes.push({
-        id: post.id,
-        label: post.title,
-        category,
-        kind: 'post',
-        href: `/${post.id}`,
-        degree: relatedDegree.get(post.id) ?? 0,
-      });
+    if (parent === '') continue;
 
-      links.push({ source: hubId, target: post.id, kind: 'category' });
-    }
+    links.push({ source: hubId(parent), target: hubId(path), kind: 'category' });
+  }
+
+  for (const post of picked) {
+    const path = [post.category, ...post.subs].join('/');
+
+    nodes.push({
+      id: post.id,
+      label: post.title,
+      category: post.category,
+      kind: 'post',
+      depth: 0,
+      href: `/${post.id}`,
+      degree: relatedDegree.get(post.id) ?? 0,
+    });
+
+    links.push({ source: hubId(path), target: post.id, kind: 'category' });
   }
 
   return { nodes, links };

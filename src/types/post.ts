@@ -8,10 +8,15 @@ import type { Category } from '@/lib/categories';
  * lib/posts.ts 속만 바꾼다 (화면 코드는 이 타입만 안다).
  */
 export type Post = {
-  /** `${category}/${slug}`. 발행 후 바뀌지 않는다 (README 규약). */
+  /** `category/…subs/slug`. 발행 후 바뀌지 않는다 (README 규약). */
   id: string;
-  /** 폴더가 결정한다. frontmatter 에는 없다. */
+  /** 맨 위 폴더가 결정한다. frontmatter 에는 없다. */
   category: Category;
+  /**
+   * 카테고리 아래로 더 판 폴더들 — 하위 카테고리. 없으면 빈 배열.
+   * id 에도 그대로 들어간다 (`dev/nextjs/app-router`).
+   */
+  subs: string[];
   /** 영문 소문자 + 하이픈. 파일명의 날짜는 뺀 부분. */
   slug: string;
   title: string;
@@ -32,19 +37,43 @@ export type Post = {
 };
 
 /**
+ * 카테고리 트리의 한 마디. 글이 실제로 들어 있는 폴더에서 자란다 —
+ * 맨 위 여섯 개는 글이 없어도 서고, 하위 카테고리는 글이 생겨야 나타난다.
+ */
+export type CategoryNode = {
+  /** ['dev', 'nextjs'] */
+  segments: string[];
+  /** 'dev/nextjs' */
+  path: string;
+  /** 마지막 칸의 대문자 표기. */
+  label: string;
+  /** '/dev/nextjs' */
+  href: string;
+  /** 하위 카테고리 글까지 전부 센 수. */
+  count: number;
+  children: CategoryNode[];
+};
+
+/**
  * 그래프 한 점. 카테고리 허브와 글이 같은 타입을 쓴다.
  *
- * 허브의 id 는 'category:dev' 처럼 접두사를 붙인다 — 글 id 는 'dev/foo' 라
- * 절대 겹치지 않는다.
+ * 허브의 id 는 'category:dev' · 'category:dev/frontend' 처럼 접두사를 붙인다 —
+ * 글 id 는 'dev/foo' 라 절대 겹치지 않는다.
  */
 export type GraphNode = {
   id: string;
   label: string;
+  /** 맨 위 카테고리. 하위 허브와 그 글도 여기 색을 물려받는다. */
   category: Category;
   kind: 'category' | 'post';
-  /** 누르면 갈 곳. 허브는 /{category}, 글은 /{id}. */
+  /**
+   * 허브의 폴더 깊이 — dev 는 1, dev/frontend 는 2. 글은 0.
+   * 깊을수록 점과 이름이 작아져서, 크기만 봐도 위계가 읽힌다.
+   */
+  depth: number;
+  /** 누르면 갈 곳. 허브는 /{폴더 길}, 글은 /{id}. */
   href: string;
-  /** 허브는 매달린 글 수, 글은 related 연결 수. 반지름에 쓴다. */
+  /** 허브는 바로 매달린 것의 수, 글은 related 연결 수. 반지름에 쓴다. */
   degree: number;
 };
 

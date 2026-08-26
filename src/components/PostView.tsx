@@ -1,52 +1,17 @@
-import type { Metadata } from 'next';
-import { notFound } from 'next/navigation';
+import type { Post } from '@/types/post';
 
-import { CATEGORY_COLOR, isCategory } from '@/lib/categories';
+import { CATEGORY_COLOR, categoryPath } from '@/lib/categories';
 import { cn } from '@/lib/cn';
-import { getAllPosts, getPost, getPostBody, getRelatedPosts } from '@/lib/posts';
 
+import { LocaleLink } from '@/components/LocaleLink';
 import { MdxContent } from '@/components/MdxContent';
-import { PostList } from '@/components/PostList';
+import { PostCards } from '@/components/PostCards';
 
-/** 색인에 있는 글만 페이지가 된다 — draft 는 프로덕션 산출물에 없으므로 404 다. */
-export const dynamicParams = false;
-
-export function generateStaticParams() {
-  return getAllPosts().map(post => ({ category: post.category, slug: post.slug }));
-}
-
-type Params = { params: Promise<{ category: string; slug: string }> };
-
-export async function generateMetadata({ params }: Params): Promise<Metadata> {
-  const { category, slug } = await params;
-  const post = getPost(category, slug);
-  if (!post) return {};
-
-  return {
-    title: post.title,
-    description: post.summary,
-    openGraph: {
-      type: 'article',
-      title: post.title,
-      description: post.summary,
-      publishedTime: post.date,
-      tags: post.tags,
-    },
-  };
-}
-
-export default async function PostPage({ params }: Params) {
-  const { category, slug } = await params;
-  if (!isCategory(category)) notFound();
-
-  const post = getPost(category, slug);
-  if (!post) notFound();
-
-  const body = getPostBody(post);
-  if (body === null) notFound();
-
-  const related = getRelatedPosts(post, 4);
-
+/**
+ * 글 한 편. 라우트가 글 · 본문 · 관련글을 다 찾아 넘겨준다 — 이 컴포넌트는
+ * 데이터를 읽지 않는다 (같은 파일에서 목록 화면도 갈라지기 때문이다).
+ */
+export function PostView({ post, body, related }: { post: Post; body: string; related: Post[] }) {
   return (
     <main className="mx-auto w-full max-w-[720px] px-6 py-10">
       <article>
@@ -57,7 +22,8 @@ export default async function PostPage({ params }: Params) {
               className={cn('size-2 shrink-0 rounded-full', CATEGORY_COLOR[post.category].dot)}
             />
             <span className="text-meta text-ink-muted">
-              {post.category.toUpperCase()} · {post.date}
+              {/* 하위 카테고리에 있는 글이면 DEV / FRONTEND 처럼 폴더 길을 그대로 보인다. */}
+              {categoryPath(post.category, post.subs)} · {post.date}
             </span>
             {post.draft && (
               <span className="text-meta-sm text-warning-ink bg-warning-subtle rounded px-1.5 py-0.5">
@@ -72,12 +38,12 @@ export default async function PostPage({ params }: Params) {
           <ul className="mt-4 flex flex-wrap gap-1.5">
             {post.tags.map(tag => (
               <li key={tag}>
-                <a
+                <LocaleLink
                   href={`/tags/${encodeURIComponent(tag)}`}
                   className="text-meta-sm text-ink bg-surface-muted hover:bg-primary-subtle hover:text-primary-ink rounded px-1.5 py-0.5"
                 >
                   {tag}
-                </a>
+                </LocaleLink>
               </li>
             ))}
           </ul>
@@ -89,8 +55,8 @@ export default async function PostPage({ params }: Params) {
       {related.length > 0 && (
         <section aria-label="관련 글" className="border-line mt-16 border-t pt-8">
           {/* 손으로 이어 둔 위키링크가 먼저고, 모자라면 태그 · 카테고리로 채운다. */}
-          <h2 className="text-title-sm text-ink-strong mb-2">이어 읽기</h2>
-          <PostList posts={related} />
+          <h2 className="text-title-sm text-ink-strong mb-3">이어 읽기</h2>
+          <PostCards posts={related} />
         </section>
       )}
     </main>

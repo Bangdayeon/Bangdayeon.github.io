@@ -1,0 +1,120 @@
+{
+  "nav": {
+    "home": "홈",
+    "tags": "태그",
+    "archive": "아카이브",
+    "about": "소개",
+    "siteMenu": "사이트 메뉴",
+    "menuExpand": "메뉴 펼치기",
+    "menuCollapse": "메뉴 접기",
+    "submenu": "{{name}} 하위 메뉴 {{action}}",
+    "expand": "펼치기",
+    "collapse": "접기"
+  },
+
+  "home": {
+    "title": "최근 글",
+    "total": "전체 {{count}}편",
+    "viewAll": "전체 보기"
+  },
+
+  "post": {
+    "draft": "초고",
+    "empty": "아직 글이 없다.",
+    "relatedRegion": "관련 글",
+    "related": "이어 읽기"
+  },
+
+  "tags": {
+    "title": "태그",
+    "kinds": "{{count}}종",
+    "empty": "아직 태그가 없다.",
+    "postsEmpty": "이 태그의 글이 없다.",
+    "count": "{{count}}편"
+  },
+
+  "category": {
+    "parents": "상위 카테고리",
+    "children": "하위 카테고리",
+    "count": "{{count}}편",
+    "page": "{{current}}/{{total}} 쪽"
+  },
+
+  "pagination": {
+    "region": "쪽 넘김",
+    "prev": "이전",
+    "next": "다음"
+  },
+
+  "archive": {
+    "title": "아카이브",
+    "empty": "아직 글이 없다.",
+    "total": "전체 {{count}}편",
+    "yearJump": "연도 바로가기",
+    "month": "{{month}}월",
+    "count": "{{count}}편"
+  },
+
+  "heatmap": {
+    "summary": "{{days}}일 동안 {{count}}편",
+    "noPost": "글 없음",
+    "dayCount": "{{count}}편",
+    "more": "외 {{count}}편",
+    "month": "{{month}}월",
+    "mon": "월",
+    "wed": "수",
+    "fri": "금"
+  },
+
+  "search": {
+    "title": "검색",
+    "heading": "글 검색",
+    "placeholder": "글 검색",
+    "clear": "검색어 지우기",
+    "graphRegion": "글 구조",
+    "graphLabel": "글 구조 그래프",
+    "noResult": "\"{{query}}\" 검색 결과가 없습니다.",
+    "resultRegion": "검색 결과",
+    "resultCount": "{{count}}개",
+    "recentRegion": "최근 검색",
+    "recent": "최근 검색",
+    "clearAll": "전체 지우기",
+    "removeRecent": "{{item}} 검색 기록 삭제",
+    "tagRegion": "태그",
+    "tags": "태그"
+  },
+
+  "settings": {
+    "menu": "설정",
+    "language": "언어",
+    "languageMenu": "언어 선택",
+    "korean": "한국어",
+    "english": "English",
+    "theme": "테마",
+    "system": "시스템",
+    "light": "라이트",
+    "dark": "다크",
+    "color": "색상",
+    "vivid": "Vivid",
+    "soft": "Soft",
+    "neon": "Neon",
+    "neonDarkOnly": "neon 은 다크 전용이다"
+  },
+
+  "profile": {
+    "region": "프로필",
+    "noViews": "조회수 집계 전",
+    "views": "조회"
+  },
+
+  "callout": {
+    "note": "참고",
+    "tip": "팁",
+    "danger": "경고",
+    "quote": "인용"
+  },
+
+  "about": {
+    "title": "소개"
+  }
+}

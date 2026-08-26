@@ -38,12 +38,24 @@ function main() {
     parsed.push(result);
   }
 
-  const seen = new Map<string, string>();
+  const seen = new Set<string>();
   for (const { post } of parsed) {
-    const before = seen.get(post.id);
-    if (before)
-      errors.push(`  ${post.id} 가 두 번 있다 (${before} · ${post.category}/${post.slug})`);
-    seen.set(post.id, `${post.category}/${post.slug}`);
+    if (seen.has(post.id)) errors.push(`  ${post.id} 가 두 번 있다`);
+    seen.add(post.id);
+  }
+
+  // 글의 주소와 하위 카테고리의 주소는 같은 공간을 쓴다. dev/nextjs 라는 글이
+  // 있는데 dev/nextjs/ 폴더도 있으면 /dev/nextjs 가 글인지 목록인지 정해지지
+  // 않는다 — 라우트는 글을 먼저 보므로 목록이 통째로 가려진다.
+  const folders = new Set(
+    parsed.flatMap(({ post }) =>
+      post.subs.map((_, depth) => [post.category, ...post.subs.slice(0, depth + 1)].join('/'))
+    )
+  );
+  for (const { post } of parsed) {
+    if (folders.has(post.id)) {
+      errors.push(`  ${post.id} 는 같은 이름의 하위 카테고리 폴더와 주소가 겹친다`);
+    }
   }
 
   if (errors.length > 0) {

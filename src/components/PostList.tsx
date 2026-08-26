@@ -1,9 +1,9 @@
-import Link from 'next/link';
-
 import type { Post } from '@/types/post';
 
-import { CATEGORY_COLOR } from '@/lib/categories';
+import { CATEGORY_COLOR, categoryPath } from '@/lib/categories';
 import { cn } from '@/lib/cn';
+
+import { LocaleLink as Link } from '@/components/LocaleLink';
 
 /**
  * 글 목록. 홈 · 카테고리 · 태그 · 아카이브 · 검색 결과가 같은 걸 쓴다.
@@ -40,7 +40,9 @@ export function PostList({
                 className={cn('size-2 shrink-0 rounded-full', CATEGORY_COLOR[post.category].dot)}
               />
               <span className="text-meta text-ink-muted">
-                {post.category.toUpperCase()} · {post.date}
+                {/* 하위 카테고리에 있는 글은 DEV / FRONTEND 처럼 폴더 길을 다 보인다.
+                    도트 색은 맨 위 칸을 따르므로 색과 글자가 어긋나지 않는다. */}
+                {categoryPath(post.category, post.subs)} · {post.date}
               </span>
               {/* draft 는 dev 에서만 목록에 들어온다 — 프로덕션 산출물엔 없다. */}
               {post.draft && (

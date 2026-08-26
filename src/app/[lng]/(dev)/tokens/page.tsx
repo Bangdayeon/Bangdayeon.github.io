@@ -1,7 +1,8 @@
 import type { Metadata } from 'next';
-import Link from 'next/link';
 
-import { CATEGORIES, CATEGORY_COLOR } from '@/lib/categories';
+import { CATEGORIES, CATEGORY_COLOR, categoryLabel } from '@/lib/categories';
+
+import { LocaleLink as Link } from '@/components/LocaleLink';
 
 export const metadata: Metadata = {
   title: '디자인 토큰',
@@ -112,7 +113,7 @@ export default function TokensPage() {
               <span className="text-meta text-ink-muted w-20 shrink-0 tabular-nums">{date}</span>
               <span className="text-body text-ink-strong min-w-0 flex-1">{title}</span>
               <span className={`text-meta shrink-0 ${CATEGORY_COLOR[cat].ink}`}>
-                {cat.toUpperCase()}
+                {categoryLabel([cat])}
               </span>
             </li>
           ))}

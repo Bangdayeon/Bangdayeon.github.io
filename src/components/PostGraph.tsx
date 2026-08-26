@@ -2,11 +2,11 @@
 
 import { useEffect, useMemo, useRef, useState } from 'react';
 
-import Link from 'next/link';
-
 import { CATEGORY_COLOR } from '@/lib/categories';
 import { cn } from '@/lib/cn';
 import { type GraphLayout, nodeRadius } from '@/lib/graph-layout';
+
+import { LocaleLink as Link } from '@/components/LocaleLink';
 
 /**
  * 노드 하나의 흔들림. 가로세로의 주기가 서로 어긋나서 왕복이 아니라 떠도는
@@ -34,8 +34,10 @@ function floatOffset(index: number, time: number) {
  * 떠다니는 움직임만 맡는다. 노드는 그 자체가 링크라서 탭으로 순회할 수 있고,
  * 그래서 옆에 같은 목록을 또 두지 않는다.
  *
- * 선은 두 종류다. 실선은 카테고리 소속(허브 → 글), 점선은 related(이어 읽기).
- * 굵기와 점선으로 갈라 두면 한 그림에서 헷갈리지 않는다.
+ * 선은 두 종류다. 실선은 소속(허브 → 하위 허브 → 글), 점선은 related(이어
+ * 읽기). 굵기와 점선으로 갈라 두면 한 그림에서 헷갈리지 않는다.
+ *
+ * 폴더 트리가 그대로 뼈대라서, 하위 카테고리는 한 단 작은 허브로 나타난다.
  *
  * 부유를 CSS 애니메이션이 아니라 rAF 한 루프로 도는 이유: 선의 두 끝점은 서로
  * 다른 노드를 따라가야 하는데 한 요소에 transform 을 둘 걸 수는 없다. CSS 로
@@ -198,19 +200,24 @@ export function PostGraph({ layout }: { layout: GraphLayout }) {
                 strokeWidth={2}
                 className="stroke-primary opacity-0 group-focus-visible:opacity-100"
               />
-              {/* 허브 이름(DEV · LOG…)은 짧고 여섯 개뿐이라 늘 띄워 둔다.
+              {/* 허브 이름(dev · log · frontend…)은 짧아서 늘 띄워 둔다. 하위
+                  카테고리는 한 톤 흐리게 — 이름이 늘어나도 맨 위 여섯 개가
+                  먼저 읽히고, 나머지는 그 아래 갈래로 보인다.
                   글 제목은 겹쳐서 못 읽게 되므로 가리킬 때만 나온다. */}
               <text
                 x={node.x}
-                y={node.y - radius - 9}
+                y={node.y - radius - (isHub ? 8 : 9)}
                 textAnchor="middle"
                 strokeWidth={4}
                 style={{ paintOrder: 'stroke' }}
                 className={cn(
                   'stroke-surface pointer-events-none transition-opacity duration-200',
-                  isHub
-                    ? 'text-meta-xs fill-ink-strong'
-                    : 'text-meta-sm fill-ink opacity-0 group-hover:opacity-100 group-focus-visible:opacity-100',
+                  !isHub &&
+                    'text-meta-sm fill-ink opacity-0 group-hover:opacity-100 group-focus-visible:opacity-100',
+                  isHub &&
+                    (node.depth <= 1
+                      ? 'text-meta-xs fill-ink-strong'
+                      : 'text-meta-xs fill-ink-muted'),
                   isHub && dim && 'opacity-30'
                 )}
               >
