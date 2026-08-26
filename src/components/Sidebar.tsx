@@ -80,7 +80,7 @@ function NavBranch({
           className={cn(
             'text-nav flex min-w-0 items-center gap-1.5 py-2',
             'after:absolute after:inset-0',
-            'focus-visible:outline-primary focus-visible:outline-2 focus-visible:-outline-offset-2',
+            'focus-visible:outline-focus focus-visible:outline-2 focus-visible:-outline-offset-2',
             isActive
               ? 'text-ink-strong font-semibold'
               : node.muted
@@ -103,7 +103,7 @@ function NavBranch({
             aria-expanded={open}
             aria-controls={listId}
             aria-label={`${node.label} 하위 메뉴 ${open ? '접기' : '펼치기'}`}
-            className="text-ink-muted hover:text-ink focus-visible:outline-primary relative z-10 grid size-5 shrink-0 place-items-center focus-visible:outline-2"
+            className="text-ink-muted hover:text-ink focus-visible:outline-focus relative z-10 grid size-5 shrink-0 place-items-center focus-visible:outline-2"
           >
             <svg
               viewBox="0 0 12 12"

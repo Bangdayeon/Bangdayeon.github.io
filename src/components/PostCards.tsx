@@ -24,7 +24,7 @@ export function PostCards({ posts }: { posts: Post[] }) {
             className={cn(
               'border-line bg-surface rounded-lg border p-4',
               'hover:border-line-strong hover:bg-surface-subtle transition-colors',
-              'focus-visible:outline-primary focus-visible:outline-2 focus-visible:-outline-offset-2',
+              'focus-visible:outline-focus focus-visible:outline-2 focus-visible:-outline-offset-2',
               // 요약이 짧은 카드도 옆 카드와 같은 높이로 선다.
               'flex flex-col'
             )}

@@ -65,7 +65,7 @@ export function Dropdown({
         aria-label={label}
         className={cn(
           'text-meta text-ink hover:bg-surface-subtle flex list-none items-center gap-1 rounded-lg px-2 py-1.5',
-          'focus-visible:outline-primary focus-visible:outline-2',
+          'focus-visible:outline-focus focus-visible:outline-2',
           '[&::-webkit-details-marker]:hidden'
         )}
       >

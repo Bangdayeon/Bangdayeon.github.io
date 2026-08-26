@@ -20,7 +20,7 @@ export default function HomePage() {
         <p className="mt-8 text-center">
           <Link
             href="/archive"
-            className="text-meta text-ink hover:bg-surface-subtle border-line focus-visible:outline-primary rounded-lg border px-3 py-1.5 focus-visible:outline-2"
+            className="text-meta text-ink hover:bg-surface-subtle border-line focus-visible:outline-focus rounded-lg border px-3 py-1.5 focus-visible:outline-2"
           >
             전체 보기
           </Link>

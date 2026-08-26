@@ -63,7 +63,7 @@ export default function ArchivePage() {
                 <li key={year}>
                   <a
                     href={`#${yearId(year)}`}
-                    className="text-meta text-ink hover:bg-surface-subtle hover:text-primary-ink border-line focus-visible:outline-primary inline-flex items-baseline gap-1.5 rounded-full border px-3 py-1 tabular-nums transition-colors focus-visible:outline-2"
+                    className="text-meta text-ink hover:bg-surface-subtle hover:text-primary-ink border-line focus-visible:outline-focus inline-flex items-baseline gap-1.5 rounded-full border px-3 py-1 tabular-nums transition-colors focus-visible:outline-2"
                   >
                     {year}
                     <span className="text-meta-sm text-ink-muted">{yearPosts.length}</span>
@@ -123,7 +123,7 @@ function CategoryChip({ category, count }: { category: Category; count: number }
   return (
     <Link
       href={`/${category}`}
-      className="text-meta text-ink-muted hover:text-ink focus-visible:outline-primary group flex items-center gap-1.5 rounded focus-visible:outline-2"
+      className="text-meta text-ink-muted hover:text-ink focus-visible:outline-focus group flex items-center gap-1.5 rounded focus-visible:outline-2"
     >
       <span
         aria-hidden="true"

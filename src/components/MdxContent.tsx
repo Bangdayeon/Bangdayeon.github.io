@@ -92,7 +92,7 @@ const COMPONENTS = {
       className={cn(
         'text-ink-muted hover:text-ink rounded-xs transition-colors',
         'decoration-primary hover:underline hover:underline-offset-4',
-        'focus-visible:outline-primary focus-visible:outline-2 focus-visible:outline-offset-2'
+        'focus-visible:outline-focus focus-visible:outline-2 focus-visible:outline-offset-2'
       )}
     >
       {children}

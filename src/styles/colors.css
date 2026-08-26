@@ -1,11 +1,13 @@
 /* ==========================================================================
    색 토큰 — 스웨디시 · 쨍한 포인트 컬러
    --------------------------------------------------------------------------
-   원칙 1. 중성색은 따뜻한 종이색이다. 순백(#ffffff)은 병원 느낌이고 장시간
-           읽기에 눈이 피로하다. 배경 #fbfaf7 · 본문 #1f1e1c.
+   원칙 1. 중성색은 유채 기 없는 회색이다. 순백(#ffffff)은 대비가 세서 장시간
+           읽기에 눈이 피로하므로 한 단 낮춘다. 배경 #fbfbfc · 본문 #1e1e21.
+           파란 기를 아주 조금만 남겨(HSL 240° · 채도 4% 이하) 화면이 누렇게
+           뜨지도, 병원처럼 파랗게 뜨지도 않게 한다.
 
-   원칙 2. 쨍한 색은 면으로 쓰고 글자는 먹색으로 둔다. 종이색 위에서 주황
-           2.72 · 초록 3.22 · 노랑 1.50 으로 전부 AA 미달이라 애초에 글자색이
+   원칙 2. 쨍한 색은 면으로 쓰고 글자는 먹색으로 둔다. 배경 위에서 주황
+           2.75 · 초록 3.25 · 노랑 1.51 로 전부 AA 미달이라 애초에 글자색이
            될 수 없다. 그래서 각 색을 3단으로 나눈다.
 
              vivid   면 · 도트 · 배지 배경.  글자색으로 쓰지 않는다
@@ -20,19 +22,19 @@
    ========================================================================== */
 
 :root {
-  /* ---------- 따뜻한 중성 램프 (유틸리티 미생성) ---------- */
-  --ramp-0: #fbfaf7; /* 종이색 */
-  --ramp-50: #f5f3ee;
-  --ramp-100: #ebe8e1;
-  --ramp-200: #e0dcd3;
-  --ramp-300: #cec9be;
-  --ramp-400: #a29d94;
-  --ramp-500: #6b6862;
-  --ramp-600: #504d47;
-  --ramp-700: #3a3833;
-  --ramp-800: #2a2825;
-  --ramp-900: #1f1e1c;
-  --ramp-950: #17161a; /* 따뜻한 어둠 */
+  /* ---------- 중성 회색 램프 (유틸리티 미생성) ---------- */
+  --ramp-0: #fbfbfc; /* 배경 */
+  --ramp-50: #f4f4f6;
+  --ramp-100: #eaeaed;
+  --ramp-200: #dedee2;
+  --ramp-300: #c9c9cf;
+  --ramp-400: #9b9ba3;
+  --ramp-500: #67676e;
+  --ramp-600: #4d4d53;
+  --ramp-700: #38383d;
+  --ramp-800: #29292d;
+  --ramp-900: #1e1e21;
+  --ramp-950: #161619; /* 가장 어두운 단 */
 
   /* ---------- 유채색 램프 ----------
      각 색은 라이트/다크 각각 subtle · vivid · ink 3단.
@@ -40,53 +42,77 @@
 
   /* blue — primary · dev */
   --hue-blue-subtle: #e8f0fe;
-  --hue-blue-vivid: #0b63e5; /*  5.12 */
-  --hue-blue-ink: #144cb5; /*  7.37 */
-  --hue-blue-strong: #0a52bf; /*  6.77  hover */
+  --hue-blue-vivid: #0b63e5; /*  5.17 */
+  --hue-blue-ink: #144cb5; /*  7.44 */
+  --hue-blue-strong: #0a52bf; /*  6.83  hover */
   --hue-blue-subtle-d: #111c33;
-  --hue-blue-vivid-d: #4a8bff; /*  5.51 */
-  --hue-blue-ink-d: #7aa9ff; /*  7.67 */
-  --hue-blue-strong-d: #6fa3ff; /*  7.17  hover */
+  --hue-blue-vivid-d: #4a8bff; /*  5.53 */
+  --hue-blue-ink-d: #7aa9ff; /*  7.69 */
+  --hue-blue-strong-d: #6fa3ff; /*  7.19  hover */
+
+  /* 포커스 링 전용 단.
+     이 팔레트에서는 vivid 와 같은 값이라 없어도 그만이지만, 링에는 vivid 에
+     없는 하한이 하나 붙는다 — WCAG 1.4.11 의 3:1 이다. vivid 는 "면"이라 얼마든
+     연해질 수 있고(노랑 1.51), 실제로 soft 팔레트는 여섯 색을 전부 파스텔로
+     띄운다. 그때 링까지 같이 연해지면 포커스가 흰 바탕에서 사라진다.
+     그래서 링은 처음부터 따로 잡아 둔다. */
+  --hue-blue-focus: #0b63e5; /*  5.17 */
+  --hue-blue-focus-d: #4a8bff; /*  5.53 */
 
   /* purple — design */
   --hue-purple-subtle: #f0eaff;
-  --hue-purple-vivid: #7a4de8; /*  4.96 */
-  --hue-purple-ink: #5f34c9; /*  7.13 */
+  --hue-purple-vivid: #7a4de8; /*  5.01 */
+  --hue-purple-ink: #5f34c9; /*  7.20 */
   --hue-purple-subtle-d: #1e1633;
-  --hue-purple-vivid-d: #9b7aff; /*  5.68 */
-  --hue-purple-ink-d: #b39bff; /*  7.76 */
+  --hue-purple-vivid-d: #9b7aff; /*  5.69 */
+  --hue-purple-ink-d: #b39bff; /*  7.78 */
 
   /* red — review · error */
   --hue-red-subtle: #ffecea;
-  --hue-red-vivid: #cf3b32; /*  4.65 · 흰 글자 4.86 */
-  --hue-red-ink: #c62f27; /*  5.24 */
+  --hue-red-vivid: #cf3b32; /*  4.70 · 밝은 글자 4.70 */
+  --hue-red-ink: #c62f27; /*  5.29 */
   --hue-red-subtle-d: #2e1512;
-  --hue-red-vivid-d: #f2554b; /*  5.30 */
-  --hue-red-ink-d: #ff8a80; /*  7.89 */
+  --hue-red-vivid-d: #f2554b; /*  5.31 */
+  --hue-red-ink-d: #ff8a80; /*  7.91 */
 
   /* orange — log */
   --hue-orange-subtle: #fff0e8;
-  --hue-orange-vivid: #ff6b2c; /*  2.72 · 면 전용. 위에 먹색 글자 5.86 */
-  --hue-orange-ink: #c04309; /*  4.97 */
+  --hue-orange-vivid: #ff6b2c; /*  2.75 · 면 전용. 위에 먹색 글자 5.85 */
+  --hue-orange-ink: #c04309; /*  5.02 */
   --hue-orange-subtle-d: #2b1a10;
-  --hue-orange-vivid-d: #ff7d3d; /*  7.08 */
-  --hue-orange-ink-d: #ff9152; /*  8.08 */
+  --hue-orange-vivid-d: #ff7d3d; /*  7.10 */
+  --hue-orange-ink-d: #ff9152; /*  8.10 */
 
   /* yellow — toon · warning */
   --hue-yellow-subtle: #fff8dd;
-  --hue-yellow-vivid: #ffc700; /*  1.50 · 면 전용. 위에 먹색 글자 10.65 */
-  --hue-yellow-ink: #8a5f00; /*  5.41 */
+  --hue-yellow-vivid: #ffc700; /*  1.51 · 면 전용. 위에 먹색 글자 10.63 */
+  --hue-yellow-ink: #8a5f00; /*  5.46 */
   --hue-yellow-subtle-d: #2a2109;
-  --hue-yellow-vivid-d: #ffc700; /* 11.51 */
-  --hue-yellow-ink-d: #ffd633; /* 12.79 */
+  --hue-yellow-vivid-d: #ffc700; /* 11.54 */
+  --hue-yellow-ink-d: #ffd633; /* 12.83 */
 
   /* green — travel · success */
   --hue-green-subtle: #e6f7ef;
-  --hue-green-vivid: #00a15c; /*  3.22 · 면 전용. 위에 먹색 글자 4.96 */
-  --hue-green-ink: #087f4c; /*  4.85 */
+  --hue-green-vivid: #00a15c; /*  3.25 · 면 전용. 위에 먹색 글자 4.95 */
+  --hue-green-ink: #087f4c; /*  4.89 */
   --hue-green-subtle-d: #0d2419;
-  --hue-green-vivid-d: #10b96c; /*  7.01 */
-  --hue-green-ink-d: #3ecf94; /*  9.05 */
+  --hue-green-vivid-d: #10b96c; /*  7.03 */
+  --hue-green-ink-d: #3ecf94; /*  9.08 */
+
+  /* ---------- 설정 패널의 색상 원 ----------
+     원 세 개가 세 팔레트를 동시에 보여줘야 한다. 그래서 여기 값들만은 활성
+     팔레트를 따라가면 안 된다 — 아래 .palette-* 블록이 이 변수들을 건드리지
+     않는 이유다. 팔레트마다 성격이 가장 잘 드러나는 3색(파랑 · 주황계 · 초록)을
+     박아 둔다. 원이 작아서 다크 쪽 값이 더 잘 읽힌다. */
+  --swatch-vivid-1: #0b63e5;
+  --swatch-vivid-2: #ff6b2c;
+  --swatch-vivid-3: #00a15c;
+  --swatch-soft-1: #92d0fc;
+  --swatch-soft-2: #fcc18d;
+  --swatch-soft-3: #98ebcd;
+  --swatch-neon-1: #29b6ff;
+  --swatch-neon-2: #ff3d6e;
+  --swatch-neon-3: #14ff9b;
 
   /* ====================================================================
      시맨틱 — 라이트
@@ -94,10 +120,10 @@
   color-scheme: light;
 
   /* 텍스트. 괄호 안은 surface 대비 */
-  --sem-ink-strong: var(--ramp-950); /* 제목            17.25 */
-  --sem-ink: var(--ramp-900); /* 본문            15.96 */
-  --sem-ink-muted: var(--ramp-500); /* 메타·날짜·태그   5.32  AA 통과 */
-  --sem-ink-subtle: var(--ramp-400); /* 비활성·장식      2.58  AA 미달 */
+  --sem-ink-strong: var(--ramp-950); /* 제목            17.46 */
+  --sem-ink: var(--ramp-900); /* 본문            16.08 */
+  --sem-ink-muted: var(--ramp-500); /* 메타·날짜·태그   5.43  AA 통과 */
+  --sem-ink-subtle: var(--ramp-400); /* 비활성·장식      2.67  AA 미달 */
 
   /* 배경 */
   --sem-surface: var(--ramp-0);
@@ -110,28 +136,44 @@
   --sem-line: var(--ramp-200);
   --sem-line-strong: var(--ramp-300);
 
+  /* 코드블록. 아래 다크 블록에 다시 적지 않는다 — 코드는 어느 테마에서나
+     어둡다. 라이트에서는 본문 배경과 뒤집히고, 다크에서는 페이지(ramp-950)
+     보다 한 단 밝아 떠 보인다. 그래서 두 테마 모두에서 "여기는 읽는 글이
+     아니라 옮겨 붙이는 것"으로 읽힌다.
+
+     인라인 코드는 여기 해당하지 않는다 — 문장 한가운데를 검게 칠하면
+     글줄이 끊긴다. 그쪽은 surface-muted 를 그대로 쓴다. */
+  --sem-code-surface: var(--ramp-900); /* 위 글자 ramp-100 13.85 */
+  --sem-code-ink: var(--ramp-100);
+  /* 다크에서 코드블록과 페이지의 밝기 차는 1.09 뿐이다 — 경계는 이 선이 짓는다. */
+  --sem-code-line: var(--ramp-700);
+
   /* 액센트 — primary (blue) */
   --sem-primary-subtle: var(--hue-blue-subtle);
   --sem-primary: var(--hue-blue-vivid);
   --sem-primary-strong: var(--hue-blue-strong);
   --sem-primary-ink: var(--hue-blue-ink);
-  --sem-primary-on: var(--ramp-0); /* vivid 위 글자. 5.34 */
+  --sem-primary-on: var(--ramp-0); /* vivid 위 글자. 5.17 */
+
+  /* 포커스 링. focus-visible:outline-focus 하나로만 쓴다 — 링을 primary 에
+     묶어 두면 액센트를 장식으로 연하게 만드는 순간 접근성이 같이 무너진다. */
+  --sem-focus: var(--hue-blue-focus);
 
   /* 피드백 */
   --sem-error-subtle: var(--hue-red-subtle);
   --sem-error: var(--hue-red-vivid);
   --sem-error-ink: var(--hue-red-ink);
-  --sem-error-on: var(--ramp-0); /* 4.86 */
+  --sem-error-on: var(--ramp-0); /* 4.70 */
 
   --sem-success-subtle: var(--hue-green-subtle);
   --sem-success: var(--hue-green-vivid);
   --sem-success-ink: var(--hue-green-ink);
-  --sem-success-on: var(--ramp-900); /* 초록 위에는 먹색. 4.96 */
+  --sem-success-on: var(--ramp-900); /* 초록 위에는 먹색. 4.95 */
 
   --sem-warning-subtle: var(--hue-yellow-subtle);
   --sem-warning: var(--hue-yellow-vivid);
   --sem-warning-ink: var(--hue-yellow-ink);
-  --sem-warning-on: var(--ramp-900); /* 노랑 위에는 먹색. 10.65 */
+  --sem-warning-on: var(--ramp-900); /* 노랑 위에는 먹색. 10.63 */
 
   /* 카테고리 — 목록 도트 · 상세 상단 띠 · 태그 칩.
      피드백 색과 색상환을 공유한다 (dev=blue, review=red, travel=green,
@@ -175,10 +217,10 @@
   :root:not(.light) {
     color-scheme: dark;
 
-    --sem-ink-strong: var(--ramp-0); /* 17.25 */
-    --sem-ink: var(--ramp-100); /* 14.72 */
-    --sem-ink-muted: var(--ramp-400); /*  6.68  AA 통과 */
-    --sem-ink-subtle: var(--ramp-600); /*  2.14  AA 미달 */
+    --sem-ink-strong: var(--ramp-0); /* 17.46 */
+    --sem-ink: var(--ramp-100); /* 15.04 */
+    --sem-ink-muted: var(--ramp-400); /*  6.54  AA 통과 */
+    --sem-ink-subtle: var(--ramp-600); /*  2.15  AA 미달 */
 
     --sem-surface: var(--ramp-950);
     --sem-surface-subtle: var(--ramp-900);
@@ -194,6 +236,8 @@
     --sem-primary-strong: var(--hue-blue-strong-d);
     --sem-primary-ink: var(--hue-blue-ink-d);
     --sem-primary-on: var(--ramp-950);
+    --sem-focus: var(--hue-blue-focus-d);
+    --sem-focus: var(--hue-blue-focus-d);
 
     --sem-error-subtle: var(--hue-red-subtle-d);
     --sem-error: var(--hue-red-vivid-d);
@@ -300,6 +344,194 @@
 }
 
 /* ====================================================================
+   색 팔레트 — soft · neon
+   --------------------------------------------------------------------
+   위 시맨틱 블록은 건드리지 않는다. --sem-* 는 이미 --ramp-* 와 --hue-* 를
+   가리키고 있고, 다크 정의가 두 벌(@media · .dark) 있다. 여기에 팔레트를
+   곱하면 같은 매핑을 여덟 번 적게 되고, 그중 한 벌만 안 고치면 특정 조합에서만
+   색이 틀어진다 — 위 블록 머리말이 경고하는 그 중복이다.
+
+   그래서 팔레트는 램프만 갈아끼운다. 라이트용과 -d 를 한 블록에 같이 두므로
+   .dark / @media 분기를 다시 쓸 일이 없고, 매핑은 계속 한 곳에만 있다.
+
+   세 팔레트 모두 위 네 원칙을 그대로 진다 — ink 단은 AA 통과, vivid 단은 면
+   전용, 유채색은 포인트로만. 주석의 숫자는 그 모드 배경 대비 실측값이다.
+   ==================================================================== */
+
+/* soft — 파스텔.
+   유채색은 여섯 개 전부 밝은 쪽으로 띄우되 채도는 높게 잡는다 (S 68~95%).
+   채도를 같이 낮추면 회색이 섞여 파스텔이 아니라 먼지색이 된다 — 맑은 파스텔은
+   "연한 색"이 아니라 "밝고 진한 색"이다. 그래서 vivid 단 위에는 어느 모드에서나
+   먹색 글자가 얹히고, 아래 --sem-*-on 네 줄이 그걸 뒤집는다.
+
+   여섯 색을 전부 띄울 수 있는 건 포커스 링을 --hue-blue-focus 로 떼어 놨기
+   때문이다 (:root 의 그 주석 참고). 링만 3:1 을 지고 나머지는 자유롭다.
+
+   중성색에는 색 기울기가 아예 없다 (R = G = B). 처음엔 40° 쪽으로 밀어
+   종이색을 냈고 다음엔 R-B 차를 6 까지 줄였는데, 배경과 본문이 화면의
+   대부분이라 그 정도로도 화면 전체가 누렇게 읽혔다. 기본 팔레트가 파란 기를
+   조금 남겨 두는 것과 달리 여기서는 0 이다 — 부드러움은 파스텔 유채색이
+   내고, 중성색은 아무 편도 들지 않는다. */
+:root.palette-soft {
+  /* 중성 램프 — 순수 회색. R = G = B 를 깨지 말 것. */
+  --ramp-0: #fbfbfb; /* 배경 */
+  --ramp-50: #f4f4f4;
+  --ramp-100: #eaeaea;
+  --ramp-200: #dddddd;
+  --ramp-300: #c7c7c7;
+  --ramp-400: #9a9a9a;
+  --ramp-500: #676767;
+  --ramp-600: #4f4f4f;
+  --ramp-700: #3a3a3a;
+  --ramp-800: #2b2b2b;
+  --ramp-900: #212121;
+  --ramp-950: #181818;
+  /* 라이트 ink-strong 17.16 · ink 15.56 · ink-muted 5.47 AA · ink-subtle 2.72
+     다크   ink-strong 17.16 · ink 14.76 · ink-muted 6.31 AA · ink-subtle 2.17
+     코드블록 13.38 · 코드블록과 페이지의 밝기 차 1.10 */
+
+  /* 파스텔 vivid 위에는 어느 모드에서나 먹색 글자가 얹힌다. --sem-* 를 팔레트가
+     덮는 건 여기 네 줄뿐이고, 넷 다 라이트 · 다크가 같은 답이라 모드 분기를
+     되살리지 않는다 (--ramp-900 은 어느 모드에서나 어두운 쪽이다). */
+  --sem-primary-on: var(--ramp-900);
+  --sem-error-on: var(--ramp-900);
+  --sem-success-on: var(--ramp-900);
+  --sem-warning-on: var(--ramp-900);
+
+  /* blue — primary · dev */
+  --hue-blue-subtle: #ebf7ff;
+  --hue-blue-vivid: #92d0fc; /*  1.60 · 면 전용. 위에 먹색 글자 9.70 */
+  --hue-blue-ink: #1a5a9e; /*  6.76 */
+  --hue-blue-strong: #6abffb; /*  hover — 파스텔은 진해지는 대신 밝아진다. 먹색 글자 8.02 */
+  --hue-blue-focus: #1a5a9e; /*  6.76 · 링은 파스텔로 못 띄운다 (3:1 하한) */
+  --hue-blue-subtle-d: #122130;
+  --hue-blue-vivid-d: #77c2f8; /*  9.18 · 위에 먹색 글자 8.32 */
+  --hue-blue-ink-d: #a7d8fb; /* 11.72 */
+  --hue-blue-strong-d: #9dd4fb; /* 11.20  hover */
+  --hue-blue-focus-d: #77c2f8; /*  9.18 */
+
+  /* purple — design */
+  --hue-purple-subtle: #f3ecfd;
+  --hue-purple-vivid: #ceaff8; /*  1.83 · 면 전용. 위에 먹색 글자 8.52 */
+  --hue-purple-ink: #652fb1; /*  7.82 */
+  --hue-purple-subtle-d: #211532;
+  --hue-purple-vivid-d: #bf9af4; /*  7.73 · 위에 먹색 글자 7.01 */
+  --hue-purple-ink-d: #d6bdfa; /* 10.59 */
+
+  /* red — review · error */
+  --hue-red-subtle: #feebee;
+  --hue-red-vivid: #fdafba; /*  1.69 · 면 전용. 위에 먹색 글자 9.21 */
+  --hue-red-ink: #b42236; /*  6.30 */
+  --hue-red-subtle-d: #321519;
+  --hue-red-vivid-d: #f896a3; /*  8.36 · 위에 먹색 글자 7.58 */
+  --hue-red-ink-d: #fcb6bf; /* 10.64 */
+
+  /* orange — log */
+  --hue-orange-subtle: #fff1e5;
+  --hue-orange-vivid: #fcc18d; /*  1.54 · 면 전용. 위에 먹색 글자 10.08 */
+  --hue-orange-ink: #9c460d; /*  6.16 */
+  --hue-orange-subtle-d: #2f2013;
+  --hue-orange-vivid-d: #f8b377; /*  9.90 · 위에 먹색 글자 8.98 */
+  --hue-orange-ink-d: #fbc99d; /* 11.79 */
+
+  /* yellow — toon · warning */
+  --hue-yellow-subtle: #fff6db;
+  --hue-yellow-vivid: #fcdc7e; /*  1.29 · 면 전용. 위에 먹색 글자 12.02 */
+  --hue-yellow-ink: #885d07; /*  5.61 */
+  --hue-yellow-subtle-d: #2c2511;
+  --hue-yellow-vivid-d: #f6d46f; /* 12.32 · 위에 먹색 글자 11.17 */
+  --hue-yellow-ink-d: #fbe193; /* 13.78 */
+
+  /* green — travel · success */
+  --hue-green-subtle: #e5faf3;
+  --hue-green-vivid: #98ebcd; /*  1.34 · 면 전용. 위에 먹색 글자 11.58 */
+  --hue-green-ink: #0d7351; /*  5.66 */
+  --hue-green-subtle-d: #11271f;
+  --hue-green-vivid-d: #7be0bb; /* 11.18 · 위에 먹색 글자 10.14 */
+  --hue-green-ink-d: #a0eed1; /* 13.23 */
+}
+
+/* neon — 다크 전용. 배경을 거의 검정까지 내리고 유채색을 형광으로 올린다.
+   대비가 전부 7:1 을 넘는 판이라 vivid 단조차 글자로 쓸 수 있지만, 그래도
+   원칙 2 는 유지한다 — 팔레트를 바꿨다고 컴포넌트가 다르게 굴면 안 된다.
+
+   아래 라이트용 값(-d 없는 것)은 -d 와 같은 값을 가리킨다. neon 은 .dark 없이
+   렌더되지 않으므로(prefs.ts 의 세 지점이 보장한다) 이 값들이 화면에 나오는
+   경로는 없다. 변수를 비워 두면 기본 팔레트의 색이 형광 중성색 위로 섞여
+   나오므로, 안 쓰이더라도 같은 판의 색을 채워 둔다. */
+:root.palette-neon {
+  color-scheme: dark;
+
+  /* 중성 램프 — 파란 기를 남긴 검정. 순검정은 형광색 가장자리가 번져 보인다. */
+  --ramp-0: #eef1ff; /* 다크에서 제목 글자 */
+  --ramp-50: #dde2f5;
+  --ramp-100: #ccd2ec;
+  --ramp-200: #b0b8d8;
+  --ramp-300: #8d95b8;
+  --ramp-400: #7f88ad;
+  --ramp-500: #5c6486;
+  --ramp-600: #454b68;
+  --ramp-700: #2f3450;
+  --ramp-800: #1c2038;
+  --ramp-900: #101326;
+  --ramp-950: #08080f; /* 배경 */
+  /* 다크 ink-strong 17.74 · ink 13.31 · ink-muted 5.73 AA · ink-subtle 2.34
+     코드블록 12.24 · 코드블록과 페이지의 밝기 차 1.09 (기본 팔레트와 같다) */
+
+  /* blue — primary · dev */
+  --hue-blue-subtle: #08283d;
+  --hue-blue-vivid: #29b6ff;
+  --hue-blue-ink: #6fd3ff;
+  --hue-blue-strong: #5ec9ff;
+  --hue-blue-subtle-d: #08283d;
+  --hue-blue-vivid-d: #29b6ff; /*  8.77 */
+  --hue-blue-ink-d: #6fd3ff; /* 11.82 */
+  --hue-blue-strong-d: #5ec9ff; /* 10.72  hover */
+  --hue-blue-focus: #29b6ff;
+  --hue-blue-focus-d: #29b6ff; /*  8.77 */
+
+  /* purple — design */
+  --hue-purple-subtle: #1e0a33;
+  --hue-purple-vivid: #b14dff;
+  --hue-purple-ink: #cf8bff;
+  --hue-purple-subtle-d: #1e0a33;
+  --hue-purple-vivid-d: #b14dff; /*  5.11 */
+  --hue-purple-ink-d: #cf8bff; /*  8.36 */
+
+  /* red — review · error */
+  --hue-red-subtle: #330a1a;
+  --hue-red-vivid: #ff3d6e;
+  --hue-red-ink: #ff87a3;
+  --hue-red-subtle-d: #330a1a;
+  --hue-red-vivid-d: #ff3d6e; /*  5.84 */
+  --hue-red-ink-d: #ff87a3; /*  8.79 */
+
+  /* orange — log */
+  --hue-orange-subtle: #331a05;
+  --hue-orange-vivid: #ff7a18;
+  --hue-orange-ink: #ffa45c;
+  --hue-orange-subtle-d: #331a05;
+  --hue-orange-vivid-d: #ff7a18; /*  7.65 */
+  --hue-orange-ink-d: #ffa45c; /* 10.19 */
+
+  /* yellow — toon · warning */
+  --hue-yellow-subtle: #2b3308;
+  --hue-yellow-vivid: #f5ff2e;
+  --hue-yellow-ink: #f7ff7a;
+  --hue-yellow-subtle-d: #2b3308;
+  --hue-yellow-vivid-d: #f5ff2e; /* 18.28 */
+  --hue-yellow-ink-d: #f7ff7a; /* 18.57 */
+
+  /* green — travel · success */
+  --hue-green-subtle: #053322;
+  --hue-green-vivid: #14ff9b;
+  --hue-green-ink: #6effc0;
+  --hue-green-subtle-d: #053322;
+  --hue-green-vivid-d: #14ff9b; /* 15.03 */
+  --hue-green-ink-d: #6effc0; /* 15.90 */
+}
+
+/* ====================================================================
    Tailwind 유틸리티 생성
    inline 이어야 유틸리티가 값을 복사하지 않고 var() 를 그대로 참조한다.
    그래야 .dark 에서 변수만 바꿔도 색이 전환된다.
@@ -321,11 +553,17 @@
   --color-line: var(--sem-line);
   --color-line-strong: var(--sem-line-strong);
 
+  --color-code-surface: var(--sem-code-surface);
+  --color-code-ink: var(--sem-code-ink);
+  --color-code-line: var(--sem-code-line);
+
   --color-primary-subtle: var(--sem-primary-subtle);
   --color-primary: var(--sem-primary);
   --color-primary-strong: var(--sem-primary-strong);
   --color-primary-ink: var(--sem-primary-ink);
   --color-primary-on: var(--sem-primary-on);
+
+  --color-focus: var(--sem-focus);
 
   --color-error-subtle: var(--sem-error-subtle);
   --color-error: var(--sem-error);

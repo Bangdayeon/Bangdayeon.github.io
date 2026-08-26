@@ -123,7 +123,7 @@ export function SearchLauncher() {
           aria-label="검색어 지우기"
           className={cn(
             'text-ink-muted hover:text-ink hover:bg-surface-muted grid size-5 shrink-0 place-items-center rounded-full',
-            'focus-visible:outline-primary focus-visible:outline-2'
+            'focus-visible:outline-focus focus-visible:outline-2'
           )}
         >
           <svg viewBox="0 0 12 12" aria-hidden="true" className="size-2.5">

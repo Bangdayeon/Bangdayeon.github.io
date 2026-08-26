@@ -77,7 +77,7 @@ function Row({ post, anchor }: { post: Post; anchor: boolean }) {
     >
       <Link
         href={`/${post.id}`}
-        className="group hover:bg-surface-subtle focus-visible:outline-primary block rounded-r-lg py-3 pr-3 pl-5 focus-visible:outline-2 focus-visible:-outline-offset-2"
+        className="group hover:bg-surface-subtle focus-visible:outline-focus block rounded-r-lg py-3 pr-3 pl-5 focus-visible:outline-2 focus-visible:-outline-offset-2"
       >
         {/* 척추 위에 얹히는 점. ring 이 선을 끊어 점이 선 위에 떠 보인다. */}
         <span

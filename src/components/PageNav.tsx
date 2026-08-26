@@ -28,7 +28,7 @@ export function PageNav({
 
   const href = (page: number) => (page === 1 ? base : `${base}/page/${page}`);
   const linkClass =
-    'text-meta text-ink hover:bg-surface-subtle focus-visible:outline-primary rounded-lg border border-line px-3 py-1.5 focus-visible:outline-2';
+    'text-meta text-ink hover:bg-surface-subtle focus-visible:outline-focus rounded-lg border border-line px-3 py-1.5 focus-visible:outline-2';
 
   return (
     <nav aria-label="쪽 넘김" className="mt-10 flex items-center justify-between gap-2">

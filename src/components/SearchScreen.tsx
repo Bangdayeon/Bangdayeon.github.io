@@ -102,7 +102,7 @@ function RecentSearches() {
         <button
           type="button"
           onClick={clearRecentSearches}
-          className="text-meta text-ink-muted hover:text-ink focus-visible:outline-primary rounded focus-visible:outline-2"
+          className="text-meta text-ink-muted hover:text-ink focus-visible:outline-focus rounded focus-visible:outline-2"
         >
           전체 지우기
         </button>
@@ -114,7 +114,7 @@ function RecentSearches() {
             <button
               type="button"
               onClick={() => setQuery(item)}
-              className="text-meta text-ink hover:text-primary-ink focus-visible:outline-primary rounded-l-full py-1 pr-1 pl-3 focus-visible:outline-2"
+              className="text-meta text-ink hover:text-primary-ink focus-visible:outline-focus rounded-l-full py-1 pr-1 pl-3 focus-visible:outline-2"
             >
               {item}
             </button>
@@ -122,7 +122,7 @@ function RecentSearches() {
               type="button"
               onClick={() => removeRecentSearch(item)}
               aria-label={`${item} 검색 기록 삭제`}
-              className="text-ink-muted hover:text-ink focus-visible:outline-primary grid size-6 shrink-0 place-items-center rounded-r-full focus-visible:outline-2"
+              className="text-ink-muted hover:text-ink focus-visible:outline-focus grid size-6 shrink-0 place-items-center rounded-r-full focus-visible:outline-2"
             >
               <svg viewBox="0 0 12 12" aria-hidden="true" className="size-2.5">
                 <path
@@ -156,7 +156,7 @@ function Tags({ tags }: { tags: { tag: string; count: number }[] }) {
               onClick={() => setQuery(tag)}
               className={cn(
                 'text-meta text-ink bg-surface-muted hover:bg-primary-subtle hover:text-primary-ink rounded-full px-2.5 py-1',
-                'focus-visible:outline-primary focus-visible:outline-2'
+                'focus-visible:outline-focus focus-visible:outline-2'
               )}
             >
               {tag}

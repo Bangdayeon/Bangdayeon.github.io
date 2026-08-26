@@ -1,12 +1,11 @@
 'use client';
 
-import Link from 'next/link';
-
 import { cn } from '@/lib/cn';
 
+import { LocaleLink as Link } from '@/components/LocaleLink';
 import { Logo } from '@/components/Logo';
 import { SearchLauncher } from '@/components/SearchLauncher';
-import { LangMenu, SettingsMenu, ThemeMenu } from '@/components/SettingsControls';
+import { LangMenu, MobileSettingsMenu, SettingsMenu } from '@/components/SettingsControls';
 
 /**
  * 화면 전체 폭 헤더.
@@ -40,7 +39,7 @@ export function Header({
             aria-label={navOpen ? '메뉴 접기' : '메뉴 펼치기'}
             className={cn(
               'text-ink-muted hover:text-ink hover:bg-surface-subtle grid size-8 shrink-0 place-items-center rounded',
-              'focus-visible:outline-primary focus-visible:outline-2'
+              'focus-visible:outline-focus focus-visible:outline-2'
             )}
           >
             {/* 접힘 방향이 없는 패널 아이콘 — 모바일(위아래)에서도 말이 된다. */}
@@ -63,7 +62,7 @@ export function Header({
             href="/"
             className={cn(
               'text-ink-strong flex min-w-0 items-center gap-2 rounded px-1 py-1',
-              'focus-visible:outline-primary focus-visible:outline-2'
+              'focus-visible:outline-focus focus-visible:outline-2'
             )}
           >
             <Logo className="size-5 shrink-0" />
@@ -78,10 +77,10 @@ export function Header({
         <div className="flex items-center justify-end gap-1">
           <div className="hidden items-center gap-1 md:flex">
             <LangMenu />
-            <ThemeMenu />
+            <SettingsMenu />
           </div>
           <div className="md:hidden">
-            <SettingsMenu />
+            <MobileSettingsMenu />
           </div>
         </div>
       </div>

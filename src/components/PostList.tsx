@@ -32,7 +32,7 @@ export function PostList({
           <Link
             href={`/${post.id}`}
             onClick={onSelect}
-            className="hover:bg-surface-subtle focus-visible:outline-primary block rounded-lg px-3 py-4 focus-visible:outline-2 focus-visible:-outline-offset-2"
+            className="hover:bg-surface-subtle focus-visible:outline-focus block rounded-lg px-3 py-4 focus-visible:outline-2 focus-visible:-outline-offset-2"
           >
             <span className="mb-1 flex items-center gap-2">
               <span

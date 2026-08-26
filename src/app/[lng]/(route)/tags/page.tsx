@@ -32,7 +32,7 @@ export default function TagsPage() {
                   목록으로 가는 이름 + 수"라서 생김새가 갈리면 안 된다. */}
               <Link
                 href={`/tags/${encodeURIComponent(tag)}`}
-                className="text-meta text-ink border-line hover:border-primary hover:bg-primary-subtle hover:text-primary-ink focus-visible:outline-primary inline-flex items-baseline gap-1.5 rounded-full border px-3 py-1.5 transition-colors focus-visible:outline-2"
+                className="text-meta text-ink border-line hover:border-primary hover:bg-primary-subtle hover:text-primary-ink focus-visible:outline-focus inline-flex items-baseline gap-1.5 rounded-full border px-3 py-1.5 transition-colors focus-visible:outline-2"
               >
                 {tag}
                 <span className="text-meta-sm text-ink-muted tabular-nums">{count}</span>

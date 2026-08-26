@@ -38,7 +38,7 @@ export function CategoryView({ node, current }: { node: CategoryNode; current: n
             <span key={parent.href}>
               <Link
                 href={parent.href}
-                className="hover:text-ink focus-visible:outline-primary rounded focus-visible:outline-2"
+                className="hover:text-ink focus-visible:outline-focus rounded focus-visible:outline-2"
               >
                 {parent.label}
               </Link>
@@ -66,7 +66,7 @@ export function CategoryView({ node, current }: { node: CategoryNode; current: n
             <Link
               key={child.path}
               href={child.href}
-              className="text-meta text-ink border-line hover:border-line-strong hover:bg-surface-subtle focus-visible:outline-primary inline-flex items-center gap-1.5 rounded-lg border px-2.5 py-1.5 transition-colors focus-visible:outline-2"
+              className="text-meta text-ink border-line hover:border-line-strong hover:bg-surface-subtle focus-visible:outline-focus inline-flex items-center gap-1.5 rounded-lg border px-2.5 py-1.5 transition-colors focus-visible:outline-2"
             >
               {dot && (
                 <span aria-hidden="true" className={cn('size-2 shrink-0 rounded-full', dot)} />
