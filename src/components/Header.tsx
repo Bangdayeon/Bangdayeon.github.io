@@ -2,6 +2,8 @@
 
 import { useT } from 'next-i18next/client';
 
+import { SHOW_LANG_SWITCH } from '@/config/site';
+
 import { cn } from '@/lib/cn';
 
 import { LocaleLink as Link } from '@/components/LocaleLink';
@@ -80,7 +82,7 @@ export function Header({
 
         <div className="flex items-center justify-end gap-1">
           <div className="hidden items-center gap-1 md:flex">
-            <LangMenu />
+            {SHOW_LANG_SWITCH && <LangMenu />}
             <SettingsMenu />
           </div>
           <div className="md:hidden">

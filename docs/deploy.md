@@ -98,7 +98,70 @@ pnpm build
 
 ---
 
-## 3. 지금 감수하는 것
+## 3. 검색엔진에 올리기
+
+`github.io` 주소도 그대로 등록된다 — 구글도 네이버도 도메인을 샀는지 따지지 않는다.
+다만 등록은 주소 단위라, 나중에 도메인을 붙이면 한 번 더 해야 한다. 저장소 이름을
+`<계정>.github.io` 로 두어 주소가 안 바뀌게 하는 편이 여기서도 낫다.
+
+빌드가 이미 두 파일을 굽는다. 손으로 갱신할 것은 없다.
+
+| 파일           | 만드는 곳            | 하는 일                                                   |
+| -------------- | -------------------- | --------------------------------------------------------- |
+| `/sitemap.xml` | `src/app/sitemap.ts` | 홈 · 카테고리 · 태그 · 글의 주소 목록. 글을 쓰면 따라온다 |
+| `/robots.txt`  | `src/app/robots.ts`  | 크롤러 규칙과 sitemap 위치                                |
+
+둘 다 `NEXT_PUBLIC_SITE_URL` 로 절대 주소를 만든다. 상대 경로로는 적을 수 없는
+값이라, **저장소 Variables 에 넣는 것이 여기서부터 선택이 아니다** —
+`https://<계정>.github.io`, 끝에 슬래시 없이. 비워 두면 코드에 박아 둔 기본값으로
+떨어진다 (`src/config/site.ts`).
+
+sitemap 에는 **한국어 주소만** 싣고 robots.txt 는 `/en/` 을 막는다. 지금 영어
+번역이 전부 빈 자리표시자라 `/en/…` 이 같은 한국어 본문을 다른 주소로 한 번 더
+내놓는 중이고, 그대로 두면 검색엔진이 어느 쪽을 정본으로 볼지 스스로 고른다.
+번역을 채우면 두 곳을 같이 푼다 (`src/config/site.ts` 의 `SHOW_LANG_SWITCH`).
+
+### 소유 확인 — 파일 한 장
+
+두 곳 모두 사이트가 내 것임을 확인시켜야 한다. GitHub Pages 에는 DNS 를 만질
+자리가 없으므로 **HTML 파일 방식**을 쓴다. 받은 파일을 `public/` 에 그대로 두고
+push 하면 사이트 루트에 그 이름으로 선다 — `public/` 은 Next 가 손대지 않고
+`out/` 루트로 복사한다.
+
+```
+public/google1234abcd.html              → https://<계정>.github.io/google1234abcd.html
+public/naver-site-verification-….html   → https://<계정>.github.io/naver-site-verification-….html
+```
+
+확인이 끝나도 파일은 지우지 않는다. 두 서비스 모두 주기적으로 다시 확인하고,
+파일이 사라지면 소유 확인이 풀린다.
+
+### 구글 — Search Console
+
+1. <https://search.google.com/search-console> → 속성 추가 → **URL 접두어**
+   (도메인 방식은 DNS 레코드를 요구해서 여기서는 못 쓴다)
+2. `https://<계정>.github.io/` 를 넣고 확인 방법에서 **HTML 파일**을 받는다
+3. `public/` 에 두고 push → 배포가 끝난 뒤 "확인"
+4. 왼쪽 **Sitemaps** 에 `sitemap.xml` 을 제출한다
+
+### 네이버 — 서치어드바이저
+
+1. <https://searchadvisor.naver.com> → 웹마스터 도구 → 사이트 등록
+2. 소유확인에서 **HTML 파일**을 받아 같은 방식으로 `public/` 에 둔다
+3. **요청 → 사이트맵 제출** 에 `sitemap.xml`
+4. **검증 → robots.txt** 로 규칙이 제대로 읽히는지 본다
+
+빙(Bing)은 Search Console 계정을 그대로 가져오는 길이 있어서, 구글을 먼저 끝내면
+[Bing Webmaster Tools](https://www.bing.com/webmasters) 에서 가져오기 한 번이면 된다.
+
+### 얼마나 걸리나
+
+등록했다고 바로 색인되지 않는다. 새 사이트는 며칠에서 몇 주가 보통이고,
+**글이 없으면 색인할 것도 없다** — 등록만 해 두고 글을 쌓는 순서가 맞다.
+
+---
+
+## 4. 지금 감수하는 것
 
 |         | 지금              | 서버 있는 곳으로 옮기면 |
 | ------- | ----------------- | ----------------------- |
@@ -110,7 +173,7 @@ pnpm build
 
 ---
 
-## 4. 나중에 Cloudflare 로 옮길 때
+## 5. 나중에 Cloudflare 로 옮길 때
 
 도메인을 사서 Cloudflare 에 올리면 두 갈래가 열린다.
 
@@ -133,7 +196,7 @@ pnpm build
 
 ---
 
-## 5. 로컬에서 배포본 그대로 보기
+## 6. 로컬에서 배포본 그대로 보기
 
 ```bash
 pnpm build

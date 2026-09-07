@@ -37,8 +37,10 @@ pnpm dev                     # http://localhost:3000
 ```
 src/
 ├─ app/
-│  ├─ layout.tsx · not-found.tsx
-│  └─ (route)/
+│  ├─ sitemap.ts · robots.ts     검색엔진에 내보내는 두 파일 ([lng] 밖 — 사이트에 하나뿐이다)
+│  └─ [lng]/
+│     ├─ layout.tsx · not-found.tsx
+│     └─ (route)/
 │     ├─ page.tsx                 /
 │     ├─ [category]/page.tsx      /{category}
 │     ├─ [category]/[...rest]/page.tsx
@@ -105,8 +107,11 @@ GitHub Pages 에 정적 파일로 올린다. `main` 에 push 하면 워크플로
 `scripts/export-fixup.ts` 가 그 둘을 파일로 대신 만든다 — 한국어 산출물을
 루트로 올려 주소를 그대로 지키고, 옛 주소마다 문서를 한 장씩 굽는다.
 
-저장소 설정 · 하위 경로(`BASE_PATH`) · 나중에 Cloudflare 로 옮기는 길은
-**[docs/deploy.md](docs/deploy.md)** 에 있다.
+`/sitemap.xml` 과 `/robots.txt` 는 빌드가 굽는다 — 글을 쓰면 따라오고 손으로
+갱신할 곳은 없다. 구글 · 네이버에 사이트를 등록하는 절차도 같은 문서에 있다.
+
+저장소 설정 · 하위 경로(`BASE_PATH`) · 검색엔진 등록 · 나중에 Cloudflare 로
+옮기는 길은 **[docs/deploy.md](docs/deploy.md)** 에 있다.
 
 ## 규약
 
@@ -132,6 +137,11 @@ GitHub Pages 에 정적 파일로 올린다. `main` 에 push 하면 워크플로
 
 ## 미결정
 
+- 영어판 — `src/locales/en/common.json` 이 전부 빈 자리표시자라, 지금 영어를
+  골라도 화면은 한국어다. 그래서 헤더의 언어 전환 버튼을 꺼 뒀다
+  (`src/config/site.ts` 의 `SHOW_LANG_SWITCH`). 라우팅과 정적 생성은 그대로
+  살아 있어서 `/en/…` 주소는 열리고, 문구를 채우면 한 줄로 되돌린다.
+  같은 이유로 sitemap 은 한국어 주소만 싣고 robots.txt 가 `/en/` 을 막는다
 - 한국어 검색 라이브러리 — 지금은 제목 · 요약 · 태그 부분일치뿐이다 (`src/lib/search.ts`)
 - 분석 도구 (Plausible vs Umami vs Vercel Analytics) — 미설치.
   붙으면 /search 글 그래프의 카테고리별 글 선정 기준을 최신순에서 조회수순으로

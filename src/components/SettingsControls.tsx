@@ -6,6 +6,8 @@ import { useRouter } from 'next/navigation';
 
 import { useT } from 'next-i18next/client';
 
+import { SHOW_LANG_SWITCH } from '@/config/site';
+
 import { cn } from '@/lib/cn';
 import { isLocale, localeHref, splitLocale } from '@/lib/i18n';
 import {
@@ -352,10 +354,15 @@ export function MobileSettingsMenu() {
         </svg>
       }
     >
-      <SectionLabel first>{t('settings.language')}</SectionLabel>
-      <OptionList options={LANG_OPTIONS} value={locale} onChange={switchLocale} />
+      {SHOW_LANG_SWITCH && (
+        <>
+          <SectionLabel first>{t('settings.language')}</SectionLabel>
+          <OptionList options={LANG_OPTIONS} value={locale} onChange={switchLocale} />
+        </>
+      )}
 
-      <ThemeSection />
+      {/* 언어 칸이 빠지면 테마가 패널의 첫 섹션이 된다 — 위 여백을 그때만 뗀다. */}
+      <ThemeSection first={!SHOW_LANG_SWITCH} />
       <ColorSection />
     </Dropdown>
   );
