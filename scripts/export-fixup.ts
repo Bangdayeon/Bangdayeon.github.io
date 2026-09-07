@@ -52,14 +52,14 @@ function main() {
 
   const moved = hoistDefaultLocale();
   const flattened = flattenSegmentCache(OUT_DIR);
-  const decoded = mirrorEncodedNames(OUT_DIR);
+  const mirrored = mirrorUrlNames(OUT_DIR);
   const shims = writeRedirectShims();
   disableJekyll();
 
   console.log(
     `✓ ${DEFAULT_LOCALE} ${moved}개를 루트로 올렸다` +
       (flattened > 0 ? ` · 프리페치 ${flattened}개 펼침` : '') +
-      (decoded > 0 ? ` · 한글 주소 ${decoded}개 이중화` : '') +
+      (mirrored > 0 ? ` · 한글 주소 ${mirrored}개 이중화` : '') +
       (shims > 0 ? ` · 옛 주소 ${shims}개` : '') +
       ' · .nojekyll'
   );
@@ -167,34 +167,30 @@ function hoistDefaultLocale(): number {
 }
 
 /**
- * 한글 태그 주소를 디코딩된 이름으로도 한 벌 더 둔다.
+ * 한글이 든 주소를 인코딩된 이름과 날것 이름 두 벌로 둔다.
  *
- * Next 는 /tags/회고 를 %ED%9A%8C%EA%B3%A0.html 이라는 이름으로 디스크에 쓴다.
- * 브라우저는 언제나 인코딩된 형태로 요청하지만, 그걸 파일로 바꾸는 방식은
- * 정적 서버마다 다르다 — 디코딩해서 찾는 서버(회고.html 을 본다)와 그대로
- * 찾는 서버(%ED%9A%8C%EA%B3%A0.html 을 본다)가 둘 다 있다.
+ * 브라우저는 /tags/회고 를 언제나 %ED%9A%8C%EA%B3%A0 으로 바꿔 보낸다. 그걸
+ * 파일로 되돌리는 방식은 정적 서버마다 다른데 — 풀어서 찾는 쪽(회고.html)과
+ * 그대로 찾는 쪽(%ED%9A%8C%EA%B3%A0.html)이 둘 다 있다 — **GitHub Pages 는
+ * 풀지 않는다** (배포해서 확인했다).
  *
- * 어느 쪽인지 올려 보기 전에는 알 수 없고, 틀리면 한글 태그 화면만 통째로
- * 404 가 된다. 태그 몇 개짜리 복사본으로 그 불확실성을 지운다.
+ * 그리고 Next 가 어느 이름으로 쓰는지도 고정된 값이 아니다. 같은 저장소에서
+ * generateStaticParams 가 태그를 인코딩해서 주느냐 그대로 주느냐에 따라
+ * 파일 이름이 통째로 바뀌었다. 양쪽에 하나씩 걸린 셈이라, 두 벌을 다 두고
+ * 어느 조합이든 맞게 한다. 태그 열댓 개짜리 복사본으로 이 불확실성을 지운다.
  */
-function mirrorEncodedNames(dir: string): number {
+function mirrorUrlNames(dir: string): number {
   let count = 0;
 
   for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
     const from = path.join(dir, entry.name);
 
-    if (entry.isDirectory()) count += mirrorEncodedNames(from);
-    if (!/%[0-9a-f]{2}/i.test(entry.name)) continue;
+    if (entry.isDirectory()) count += mirrorUrlNames(from);
 
-    let name = entry.name;
-    try {
-      name = decodeURIComponent(entry.name);
-    } catch {
-      continue; // % 가 인코딩이 아니라 이름의 일부였다
-    }
-    if (name === entry.name) continue;
+    const other = otherForm(entry.name);
+    if (!other) continue;
 
-    const to = path.join(dir, name);
+    const to = path.join(dir, other);
     if (fs.existsSync(to)) continue;
 
     fs.cpSync(from, to, { recursive: true });
@@ -202,6 +198,28 @@ function mirrorEncodedNames(dir: string): number {
   }
 
   return count;
+}
+
+/**
+ * 같은 주소를 가리키는 다른 이름. 바꿀 것이 없으면 null.
+ *
+ * ASCII 로만 된 이름은 건드리지 않는다 — 펼쳐 둔 프리페치 파일에 $ 같은 글자가
+ * 있어서, 인코딩하면 있지도 않은 주소의 사본만 늘어난다.
+ */
+function otherForm(name: string): string | null {
+  if (/%[0-9a-f]{2}/i.test(name)) {
+    try {
+      const decoded = decodeURIComponent(name);
+      return decoded === name ? null : decoded;
+    } catch {
+      return null; // % 가 인코딩이 아니라 이름의 일부였다
+    }
+  }
+
+  if (!/[^\x00-\x7f]/.test(name)) return null;
+
+  const encoded = encodeURIComponent(name);
+  return encoded === name ? null : encoded;
 }
 
 /**

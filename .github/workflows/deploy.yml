@@ -47,6 +47,10 @@ jobs:
           NEXT_PUBLIC_BASE_PATH: ${{ vars.NEXT_PUBLIC_BASE_PATH }}
           NEXT_PUBLIC_SITE_URL: ${{ vars.NEXT_PUBLIC_SITE_URL }}
           NEXT_PUBLIC_IMAGE_BASE_URL: ${{ vars.NEXT_PUBLIC_IMAGE_BASE_URL }}
+          # 조회수. 코드는 화면에 나가는 값이라 Variables, 토큰은 Secrets 다.
+          # 둘 중 하나라도 비면 숫자 없이(= "조회수 집계 전") 그대로 배포된다.
+          NEXT_PUBLIC_GOATCOUNTER_CODE: ${{ vars.NEXT_PUBLIC_GOATCOUNTER_CODE }}
+          GOATCOUNTER_API_TOKEN: ${{ secrets.GOATCOUNTER_API_TOKEN }}
 
       - uses: actions/upload-pages-artifact@v3
         with:

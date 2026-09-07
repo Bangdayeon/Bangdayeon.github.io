@@ -38,6 +38,25 @@ CSS 에 문자열로 적혀 있는데 CSS 는 basePath 를 모르기 때문이�
 같은 Variables 화면에 `NEXT_PUBLIC_SITE_URL` 과, 이미지를 R2 로 옮긴 뒤에는
 `NEXT_PUBLIC_IMAGE_BASE_URL` 도 넣는다.
 
+### 조회수 (선택)
+
+[GoatCounter](https://www.goatcounter.com) 에 사이트를 만들면 `<코드>.goatcounter.com`
+을 받는다. 그 코드와 API 토큰(GoatCounter → Settings → API)을 저장소에 넣으면 집계가
+붙는다.
+
+| 값                             | 자리      | 쓰이는 곳                            |
+| ------------------------------ | --------- | ------------------------------------ |
+| `NEXT_PUBLIC_GOATCOUNTER_CODE` | Variables | 집계 스크립트 (화면에 나가는 값이다) |
+| `GOATCOUNTER_API_TOKEN`        | Secrets   | 사이드바 숫자 (빌드에서만 쓴다)      |
+
+둘 다 없어도 배포는 된다 — 스크립트가 아예 안 실려 나가고 사이드바는 "조회수 집계
+전"으로 선다. 로컬에서 시험하려면 `.env.local` 에 같은 두 줄을 넣는다 (코드를 넣지
+않으면 로컬 새로고침이 숫자에 안 섞인다).
+
+숫자는 `pnpm build` 가 한 번 받아 굽는다(`scripts/fetch-views.ts` → `src/data/views.json`).
+정적 사이트라 화면이 그릴 때 API 를 부를 수 없어서고, 그래서 **배포 시점에 멈춘다** —
+더 자주 갱신하려면 워크플로에 cron 을 건다. 받아오기가 실패해도 빌드는 통과한다.
+
 ---
 
 ## 2. 빌드가 하는 일

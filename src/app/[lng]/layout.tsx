@@ -10,6 +10,7 @@ import {
 
 import { SITE_DESCRIPTION, SITE_NAME } from '@/config/site';
 
+import { Analytics } from '@/components/Analytics';
 import { PrefsBoot } from '@/components/PrefsBoot';
 
 import '@/styles/globals.css';
@@ -77,6 +78,10 @@ export default async function RootLayout({
         <PrefsBoot />
       </head>
       <body>
+        {/* 조회수 집계. 코드가 없으면 아무것도 안 한다 — 로컬 새로고침이
+            숫자에 섞이지 않는다. */}
+        <Analytics />
+
         <I18nProvider
           language={lng}
           resources={resources}

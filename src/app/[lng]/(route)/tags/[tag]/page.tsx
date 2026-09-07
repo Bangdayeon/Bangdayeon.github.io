@@ -12,7 +12,11 @@ export const dynamicParams = false;
 // [lng] 는 루트 파라미터라 여기서도 serverLocale() 로 바로 읽는다 — 언어마다
 // 태그 목록이 다르므로(번역이 없는 글은 원문 언어에만 있다) 언어별로 돈다.
 export async function generateStaticParams() {
-  return getTagCounts(await serverLocale()).map(({ tag }) => ({ tag: encodeURIComponent(tag) }));
+  // 태그를 적힌 그대로 돌려준다. 여기서 encodeURIComponent 를 걸면 한글 태그가
+  // 두 곳에서 어긋난다 — 라우터는 주소에서 푼 값(회고)과 맞춰 보므로 dev 에서
+  // 404 가 나고, 정적 내보내기에서는 인코딩된 문자열이 그대로 제목이 된다.
+  // 주소에 넣을 때 Next 가 알아서 인코딩한다.
+  return getTagCounts(await serverLocale()).map(({ tag }) => ({ tag }));
 }
 
 type Params = { params: Promise<{ tag: string }> };
