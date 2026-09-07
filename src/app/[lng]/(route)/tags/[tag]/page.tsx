@@ -1,6 +1,8 @@
 import type { Metadata } from 'next';
+import { notFound } from 'next/navigation';
 
 import { getPostsByTag, getTagCounts } from '@/lib/posts';
+import { EMPTY_PARAM, atLeastOne } from '@/lib/static-params';
 import { serverLocale, serverT } from '@/lib/t';
 
 import { PageTitle } from '@/components/PageTitle';
@@ -16,7 +18,13 @@ export async function generateStaticParams() {
   // 두 곳에서 어긋난다 — 라우터는 주소에서 푼 값(회고)과 맞춰 보므로 dev 에서
   // 404 가 나고, 정적 내보내기에서는 인코딩된 문자열이 그대로 제목이 된다.
   // 주소에 넣을 때 Next 가 알아서 인코딩한다.
-  return getTagCounts(await serverLocale()).map(({ tag }) => ({ tag }));
+  // 태그가 하나도 없으면(글 0편) 자리표시자 하나 — 아래에서 404 로 떨어진다.
+  return atLeastOne(
+    getTagCounts(await serverLocale()).map(({ tag }) => ({ tag })),
+    {
+      tag: EMPTY_PARAM,
+    }
+  );
 }
 
 type Params = { params: Promise<{ tag: string }> };
@@ -31,6 +39,8 @@ export default async function TagPage({ params }: Params) {
   const { tag } = await params;
   // config/tag-alias.ts 로 정규화된 태그가 색인에 들어 있으므로 여기서는 그대로 쓴다.
   const name = decodeURIComponent(tag);
+  if (name === EMPTY_PARAM) notFound();
+
   const posts = getPostsByTag(await serverLocale(), name);
 
   return (

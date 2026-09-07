@@ -4,7 +4,7 @@ import { notFound } from 'next/navigation';
 import type { CategoryNode, Post } from '@/types/post';
 
 import type { Category } from '@/lib/categories';
-import { categoryPath, isCategory } from '@/lib/categories';
+import { CATEGORIES, categoryPath, isCategory } from '@/lib/categories';
 import {
   getAllPosts,
   getCategoryNode,
@@ -14,6 +14,7 @@ import {
   getPostsIn,
   getRelatedPosts,
 } from '@/lib/posts';
+import { EMPTY_PARAM, atLeastOne } from '@/lib/static-params';
 import { serverLocale } from '@/lib/t';
 
 import { CategoryView } from '@/components/CategoryView';
@@ -92,7 +93,9 @@ export async function generateStaticParams() {
 
   getCategoryTree(locale).forEach(walk);
 
-  return params;
+  // 글도 하위 카테고리도 없으면 params 가 빈 배열이다 — 자리표시자 하나를
+  // 끼운다. resolve() 가 이 경로를 못 풀어 notFound() 로 떨어진다.
+  return atLeastOne(params, { category: CATEGORIES[0], rest: [EMPTY_PARAM] });
 }
 
 export async function generateMetadata({ params }: Params): Promise<Metadata> {
