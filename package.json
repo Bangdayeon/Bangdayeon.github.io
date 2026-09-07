@@ -9,7 +9,10 @@
   },
   "scripts": {
     "dev": "next dev --turbopack",
+    "prepare": "git config core.hooksPath .githooks || exit 0",
     "index": "tsx scripts/build-index.ts",
+    "img": "tsx scripts/upload-image.ts",
+    "redirects": "tsx scripts/sync-redirects.ts || exit 0",
     "font": "tsx scripts/subset-font.ts",
     "build": "pnpm index && next build",
     "start": "next start",
@@ -54,6 +57,7 @@
     "fontverter": "^2.0.0",
     "prettier": "^3.6.2",
     "prettier-plugin-tailwindcss": "^0.7.1",
+    "sharp": "^0.35.4",
     "subset-font": "^2.5.0",
     "tailwindcss": "^4.1.17",
     "tsx": "^4.20.3",

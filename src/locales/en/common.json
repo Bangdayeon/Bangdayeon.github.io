@@ -1,108 +1,130 @@
 {
   "nav": {
-    "home": "",
-    "tags": "",
-    "archive": "",
-    "about": "",
-    "siteMenu": "",
-    "menuExpand": "",
-    "menuCollapse": "",
-    "submenu": "",
-    "expand": "",
-    "collapse": ""
+    "home": "Home",
+    "tags": "Tags",
+    "archive": "Archive",
+    "about": "About",
+    "siteMenu": "Site menu",
+    "menuExpand": "Open menu",
+    "menuCollapse": "Close menu",
+    "submenu": "{{action}} {{name}} submenu",
+    "expand": "Expand",
+    "collapse": "Collapse"
   },
   "home": {
-    "title": "",
-    "total": "",
-    "viewAll": ""
+    "title": "Latest posts",
+    "total_one": "{{count}} post",
+    "total_other": "{{count}} posts",
+    "viewAll": "View all"
   },
   "post": {
-    "draft": "",
-    "empty": "",
-    "relatedRegion": "",
-    "related": ""
+    "draft": "Draft",
+    "empty": "No posts yet.",
+    "relatedRegion": "Related posts",
+    "related": "Read next",
+    "notTranslated": "Not translated yet"
   },
   "tags": {
-    "title": "",
-    "kinds": "",
-    "empty": "",
-    "postsEmpty": "",
-    "count": ""
+    "title": "Tags",
+    "kinds_one": "{{count}} tag",
+    "kinds_other": "{{count}} tags",
+    "empty": "No tags yet.",
+    "postsEmpty": "Nothing tagged with this yet.",
+    "count_one": "{{count}} post",
+    "count_other": "{{count}} posts"
   },
   "category": {
-    "parents": "",
-    "children": "",
-    "count": "",
-    "page": ""
+    "parents": "Parent categories",
+    "children": "Subcategories",
+    "count_one": "{{count}} post",
+    "count_other": "{{count}} posts",
+    "page": "page {{current}} of {{total}}"
   },
   "pagination": {
-    "region": "",
-    "prev": "",
-    "next": ""
+    "region": "Pagination",
+    "prev": "Previous",
+    "next": "Next"
   },
   "archive": {
-    "title": "",
-    "empty": "",
-    "total": "",
-    "yearJump": "",
-    "month": "",
-    "count": ""
+    "title": "Archive",
+    "empty": "No posts yet.",
+    "total_one": "{{count}} post in all",
+    "total_other": "{{count}} posts in all",
+    "yearJump": "Jump to year",
+    "count_one": "{{count}} post",
+    "count_other": "{{count}} posts"
   },
   "heatmap": {
-    "summary": "",
-    "noPost": "",
-    "dayCount": "",
-    "more": "",
-    "month": "",
-    "mon": "",
-    "wed": "",
-    "fri": ""
+    "summary_one": "{{count}} post over {{days}} days",
+    "summary_other": "{{count}} posts over {{days}} days",
+    "noPost": "No posts",
+    "dayCount_one": "{{count}} post",
+    "dayCount_other": "{{count}} posts",
+    "more_one": "and {{count}} more",
+    "more_other": "and {{count}} more",
+    "mon": "Mon",
+    "wed": "Wed",
+    "fri": "Fri"
   },
   "search": {
-    "title": "",
-    "heading": "",
-    "placeholder": "",
-    "clear": "",
-    "graphRegion": "",
-    "graphLabel": "",
-    "noResult": "",
-    "resultRegion": "",
-    "resultCount": "",
-    "recentRegion": "",
-    "recent": "",
-    "clearAll": "",
-    "removeRecent": "",
-    "tagRegion": "",
-    "tags": ""
+    "title": "Search",
+    "heading": "Search posts",
+    "placeholder": "Search posts",
+    "clear": "Clear search",
+    "graphRegion": "Post map",
+    "graphLabel": "Map of posts and categories",
+    "noResult": "No results for \"<em>{{query}}</em>\".",
+    "resultRegion": "Search results",
+    "resultCount_one": "{{count}} result",
+    "resultCount_other": "{{count}} results",
+    "recentRegion": "Recent searches",
+    "recent": "Recent searches",
+    "clearAll": "Clear all",
+    "removeRecent": "Remove {{item}} from recent searches",
+    "tagRegion": "Tags",
+    "tags": "Tags"
   },
   "settings": {
-    "menu": "",
-    "language": "",
-    "languageMenu": "",
+    "menu": "Settings",
+    "language": "Language",
+    "languageMenu": "Choose language",
     "korean": "한국어",
     "english": "English",
-    "theme": "",
-    "system": "",
-    "light": "",
-    "dark": "",
-    "color": "",
+    "theme": "Theme",
+    "system": "System",
+    "light": "Light",
+    "dark": "Dark",
+    "color": "Color",
     "vivid": "Vivid",
     "soft": "Soft",
-    "neon": "Neon",
-    "neonDarkOnly": ""
+    "neon": "Neon"
   },
   "profile": {
-    "region": "",
-    "noViews": "",
-    "views": ""
+    "region": "Profile",
+    "noViews": "No views yet",
+    "views": "views"
   },
   "callout": {
-    "note": "",
-    "tip": "",
-    "danger": "",
-    "quote": ""
+    "note": "Note",
+    "tip": "Tip",
+    "danger": "Warning",
+    "quote": "Quote"
   },
   "about": {
-    "title": ""
+    "title": "About"
+  },
+  "months": {
+    "1": "Jan",
+    "2": "Feb",
+    "3": "Mar",
+    "4": "Apr",
+    "5": "May",
+    "6": "Jun",
+    "7": "Jul",
+    "8": "Aug",
+    "9": "Sep",
+    "10": "Oct",
+    "11": "Nov",
+    "12": "Dec"
   }
 }

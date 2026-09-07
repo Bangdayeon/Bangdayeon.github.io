@@ -10,6 +10,8 @@ import { CATEGORIES } from '@/lib/categories';
 import { type LinkTarget, extractWikilinks, resolveWikilink } from '@/lib/mdx/wikilink';
 import { frontmatterSchema, parsePostPath } from '@/lib/post-schema';
 
+import type { Locale } from '@/i18n.config';
+
 /**
  * MDX 파일 → Post.
  *
@@ -89,6 +91,7 @@ export function parsePostFile(relativePath: string): ParsedPost | { error: strin
       category: meta.category,
       subs: meta.subs,
       slug: meta.slug,
+      locale: meta.locale,
       title: parsed.data.title,
       date: parsed.data.date,
       summary: parsed.data.summary,
@@ -104,6 +107,42 @@ export function parsePostFile(relativePath: string): ParsedPost | { error: strin
 
 export type MissingLink = { from: string; target: string };
 
+export type DateMismatch = {
+  /** 두 언어판이 함께 쓰는 글 id. */
+  id: string;
+  /** 언어판마다 적힌 날짜. 언제나 둘 이상이다. */
+  dates: { locale: Locale; date: string }[];
+};
+
+/**
+ * 같은 글의 언어판끼리 날짜가 어긋난 것.
+ *
+ * 번역은 같은 글이라 id 를 공유하지만(주소도 하나다) 날짜는 각자의 frontmatter
+ * 에서 온다. 어긋나면 목록 · 아카이브 · 연표가 언어마다 같은 글을 다른 자리에
+ * 세운다 — 한국어로 보면 8월 글인데 영어로 보면 9월 글이 되는 식이다.
+ *
+ * 화면이 깨지지 않아서 눈으로는 거의 안 잡힌다. 그래서 기계가 말해 준다.
+ *
+ * 멈추지는 않는다 — 번역을 붙이는 김에 원문 날짜를 손보는 중일 수도 있고, 그
+ * 상태로도 사이트는 멀쩡히 돈다. 파일명 날짜 경고와 같은 급이다.
+ */
+export function findDateMismatches(parsed: ParsedPost[]): DateMismatch[] {
+  const byId = new Map<string, DateMismatch['dates']>();
+
+  for (const { post } of parsed) {
+    byId.set(post.id, [...(byId.get(post.id) ?? []), { locale: post.locale, date: post.date }]);
+  }
+
+  return [...byId]
+    .filter(([, dates]) => new Set(dates.map(entry => entry.date)).size > 1)
+    .map(([id, dates]) => ({ id, dates }));
+}
+
+/** 경고 한 줄로 적을 때 쓰는 표기 — 'ko: 2026-08-11 · en: 2026-09-01'. */
+export function formatDates(dates: DateMismatch['dates']): string {
+  return dates.map(({ locale, date }) => `${locale}: ${date}`).join(' · ');
+}
+
 /**
  * 본문의 위키링크를 읽어 related 를 채우고 최신순으로 세운다.
  *
@@ -118,6 +157,9 @@ export function linkPosts(parsed: ParsedPost[]): { posts: Post[]; missing: Missi
     file,
   }));
 
+  // id 하나에 Set 하나다 — 같은 글의 두 언어판은 id 가 같아 같은 칸을 쓴다.
+  // 어느 쪽 본문에 적은 링크든 양쪽 언어판의 related 에 함께 들어간다. 번역본에만
+  // 링크를 적었다고 그래프가 갈라지면 안 된다.
   const related = new Map<string, Set<string>>(parsed.map(({ post }) => [post.id, new Set()]));
   const missing: MissingLink[] = [];
 

@@ -2,26 +2,27 @@
 
 import { useSyncExternalStore } from 'react';
 
+import { useRouter } from 'next/navigation';
+
 import { useT } from 'next-i18next/client';
 
 import { cn } from '@/lib/cn';
+import { isLocale, localeHref, splitLocale } from '@/lib/i18n';
 import {
-  type Lang,
   type Palette,
-  SERVER_LANG,
   SERVER_PALETTE,
   SERVER_THEME,
   type Theme,
-  applyLang,
   applyPalette,
   applyTheme,
-  readLang,
   readPalette,
   readTheme,
   subscribePrefs,
 } from '@/lib/prefs';
 
 import { Dropdown } from '@/components/Dropdown';
+
+import { DEFAULT_LOCALE, type Locale } from '@/i18n.config';
 
 /**
  * 헤더 우측 설정 — 언어 · 테마 · 색상.
@@ -34,9 +35,12 @@ import { Dropdown } from '@/components/Dropdown';
  * 열어 보기 전에는 알 수 없다. 언어는 값 자체가 곧 이름이라 그대로 둔다.
  *
  * 현재 값 표시는 JS 상태가 아니라 <html> 을 보는 CSS variant 가 한다
- * (theme-dark:… · palette-soft:… 처럼). head 인라인 스크립트가 첫 페인트 전에
- * class 와 lang 을 복원하므로 새로고침 직후에도 틀린 값이 잠깐 비치지 않는다.
- * JS 로 읽은 값은 aria-pressed 와 잠금 판정에만 쓴다.
+ * (theme-dark:… · palette-soft:… 처럼). 테마 · 팔레트는 head 인라인 스크립트가
+ * 첫 페인트 전에 class 를 복원하고, 언어는 서버가 <html lang> 에 박아 보내므로
+ * 새로고침 직후에도 틀린 값이 잠깐 비치지 않는다. JS 로 읽은 값은 aria-pressed 와
+ * 잠금 판정에만 쓴다.
+ *
+ * 언어만 저장하지 않고 이동한다 — 주소가 곧 언어다 (useSwitchLocale).
  */
 
 type Option<T extends string> = {
@@ -71,7 +75,7 @@ const THEME_OPTIONS: readonly Option<Theme>[] = [
   },
 ];
 
-const LANG_OPTIONS: readonly Option<Lang>[] = [
+const LANG_OPTIONS: readonly Option<Locale>[] = [
   {
     value: 'ko',
     key: 'settings.korean',
@@ -234,8 +238,6 @@ function ColorSection() {
             onClick={() => applyPalette(option.value)}
             style={{ backgroundImage: option.swatch }}
             className={cn(
-              // 고른 표시는 ring-focus 다. ring-primary 로 두면 soft 처럼 액센트가
-              // 파스텔인 판에서 테가 배경에 묻어 어느 원이 켜졌는지 안 보인다.
               'border-line-strong ring-focus ring-offset-surface size-6 rounded-full border ring-offset-2',
               'focus-visible:outline-focus focus-visible:outline-2 focus-visible:outline-offset-2',
               option.active
@@ -245,10 +247,6 @@ function ColorSection() {
           </button>
         ))}
       </div>
-      {/* neon 일 때만 뜬다. 테마 칸이 왜 흐린지 화면에서 답한다. */}
-      <p className="text-meta-sm text-ink-subtle palette-neon:block hidden px-2 pb-0.5">
-        {t('settings.neonDarkOnly')}
-      </p>
     </>
   );
 }
@@ -257,8 +255,35 @@ function useTheme() {
   return useSyncExternalStore(subscribePrefs, readTheme, () => SERVER_THEME);
 }
 
-function useLang() {
-  return useSyncExternalStore(subscribePrefs, readLang, () => SERVER_LANG);
+/** 지금 언어 — 주소에서 온 값을 I18nProvider 가 들고 있다. */
+function useLocale(): Locale {
+  const { i18n } = useT();
+  return isLocale(i18n.language) ? i18n.language : DEFAULT_LOCALE;
+}
+
+/**
+ * 언어 바꾸기 — 보던 화면의 다른 언어판으로 옮긴다.
+ *
+ * 테마 · 팔레트와 달리 언어는 저장할 값이 아니다. proxy 가 `/dev` 를 한국어로,
+ * `/en/dev` 를 영어로 가르므로 고르는 행위가 곧 이동이다.
+ *
+ * 지금 주소는 usePathname 이 아니라 주소창에서 직접 읽는다. 한국어 주소는 proxy 가
+ * 안에서 `/ko/…` 로 rewrite 하는데, 그러면 서버가 렌더한 값(`/ko/dev`)과 주소창
+ * (`/dev`)이 갈린다 — Next 문서가 usePathname 의 rewrite 주의사항으로 적어 둔 그
+ * 갈림이다. 앞의 값을 잡으면 splitLocale 이 `/ko` 를 언어 접두사로 보지 않아
+ * (한국어는 접두사가 없는 게 정식) `/en/ko/dev` 같은 주소가 나온다. 클릭 시점의
+ * 주소창은 언제나 정식 주소다.
+ *
+ * 쿼리와 앵커도 들고 간다 — 검색 결과(`?q=…`)를 보다 언어를 바꾸면 검색어가 남는다.
+ */
+function useSwitchLocale() {
+  const router = useRouter();
+
+  return (locale: Locale) => {
+    const { search, hash, pathname } = window.location;
+    const { path } = splitLocale(pathname);
+    router.push(`${localeHref(locale, path)}${search}${hash}`);
+  };
 }
 
 function usePalette() {
@@ -267,7 +292,8 @@ function usePalette() {
 
 export function LangMenu() {
   const { t } = useT();
-  const lang = useLang();
+  const locale = useLocale();
+  const switchLocale = useSwitchLocale();
 
   return (
     <Dropdown
@@ -279,7 +305,7 @@ export function LangMenu() {
         </>
       }
     >
-      <OptionList options={LANG_OPTIONS} value={lang} onChange={applyLang} />
+      <OptionList options={LANG_OPTIONS} value={locale} onChange={switchLocale} />
     </Dropdown>
   );
 }
@@ -307,7 +333,8 @@ export function SettingsMenu() {
 /** 모바일 — 언어 · 테마 · 색상을 한 패널에 담는다. */
 export function MobileSettingsMenu() {
   const { t } = useT();
-  const lang = useLang();
+  const locale = useLocale();
+  const switchLocale = useSwitchLocale();
 
   return (
     <Dropdown
@@ -326,7 +353,7 @@ export function MobileSettingsMenu() {
       }
     >
       <SectionLabel first>{t('settings.language')}</SectionLabel>
-      <OptionList options={LANG_OPTIONS} value={lang} onChange={applyLang} />
+      <OptionList options={LANG_OPTIONS} value={locale} onChange={switchLocale} />
 
       <ThemeSection />
       <ColorSection />

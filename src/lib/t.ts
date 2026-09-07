@@ -2,7 +2,9 @@ import { lng } from 'next/root-params';
 
 import { getT } from 'next-i18next/server';
 
-import { DEFAULT_LOCALE } from '@/i18n.config';
+import { isLocale } from '@/lib/i18n';
+
+import { DEFAULT_LOCALE, type Locale } from '@/i18n.config';
 
 /**
  * 서버 컴포넌트에서 문구를 읽는 창구.
@@ -22,10 +24,19 @@ import { DEFAULT_LOCALE } from '@/i18n.config';
  * I18nProvider 가 같은 문구를 이미 심어 두었다.
  */
 export async function serverT() {
-  return getT(undefined, { lng: (await lng()) ?? DEFAULT_LOCALE });
+  return getT(undefined, { lng: await serverLocale() });
 }
 
-/** 서버에서 지금 언어만 필요할 때 (날짜 · 수 형식 등). */
-export async function serverLocale() {
-  return (await lng()) ?? DEFAULT_LOCALE;
+/**
+ * 서버에서 지금 언어만 필요할 때 (날짜 · 수 형식 · 카테고리 라벨 등).
+ *
+ * root-params 의 lng() 는 그냥 string 이다 — 주소에 무엇이 들어오든 그대로
+ * 준다. 그 값을 Locale 로 좁히는 일은 여기서 한 번만 한다. 안 그러면
+ * CATEGORY_LABEL[locale] 같은 조회가 부르는 쪽마다 좁히는 코드를 다시 적게
+ * 만들고, 빠뜨리면 런타임에서야 undefined 로 터진다 (클라이언트 쪽
+ * useLocale() 이 같은 이유로 같은 모양이다).
+ */
+export async function serverLocale(): Promise<Locale> {
+  const value = await lng();
+  return value !== undefined && isLocale(value) ? value : DEFAULT_LOCALE;
 }

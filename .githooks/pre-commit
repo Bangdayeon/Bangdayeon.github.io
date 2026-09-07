@@ -1,0 +1,26 @@
+#!/bin/sh
+#
+# 글을 옮겼으면 리다이렉트 표를 맞춰 커밋에 얹는다.
+#
+# 주소는 파일 경로에서 나오므로 이름을 바꾸면 옛 주소가 404 가 된다. 표를
+# 사람이 적게 하면 언젠가 빠뜨리는데, 빠뜨려도 화면에는 아무 표시가 안 난다 —
+# 그래서 커밋하는 자리에서 기계가 채운다. `pnpm index` 를 잊어도 링크가 안 깨진다.
+#
+# 훅이 실패해도 커밋은 막지 않는다. 글 쓰다 만든 커밋이 도구 사정으로 멈추는
+# 것이 이 저장소에서는 더 나쁜 일이다 (배포 빌드가 어차피 한 번 더 맞춘다).
+
+# src/content 에 변화가 없으면 볼 것도 없다 — 대부분의 커밋이 여기서 끝난다.
+if git diff --cached --quiet -- src/content; then
+  exit 0
+fi
+
+npx tsx scripts/sync-redirects.ts
+status=$?
+
+# 10 = 표가 바뀌었다. 그때만 커밋에 얹는다.
+if [ "$status" -eq 10 ]; then
+  git add src/config/id-redirects.json
+  echo "  ↳ id-redirects.json 을 이번 커밋에 얹었다"
+fi
+
+exit 0

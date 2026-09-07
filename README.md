@@ -22,6 +22,7 @@ pnpm dev                     # http://localhost:3000
 | ------------------------------ | --------------------------- |
 | `pnpm dev`                     | 개발 서버 (Turbopack)       |
 | `pnpm index`                   | 콘텐츠 검증 + 색인 생성     |
+| `pnpm img`                     | 이미지 R2 업로드            |
 | `pnpm font`                    | 폰트 서브셋 생성            |
 | `pnpm build`                   | 색인 생성 후 프로덕션 빌드  |
 | `pnpm start`                   | 빌드 결과 실행              |
@@ -51,8 +52,8 @@ src/
 └─ data/       빌드 산출물 (gitignore)
 
 public/        Next 제약으로 루트 고정
-scripts/       build-index.ts (pnpm index) · subset-font.ts (pnpm font)
-               upload-image.ts(미작성)
+scripts/       build-index.ts (pnpm index) · upload-image.ts (pnpm img)
+               subset-font.ts (pnpm font)
 docs/          상세 명세
 ```
 
@@ -112,7 +113,9 @@ docs/          상세 명세
 - 발행 후 `post.id`(`category/…/slug`)를 바꾸지 않는다 — 폴더를 옮기는 것도 id를 바꾸는 일이다
 - UI · 아이콘 · 애니메이션 라이브러리를 쓰지 않는다
   (예외 하나: 글 그래프의 좌표 계산에 쓰는 `d3-force`. 배치만 맡고 화면에서 돌지 않는다)
-- R2 이미지를 `next/image`에 물리지 않는다 (`<Img>` 직접 서빙)
+- R2 이미지를 `next/image`에 물리지 않는다 (`<Img>` 직접 서빙).
+  사진 원본은 커밋하지 않는다 — `pnpm img` 가 R2 에 올리고 `config/images.json`
+  에 주소만 남긴다. 안 올린 사진이 본문에 있으면 `pnpm index` 가 빌드를 멈춘다
 
 파일명 규칙은 ESLint가 강제한다 — `src/components/**`는 PascalCase, `**/hooks/**`는 camelCase.
 

@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation';
 
 import { CATEGORIES, categoryLabel, isCategory } from '@/lib/categories';
 import { getCategoryNode } from '@/lib/posts';
+import { serverLocale } from '@/lib/t';
 
 import { CategoryView } from '@/components/CategoryView';
 
@@ -18,14 +19,14 @@ type Params = { params: Promise<{ category: string }> };
 
 export async function generateMetadata({ params }: Params): Promise<Metadata> {
   const { category } = await params;
-  return { title: categoryLabel([category]) };
+  return { title: categoryLabel(await serverLocale(), [category]) };
 }
 
 export default async function CategoryPage({ params }: Params) {
   const { category } = await params;
   if (!isCategory(category)) notFound();
 
-  const node = getCategoryNode([category]);
+  const node = getCategoryNode(await serverLocale(), [category]);
   if (!node) notFound();
 
   return <CategoryView node={node} current={1} />;

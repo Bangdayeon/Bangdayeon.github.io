@@ -14,10 +14,13 @@ import {
   getPostsIn,
   getRelatedPosts,
 } from '@/lib/posts';
+import { serverLocale } from '@/lib/t';
 
 import { CategoryView } from '@/components/CategoryView';
 import { pageCount } from '@/components/PageNav';
 import { PostView } from '@/components/PostView';
+
+import type { Locale } from '@/i18n.config';
 
 /**
  * 카테고리 아래의 모든 경로.
@@ -38,35 +41,38 @@ type Params = { params: Promise<{ category: string; rest: string[] }> };
 type Resolved =
   { kind: 'post'; post: Post } | { kind: 'list'; node: CategoryNode; current: number };
 
-function resolve(category: string, rest: string[]): Resolved | null {
+function resolve(locale: Locale, category: string, rest: string[]): Resolved | null {
   if (!isCategory(category)) return null;
 
   // 뒤 두 칸이 page/N 이면 쪽 넘김이다. 'page' 는 하위 카테고리 폴더 이름으로
   // 쓰지 못하게 막아 뒀으므로(lib/post-schema) 글 경로와 겹칠 일이 없다.
   if (rest.length >= 2 && rest[rest.length - 2] === 'page') {
-    const node = getCategoryNode([category, ...rest.slice(0, -2)]);
+    const node = getCategoryNode(locale, [category, ...rest.slice(0, -2)]);
     if (!node) return null;
 
     const current = Number(rest[rest.length - 1]);
     // 1쪽은 /{category} · /{category}/{하위} 가 맡는다. 여기로 오면 안 된다.
     if (!Number.isInteger(current) || current < 2) return null;
-    if (current > pageCount(getPostsIn(node.segments).length)) return null;
+    if (current > pageCount(getPostsIn(locale, node.segments).length)) return null;
 
     return { kind: 'list', node, current };
   }
 
   // 글이 먼저다 — 글의 주소는 발행 뒤 바뀌지 않는다는 약속이 더 무겁다.
-  const post = getPostById([category, ...rest].join('/'));
+  const post = getPostById(locale, [category, ...rest].join('/'));
   if (post) return { kind: 'post', post };
 
-  const node = getCategoryNode([category, ...rest]);
+  const node = getCategoryNode(locale, [category, ...rest]);
   return node ? { kind: 'list', node, current: 1 } : null;
 }
 
-export function generateStaticParams() {
+// [lng] 는 루트 파라미터라 여기서도 serverLocale() 로 읽는다 — 언어마다 글
+// 목록도 카테고리 트리도 다르므로 이 함수는 언어별로 한 번씩 돈다.
+export async function generateStaticParams() {
+  const locale = await serverLocale();
   const params: { category: string; rest: string[] }[] = [];
 
-  for (const post of getAllPosts()) {
+  for (const post of getAllPosts(locale)) {
     params.push({ category: post.category, rest: [...post.subs, post.slug] });
   }
 
@@ -76,7 +82,7 @@ export function generateStaticParams() {
     // 하위 카테고리 목록. 맨 위 카테고리의 1쪽은 [category]/page.tsx 가 맡는다.
     if (rest.length > 0) params.push({ category, rest });
 
-    const total = pageCount(getPostsIn(node.segments).length);
+    const total = pageCount(getPostsIn(locale, node.segments).length);
     for (let page = 2; page <= total; page += 1) {
       params.push({ category, rest: [...rest, 'page', String(page)] });
     }
@@ -84,19 +90,20 @@ export function generateStaticParams() {
     node.children.forEach(walk);
   };
 
-  getCategoryTree().forEach(walk);
+  getCategoryTree(locale).forEach(walk);
 
   return params;
 }
 
 export async function generateMetadata({ params }: Params): Promise<Metadata> {
+  const locale = await serverLocale();
   const { category, rest } = await params;
-  const resolved = resolve(category, rest);
+  const resolved = resolve(locale, category, rest);
   if (!resolved) return {};
 
   if (resolved.kind === 'list') {
     const [top, ...subs] = resolved.node.segments;
-    return { title: categoryPath(top as Category, subs) };
+    return { title: categoryPath(locale, top as Category, subs) };
   }
 
   const { post } = resolved;
@@ -114,9 +121,10 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
 }
 
 export default async function CategoryRestPage({ params }: Params) {
+  const locale = await serverLocale();
   const { category, rest } = await params;
 
-  const resolved = resolve(category, rest);
+  const resolved = resolve(locale, category, rest);
   if (!resolved) notFound();
 
   if (resolved.kind === 'list') {
@@ -126,5 +134,11 @@ export default async function CategoryRestPage({ params }: Params) {
   const body = getPostBody(resolved.post);
   if (body === null) notFound();
 
-  return <PostView post={resolved.post} body={body} related={getRelatedPosts(resolved.post, 4)} />;
+  return (
+    <PostView
+      post={resolved.post}
+      body={body}
+      related={getRelatedPosts(locale, resolved.post, 4)}
+    />
+  );
 }

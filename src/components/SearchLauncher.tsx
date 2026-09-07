@@ -4,7 +4,10 @@ import { useEffect, useRef, useSyncExternalStore } from 'react';
 
 import { usePathname, useRouter } from 'next/navigation';
 
+import { useT } from 'next-i18next/client';
+
 import { cn } from '@/lib/cn';
+import { localeHref, stripLocale } from '@/lib/i18n';
 import { addRecentSearch } from '@/lib/recent-searches';
 import { getQuery, getServerQuery, setQuery, subscribeQuery } from '@/lib/search-query';
 
@@ -36,16 +39,21 @@ export function SearchIcon({ className }: { className?: string }) {
 export function SearchLauncher() {
   const pathname = usePathname();
   const router = useRouter();
+  const { t, i18n } = useT();
   const inputRef = useRef<HTMLInputElement>(null);
 
-  const onSearchPage = pathname === '/search';
+  // 언어 접두사를 떼고 본다. 안 그러면 영어 화면에서는 검색 화면에 서 있어도
+  // 아니라고 판정해서, 한 글자 칠 때마다 /search 로 다시 밀어낸다.
+  const onSearchPage = stripLocale(pathname) === '/search';
+  /** 지금 언어의 검색 화면 주소 — 영어를 보다 검색하면 영어 검색 화면으로 간다. */
+  const searchHref = localeHref(i18n.language, '/search');
   // 라우팅이 붙기 전에 여러 글자를 치면 push 가 여러 번 나가 히스토리가 쌓인다.
   const pushed = useRef(false);
 
   const goToSearch = () => {
     if (onSearchPage || pushed.current) return;
     pushed.current = true;
-    router.push('/search');
+    router.push(searchHref);
   };
 
   // 값은 스토어가 들고 있다 — 화면 쪽 태그 칩이 눌려도 이 입력창이 같이 바뀐다.
@@ -71,13 +79,13 @@ export function SearchLauncher() {
 
     const id = setTimeout(() => {
       const query = value.trim();
-      router.replace(query ? `/search?q=${encodeURIComponent(query)}` : '/search', {
+      router.replace(query ? `${searchHref}?q=${encodeURIComponent(query)}` : searchHref, {
         scroll: false,
       });
     }, 200);
 
     return () => clearTimeout(id);
-  }, [value, onSearchPage, router]);
+  }, [value, onSearchPage, router, searchHref]);
 
   return (
     <form
@@ -107,8 +115,8 @@ export function SearchLauncher() {
           // 포커스 없이 값이 들어오는 경우(자동완성 등)까지 받아 둔다.
           goToSearch();
         }}
-        placeholder="글 검색"
-        aria-label="글 검색"
+        placeholder={t('search.placeholder')}
+        aria-label={t('search.placeholder')}
         className="text-meta text-ink placeholder:text-ink-subtle w-full min-w-0 bg-transparent outline-none"
       />
 
@@ -120,7 +128,7 @@ export function SearchLauncher() {
             setQuery('');
             inputRef.current?.focus();
           }}
-          aria-label="검색어 지우기"
+          aria-label={t('search.clear')}
           className={cn(
             'text-ink-muted hover:text-ink hover:bg-surface-muted grid size-5 shrink-0 place-items-center rounded-full',
             'focus-visible:outline-focus focus-visible:outline-2'

@@ -2,6 +2,8 @@
 
 import { useSyncExternalStore } from 'react';
 
+import { Trans, useT } from 'next-i18next/client';
+
 import type { Post } from '@/types/post';
 
 import { cn } from '@/lib/cn';
@@ -42,6 +44,7 @@ export function SearchScreen({
   /** 카테고리당 3개 — 좁은 화면. */
   graphNarrow: GraphLayout;
 }) {
+  const { t } = useT();
   const query = useSyncExternalStore(subscribeQuery, getQuery, getServerQuery).trim();
 
   if (query !== '') return <Results posts={searchPosts(posts, query)} query={query} />;
@@ -54,7 +57,7 @@ export function SearchScreen({
       {/* 둘 다 마크업에 있지만 display:none 인 쪽은 접근성 트리에서도 빠진다.
           그래서 링크가 중복으로 읽히지 않는다. */}
       <section
-        aria-label="글 구조"
+        aria-label={t('search.graphRegion')}
         className="border-line min-h-[60dvh] rounded-xl border md:h-full"
       >
         <div className="h-full md:hidden">
@@ -69,17 +72,28 @@ export function SearchScreen({
 }
 
 function Results({ posts, query }: { posts: Post[]; query: string }) {
+  const { t } = useT();
+
   if (posts.length === 0) {
     return (
       <p className="text-body text-ink-muted py-16 text-center">
-        &quot;<span className="text-ink-strong">{query}</span>&quot; 검색 결과가 없습니다.
+        {/* 사람이 친 검색어만 진하게. 문구에 태그를 적을 수는 없으므로 <em> 자리를
+            컴포넌트로 갈아 끼운다 — 따옴표 위치나 어순이 언어마다 달라도 문구 파일이
+            혼자 정한다. */}
+        <Trans
+          i18nKey="search.noResult"
+          values={{ query }}
+          components={{ em: <span className="text-ink-strong" /> }}
+        />
       </p>
     );
   }
 
   return (
-    <section aria-label="검색 결과">
-      <p className="text-meta text-ink-muted mb-4">{posts.length}개</p>
+    <section aria-label={t('search.resultRegion')}>
+      <p className="text-meta text-ink-muted mb-4">
+        {t('search.resultCount', { count: posts.length })}
+      </p>
       {/* 결과를 실제로 열었을 때만 최근 검색에 남긴다. */}
       <PostList posts={posts} onSelect={() => addRecentSearch(query)} />
     </section>
@@ -87,6 +101,7 @@ function Results({ posts, query }: { posts: Post[]; query: string }) {
 }
 
 function RecentSearches() {
+  const { t } = useT();
   const recent = useSyncExternalStore(
     subscribeRecentSearches,
     getRecentSearches,
@@ -96,15 +111,15 @@ function RecentSearches() {
   if (recent.length === 0) return null;
 
   return (
-    <section aria-label="최근 검색">
+    <section aria-label={t('search.recentRegion')}>
       <div className="mb-3 flex items-center justify-between gap-2">
-        <h2 className="text-label text-ink-strong">최근 검색</h2>
+        <h2 className="text-label text-ink-strong">{t('search.recent')}</h2>
         <button
           type="button"
           onClick={clearRecentSearches}
           className="text-meta text-ink-muted hover:text-ink focus-visible:outline-focus rounded focus-visible:outline-2"
         >
-          전체 지우기
+          {t('search.clearAll')}
         </button>
       </div>
 
@@ -121,7 +136,7 @@ function RecentSearches() {
             <button
               type="button"
               onClick={() => removeRecentSearch(item)}
-              aria-label={`${item} 검색 기록 삭제`}
+              aria-label={t('search.removeRecent', { item })}
               className="text-ink-muted hover:text-ink focus-visible:outline-focus grid size-6 shrink-0 place-items-center rounded-r-full focus-visible:outline-2"
             >
               <svg viewBox="0 0 12 12" aria-hidden="true" className="size-2.5">
@@ -141,12 +156,14 @@ function RecentSearches() {
 }
 
 function Tags({ tags }: { tags: { tag: string; count: number }[] }) {
+  const { t } = useT();
+
   if (tags.length === 0) return null;
 
   return (
-    <section aria-label="태그">
+    <section aria-label={t('search.tagRegion')}>
       {/* 누르면 이 화면에서 바로 걸러진다. 태그 전용 색인은 /tags 가 따로 맡는다. */}
-      <h2 className="text-label text-ink-strong mb-3">태그</h2>
+      <h2 className="text-label text-ink-strong mb-3">{t('search.tags')}</h2>
 
       <ul className="flex flex-wrap gap-2">
         {tags.map(({ tag, count }) => (

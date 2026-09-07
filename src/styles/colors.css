@@ -199,9 +199,9 @@
   --sem-cat-travel-ink: var(--hue-green-ink);
   --sem-cat-travel-subtle: var(--hue-green-subtle);
 
-  --sem-cat-log: var(--hue-orange-vivid);
-  --sem-cat-log-ink: var(--hue-orange-ink);
-  --sem-cat-log-subtle: var(--hue-orange-subtle);
+  --sem-cat-diary: var(--hue-orange-vivid);
+  --sem-cat-diary-ink: var(--hue-orange-ink);
+  --sem-cat-diary-subtle: var(--hue-orange-subtle);
 }
 
 /* ====================================================================
@@ -274,9 +274,9 @@
     --sem-cat-travel-ink: var(--hue-green-ink-d);
     --sem-cat-travel-subtle: var(--hue-green-subtle-d);
 
-    --sem-cat-log: var(--hue-orange-vivid-d);
-    --sem-cat-log-ink: var(--hue-orange-ink-d);
-    --sem-cat-log-subtle: var(--hue-orange-subtle-d);
+    --sem-cat-diary: var(--hue-orange-vivid-d);
+    --sem-cat-diary-ink: var(--hue-orange-ink-d);
+    --sem-cat-diary-subtle: var(--hue-orange-subtle-d);
   }
 }
 
@@ -338,9 +338,9 @@
   --sem-cat-travel-ink: var(--hue-green-ink-d);
   --sem-cat-travel-subtle: var(--hue-green-subtle-d);
 
-  --sem-cat-log: var(--hue-orange-vivid-d);
-  --sem-cat-log-ink: var(--hue-orange-ink-d);
-  --sem-cat-log-subtle: var(--hue-orange-subtle-d);
+  --sem-cat-diary: var(--hue-orange-vivid-d);
+  --sem-cat-diary-ink: var(--hue-orange-ink-d);
+  --sem-cat-diary-subtle: var(--hue-orange-subtle-d);
 }
 
 /* ====================================================================
@@ -600,7 +600,7 @@
   --color-cat-travel-ink: var(--sem-cat-travel-ink);
   --color-cat-travel-subtle: var(--sem-cat-travel-subtle);
 
-  --color-cat-log: var(--sem-cat-log);
-  --color-cat-log-ink: var(--sem-cat-log-ink);
-  --color-cat-log-subtle: var(--sem-cat-log-subtle);
+  --color-cat-diary: var(--sem-cat-diary);
+  --color-cat-diary-ink: var(--sem-cat-diary-ink);
+  --color-cat-diary-subtle: var(--sem-cat-diary-subtle);
 }

@@ -1,3 +1,7 @@
+'use client';
+
+import { useT } from 'next-i18next/client';
+
 import type { Profile } from '@/config/profile';
 
 import { cn } from '@/lib/cn';
@@ -36,9 +40,11 @@ export function SidebarProfile({
   views: number | null;
   className?: string;
 }) {
+  const { t } = useT();
+
   return (
     <section
-      aria-label="프로필"
+      aria-label={t('profile.region')}
       className={cn(
         'border-line-subtle flex flex-col items-center gap-3 border-b px-4 py-4 text-center',
         className
@@ -71,11 +77,11 @@ export function SidebarProfile({
 
         <p className="text-meta">
           {views === null ? (
-            <span className="text-ink-muted">조회수 집계 전</span>
+            <span className="text-ink-muted">{t('profile.noViews')}</span>
           ) : (
             <>
               <span className="text-ink font-semibold">{formatCount(views)}</span>{' '}
-              <span className="text-ink-muted">조회</span>
+              <span className="text-ink-muted">{t('profile.views')}</span>
             </>
           )}
         </p>

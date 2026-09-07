@@ -45,3 +45,24 @@ export function splitLocale(pathname: string): { locale: Locale; path: string } 
 
   return { locale: DEFAULT_LOCALE, path: pathname };
 }
+
+/**
+ * "지금 어느 화면인가" 를 따질 때 쓰는 경로 — 언어 접두사를 뗀 나머지.
+ *
+ * 화면을 가리키는 값(사이드바의 활성 항목, 검색 화면인지 여부)은 전부 접두사
+ * 없는 경로로 적혀 있다. 주소를 그대로 대면 `/en/dev` 는 어느 것과도 안 맞아서
+ * 영어 화면에서는 활성 표시가 통째로 사라진다.
+ *
+ * splitLocale 과 달리 기본 언어 접두사(`/ko`)도 뗀다. 주소창에는 안 나오지만
+ * (proxy 가 접두사 없는 쪽으로 되돌린다) 그 rewrite 를 사이에 두고 서버가 보는
+ * 값은 `/ko/…` 일 수 있다 — 어느 쪽이 들어와도 답이 같아야 한다.
+ *
+ *   stripLocale('/en/dev') → '/dev'
+ *   stripLocale('/dev')    → '/dev'
+ *   stripLocale('/en')     → '/'
+ */
+export function stripLocale(pathname: string): string {
+  const [, head, ...rest] = pathname.split('/');
+  if (!isLocale(head)) return pathname;
+  return `/${rest.join('/')}`;
+}

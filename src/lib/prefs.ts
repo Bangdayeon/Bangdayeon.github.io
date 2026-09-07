@@ -1,10 +1,14 @@
 /**
- * 사용자 설정 — 테마 · 색상 팔레트 · 언어.
+ * 사용자 설정 — 테마 · 색상 팔레트.
  *
  * 값은 localStorage 에 저장하고, 실제 상태는 <html> 이 들고 있다
- * (테마 = class="dark" / "light", 팔레트 = class="palette-soft" / "palette-neon",
- * 언어 = lang 속성). 첫 페인트 전에 PREFS_BOOT_SCRIPT 가 셋을 복원하므로
- * 새로고침 때 깜빡임이 없다.
+ * (테마 = class="dark" / "light", 팔레트 = class="palette-soft" / "palette-neon").
+ * 첫 페인트 전에 PREFS_BOOT_SCRIPT 가 둘을 복원하므로 새로고침 때 깜빡임이 없다.
+ *
+ * 언어는 여기 없다. 주소가 곧 언어라서(proxy 가 `/dev` 를 한국어로, `/en/dev` 를
+ * 영어로 가른다) 저장할 값이 아니다 — localStorage 에 적어 두면 주소와 어긋날 수
+ * 있는 값이 하나 더 생긴다. <html lang> 은 서버가 [lng] 로 정하고, 언어를 고르는
+ * UI 는 SettingsControls 가 라우터를 태운다.
  *
  * 선택 UI 의 활성 칸도 JS 상태가 아니라 <html> 을 보는 CSS 로 칠한다
  * (globals.css 의 theme-* · palette-* · lang-* variant). 그래서 하이드레이션
@@ -12,19 +16,10 @@
  */
 
 export const THEME_KEY = 'theme';
-export const LANG_KEY = 'lang';
 export const PALETTE_KEY = 'palette';
 
 export type Theme = 'system' | 'light' | 'dark';
-export type Lang = 'ko' | 'en';
 
-/**
- * 색 팔레트. 기본값 vivid 는 클래스를 붙이지 않는다 (theme 의 system 과 같은 규칙).
- *
- * neon 은 다크 전용이다 — 형광색은 어두운 바탕이 있어야 색으로 읽히고, 밝은
- * 바탕에 얹으면 대비가 무너진다. 그래서 세 곳이 이 불변식을 지킨다:
- * applyPalette · applyTheme 의 가드 · 아래 boot 스크립트.
- */
 export type Palette = 'vivid' | 'soft' | 'neon';
 
 /**
@@ -34,7 +29,7 @@ export type Palette = 'vivid' | 'soft' | 'neon';
  * 붙여야 하기 때문이다 (저장 시점에 맞춰 두지만, 손으로 고쳐 넣은 값이나
  * 예전 버전이 남긴 값에도 화면이 깨지지 않게 한다).
  */
-export const PREFS_BOOT_SCRIPT = `(function(){try{var d=document.documentElement;var p=localStorage.getItem("${PALETTE_KEY}");if(p==="soft"||p==="neon")d.classList.add("palette-"+p);var t=localStorage.getItem("${THEME_KEY}");if(p==="neon")d.classList.add("dark");else if(t==="dark"||t==="light")d.classList.add(t);var l=localStorage.getItem("${LANG_KEY}");if(l==="ko"||l==="en")d.lang=l}catch(e){}})()`;
+export const PREFS_BOOT_SCRIPT = `(function(){try{var d=document.documentElement;var p=localStorage.getItem("${PALETTE_KEY}");if(p==="soft"||p==="neon")d.classList.add("palette-"+p);var t=localStorage.getItem("${THEME_KEY}");if(p==="neon")d.classList.add("dark");else if(t==="dark"||t==="light")d.classList.add(t)}catch(e){}})()`;
 
 /* ---------- 외부 스토어 ----------
    진짜 상태는 <html> 이 들고 있다. 선택 UI 는 useSyncExternalStore 로 그걸
@@ -109,19 +104,6 @@ export function applyPalette(palette: Palette) {
   else emit();
 }
 
-export function readLang(): Lang {
-  return document.documentElement.lang === 'en' ? 'en' : 'ko';
-}
-
-export function applyLang(lang: Lang) {
-  // TODO: 아직 번역 · 로케일 라우팅이 없다. 지금은 선택을 기억하고 <html lang>
-  // 만 바꾼다. i18n 을 붙이면 이 함수가 라우터를 태우는 자리가 된다.
-  document.documentElement.lang = lang;
-  store(LANG_KEY, lang);
-  emit();
-}
-
-/* 서버에는 DOM 이 없다. <html lang="ko"> 에 클래스가 없는 상태 = 아래 기본값. */
+/* 서버에는 DOM 이 없다. <html> 에 클래스가 없는 상태 = 아래 기본값. */
 export const SERVER_THEME: Theme = 'system';
-export const SERVER_LANG: Lang = 'ko';
 export const SERVER_PALETTE: Palette = 'vivid';

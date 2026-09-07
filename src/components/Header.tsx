@@ -1,5 +1,7 @@
 'use client';
 
+import { useT } from 'next-i18next/client';
+
 import { cn } from '@/lib/cn';
 
 import { LocaleLink as Link } from '@/components/LocaleLink';
@@ -27,6 +29,8 @@ export function Header({
   onToggleNav: () => void;
   navId: string;
 }) {
+  const { t } = useT();
+
   return (
     <header className="border-line bg-surface sticky top-0 z-20 h-14 border-b">
       <div className="grid h-full grid-cols-[1fr_minmax(0,20rem)_1fr] items-center gap-2 px-3">
@@ -36,7 +40,7 @@ export function Header({
             onClick={onToggleNav}
             aria-expanded={navOpen}
             aria-controls={navId}
-            aria-label={navOpen ? '메뉴 접기' : '메뉴 펼치기'}
+            aria-label={navOpen ? t('nav.menuCollapse') : t('nav.menuExpand')}
             className={cn(
               'text-ink-muted hover:text-ink hover:bg-surface-subtle grid size-8 shrink-0 place-items-center rounded',
               'focus-visible:outline-focus focus-visible:outline-2'

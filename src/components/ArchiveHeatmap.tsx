@@ -1,6 +1,7 @@
 import type { Post } from '@/types/post';
 
 import { cn } from '@/lib/cn';
+import { serverT } from '@/lib/t';
 
 import { dayId } from '@/components/ArchiveTimeline';
 import { LocaleLink as Link } from '@/components/LocaleLink';
@@ -69,7 +70,8 @@ function toDate(ms: number) {
   return new Date(ms).toISOString().slice(0, 10);
 }
 
-export function ArchiveHeatmap({ year, posts }: { year: string; posts: Post[] }) {
+export async function ArchiveHeatmap({ year, posts }: { year: string; posts: Post[] }) {
+  const { t } = await serverT();
   const number = Number(year);
 
   // 격자는 주 단위라 그 해의 앞뒤로 조금씩 넘친다 — 1월 1일이 낀 주의
@@ -91,9 +93,7 @@ export function ArchiveHeatmap({ year, posts }: { year: string; posts: Post[] })
     <figure>
       <figcaption className="text-meta text-ink-muted mb-2 flex flex-wrap items-baseline gap-x-2 tabular-nums">
         <span className="text-ink">{year}</span>
-        <span>
-          {written}일 동안 {total}편
-        </span>
+        <span>{t('heatmap.summary', { days: written, count: total })}</span>
       </figcaption>
 
       {/*
@@ -143,7 +143,7 @@ export function ArchiveHeatmap({ year, posts }: { year: string; posts: Post[] })
                   return (
                     <span
                       key={ms}
-                      title={`${date} · 글 없음`}
+                      title={`${date} · ${t('heatmap.noPost')}`}
                       style={box}
                       className={cn('rounded-[2px]', LEVEL_CLASS[0])}
                     />
@@ -202,7 +202,7 @@ const POPOVER_MAX = 4;
  * 아니라 padding 으로 띄운다 (margin 이면 그 틈에서 hover 가 끊겨 팝오버가
  * 닫힌다 — 링크까지 마우스가 못 간다).
  */
-function DayPopover({
+async function DayPopover({
   date,
   posts,
   below,
@@ -213,6 +213,7 @@ function DayPopover({
   below: boolean;
   alignStart: boolean;
 }) {
+  const { t } = await serverT();
   const shown = posts.slice(0, POPOVER_MAX);
   const rest = posts.length - shown.length;
 
@@ -227,7 +228,7 @@ function DayPopover({
       {/* 나머지 팝오버(Dropdown)와 같은 상자다 — 테두리 · 그림자 · 둥글기. */}
       <span className="border-line bg-surface block w-max max-w-65 rounded-lg border p-2 shadow-lg">
         <span className="text-meta-sm text-ink-muted block tabular-nums">
-          {date} · {posts.length}편
+          {date} · {t('heatmap.dayCount', { count: posts.length })}
         </span>
 
         {shown.map(post => (
@@ -240,7 +241,11 @@ function DayPopover({
           </Link>
         ))}
 
-        {rest > 0 && <span className="text-meta-sm text-ink-subtle mt-1 block">외 {rest}편</span>}
+        {rest > 0 && (
+          <span className="text-meta-sm text-ink-subtle mt-1 block">
+            {t('heatmap.more', { count: rest })}
+          </span>
+        )}
       </span>
     </span>
   );
@@ -252,7 +257,8 @@ function DayPopover({
  * 격자와 같은 그리드에 태우면 이름이 칸(10px)보다 넓어서 그 열만 벌어진다.
  * 그래서 이 줄만 따로 띄우고 열 간격(PITCH)으로 자리를 잡는다.
  */
-function MonthRow({ year, start, weeks }: { year: number; start: number; weeks: number }) {
+async function MonthRow({ year, start, weeks }: { year: number; start: number; weeks: number }) {
+  const { t } = await serverT();
   const labels: { week: number; month: number }[] = [];
 
   for (let week = 0; week < weeks; week += 1) {
@@ -275,7 +281,7 @@ function MonthRow({ year, start, weeks }: { year: number; start: number; weeks: 
           className="text-meta-sm text-ink-subtle absolute top-0 tabular-nums"
           style={{ insetInlineStart: week * PITCH }}
         >
-          {month}월
+          {t(`months.${month}`)}
         </span>
       ))}
     </div>
@@ -283,13 +289,15 @@ function MonthRow({ year, start, weeks }: { year: number; start: number; weeks: 
 }
 
 /** 왼쪽 요일. 일곱 개를 다 적으면 글자가 칸보다 빽빽해서 한 칸씩 걸러 적는다. */
-function WeekdayColumn() {
+async function WeekdayColumn() {
+  const { t } = await serverT();
+
   return (
     <div className="relative shrink-0" style={{ width: WEEKDAY_WIDTH }}>
       {[
-        { row: 1, label: '월' },
-        { row: 3, label: '수' },
-        { row: 5, label: '금' },
+        { row: 1, label: t('heatmap.mon') },
+        { row: 3, label: t('heatmap.wed') },
+        { row: 5, label: t('heatmap.fri') },
       ].map(({ row, label }) => (
         <span
           key={label}

@@ -1,4 +1,5 @@
 import { cn } from '@/lib/cn';
+import { serverT } from '@/lib/t';
 
 import { LocaleLink as Link } from '@/components/LocaleLink';
 
@@ -15,7 +16,7 @@ export function pageCount(total: number) {
  * 한 쪽에 다 들어가면 아무것도 그리지 않는다 — 글 세 편짜리 카테고리 밑에
  * "1 / 1" 이 붙어 있을 이유가 없다.
  */
-export function PageNav({
+export async function PageNav({
   base,
   current,
   total,
@@ -26,15 +27,20 @@ export function PageNav({
 }) {
   if (total <= 1) return null;
 
+  const { t } = await serverT();
+
   const href = (page: number) => (page === 1 ? base : `${base}/page/${page}`);
   const linkClass =
     'text-meta text-ink hover:bg-surface-subtle focus-visible:outline-focus rounded-lg border border-line px-3 py-1.5 focus-visible:outline-2';
 
   return (
-    <nav aria-label="쪽 넘김" className="mt-10 flex items-center justify-between gap-2">
+    <nav
+      aria-label={t('pagination.region')}
+      className="mt-10 flex items-center justify-between gap-2"
+    >
       {current > 1 ? (
         <Link href={href(current - 1)} className={linkClass} rel="prev">
-          이전
+          {t('pagination.prev')}
         </Link>
       ) : (
         <span />
@@ -46,11 +52,11 @@ export function PageNav({
 
       {current < total ? (
         <Link href={href(current + 1)} className={linkClass} rel="next">
-          다음
+          {t('pagination.next')}
         </Link>
       ) : (
         <span className={cn(linkClass, 'invisible')} aria-hidden="true">
-          다음
+          {t('pagination.next')}
         </span>
       )}
     </nav>

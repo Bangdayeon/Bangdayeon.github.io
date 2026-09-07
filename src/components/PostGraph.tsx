@@ -2,6 +2,8 @@
 
 import { useEffect, useMemo, useRef, useState } from 'react';
 
+import { useT } from 'next-i18next/client';
+
 import { CATEGORY_COLOR } from '@/lib/categories';
 import { cn } from '@/lib/cn';
 import { type GraphLayout, nodeRadius } from '@/lib/graph-layout';
@@ -46,6 +48,7 @@ function floatOffset(index: number, time: number) {
  * DOM 속성만 직접 쓰므로 리렌더는 일어나지 않는다.
  */
 export function PostGraph({ layout }: { layout: GraphLayout }) {
+  const { t } = useT();
   const [active, setActive] = useState<string | null>(null);
 
   const nodeEls = useRef(new Map<string, SVGGElement | null>());
@@ -115,7 +118,7 @@ export function PostGraph({ layout }: { layout: GraphLayout }) {
 
   if (layout.nodes.length === 0) {
     return (
-      <p className="text-body text-ink-muted grid h-full place-items-center">아직 글이 없다.</p>
+      <p className="text-body text-ink-muted grid h-full place-items-center">{t('post.empty')}</p>
     );
   }
 
@@ -127,7 +130,7 @@ export function PostGraph({ layout }: { layout: GraphLayout }) {
   return (
     <svg
       viewBox={`0 0 ${layout.width} ${layout.height}`}
-      aria-label="글 구조 그래프"
+      aria-label={t('search.graphLabel')}
       // SVG 안의 글자와 원은 viewBox 대비 그려진 폭만큼 확대된다. 폭을 풀어
       // 두면 1100px 컬럼에서 1.5 배로 커져서 11px 라벨이 17px 로 보인다.
       // 자기 좌표계 크기(720)를 넘지 않게 막아 토큰 값이 곧 화면 크기가 되게 한다.

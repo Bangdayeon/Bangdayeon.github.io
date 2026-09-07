@@ -3,7 +3,17 @@ import path from 'node:path';
 
 import type { Post } from '@/types/post';
 
-import { collectPostFiles, linkPosts, parsePostFile } from '@/lib/content/parse';
+import { IMAGES, missingImages } from '@/lib/content/images';
+import {
+  collectPostFiles,
+  findDateMismatches,
+  formatDates,
+  linkPosts,
+  parsePostFile,
+} from '@/lib/content/parse';
+
+import { loadEnvLocal } from './env';
+import { syncRedirects } from './redirects';
 
 /**
  * src/content/**\/*.mdx → src/data/{index,search,stats}.json
@@ -22,6 +32,8 @@ function write(name: string, value: unknown) {
 }
 
 function main() {
+  loadEnvLocal();
+
   const files = collectPostFiles();
   const parsed = [];
   const errors: string[] = [];
@@ -38,10 +50,14 @@ function main() {
     parsed.push(result);
   }
 
+  // 같은 글의 두 언어판은 id 가 같다 (…-slug.mdx · …-slug.en.mdx) — 같은 글이니
+  // 주소도 하나여야 하기 때문이다. 그래서 언어까지 묶어서 센다. id 만 보면
+  // 번역을 하나 붙이는 순간 멀쩡한 글이 "두 번 있다"로 빌드를 멈춘다.
   const seen = new Set<string>();
   for (const { post } of parsed) {
-    if (seen.has(post.id)) errors.push(`  ${post.id} 가 두 번 있다`);
-    seen.add(post.id);
+    const key = `${post.id}:${post.locale}`;
+    if (seen.has(key)) errors.push(`  ${post.id} (${post.locale}) 가 두 번 있다`);
+    seen.add(key);
   }
 
   // 글의 주소와 하위 카테고리의 주소는 같은 공간을 쓴다. dev/nextjs 라는 글이
@@ -58,11 +74,35 @@ function main() {
     }
   }
 
+  // 아직 안 올린 이미지. 깨진 그림이 배포까지 흘러가는 것보다 빌드가 멈추는
+  // 편이 낫다 — 화면에서는 조용히 빈자리가 될 뿐이라 아무도 못 본다.
+  // draft 는 배포에 나가지 않으므로 묻지 않는다 (쓰는 중에 올리라고 조를 이유가 없다).
+  for (const { post, body } of parsed) {
+    if (post.draft) continue;
+    for (const ref of missingImages(post.id, body)) {
+      errors.push(`  ${post.id}\n    이미지가 R2 에 없다: ${ref} — pnpm img 를 돌릴 것`);
+    }
+  }
+
+  if (Object.keys(IMAGES).length > 0 && !process.env.NEXT_PUBLIC_IMAGE_BASE_URL) {
+    console.error('\n✖ NEXT_PUBLIC_IMAGE_BASE_URL 이 비어 있다 — 이미지 주소를 만들 수 없다.');
+    console.error('  R2 버킷에 붙인 커스텀 도메인을 배포 환경변수에 넣을 것.\n');
+    process.exit(1);
+  }
+
   if (errors.length > 0) {
     console.error(`\n✖ 글 ${errors.length}편이 규약을 어겼다.\n`);
     console.error(errors.join('\n\n'));
     console.error('\nfrontmatter 는 title · date · summary · tags · draft 다섯 개뿐이다.\n');
     process.exit(1);
+  }
+
+  // 멈추지 않고 알리기만 한다 — 어긋난 날짜로도 사이트는 돌고, 번역을 붙이는
+  // 중에 원문 날짜를 손보는 경우도 있다.
+  for (const { id, dates } of findDateMismatches(parsed)) {
+    console.warn(
+      `⚠ ${id} — 언어판마다 date 가 다르다 (${formatDates(dates)}) · 목록 순서가 언어마다 갈린다`
+    );
   }
 
   const { posts, missing } = linkPosts(parsed);
@@ -77,6 +117,8 @@ function main() {
     ...post,
     related: post.related.filter(id => live.has(id)),
   }));
+
+  syncRedirects(live);
 
   const tagFreq: Record<string, number> = {};
   const byYear: Record<string, number> = {};

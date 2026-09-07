@@ -1,5 +1,7 @@
 import type { Category } from '@/lib/categories';
 
+import type { Locale } from '@/i18n.config';
+
 /**
  * 글 하나. src/data/index.json 의 항목 스키마이기도 하다.
  *
@@ -19,6 +21,15 @@ export type Post = {
   subs: string[];
   /** 영문 소문자 + 하이픈. 파일명의 날짜는 뺀 부분. */
   slug: string;
+  /**
+   * 이 글이 쓰인 언어. 파일 이름이 정한다 — `…-slug.mdx` 는 한국어,
+   * `…-slug.en.mdx` 는 그 글의 영어판이다.
+   *
+   * 두 언어판은 id 가 같다. 같은 글이므로 주소도 하나고(`/dev/x` · `/en/dev/x`),
+   * 번역이 없으면 원문이 그 자리에 그대로 선다 — 그때 이 값이 화면 언어와
+   * 달라지고, 목록의 언어 배지가 그걸 보고 뜬다.
+   */
+  locale: Locale;
   title: string;
   /** YYYY-MM-DD */
   date: string;

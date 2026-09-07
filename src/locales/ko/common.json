@@ -11,61 +11,52 @@
     "expand": "펼치기",
     "collapse": "접기"
   },
-
   "home": {
     "title": "최근 글",
-    "total": "전체 {{count}}편",
+    "total_other": "전체 {{count}}편",
     "viewAll": "전체 보기"
   },
-
   "post": {
     "draft": "초고",
     "empty": "아직 글이 없다.",
     "relatedRegion": "관련 글",
-    "related": "이어 읽기"
+    "related": "이어 읽기",
+    "notTranslated": "아직 번역하지 않은 글"
   },
-
   "tags": {
     "title": "태그",
-    "kinds": "{{count}}종",
+    "kinds_other": "{{count}}종",
     "empty": "아직 태그가 없다.",
     "postsEmpty": "이 태그의 글이 없다.",
-    "count": "{{count}}편"
+    "count_other": "{{count}}편"
   },
-
   "category": {
     "parents": "상위 카테고리",
     "children": "하위 카테고리",
-    "count": "{{count}}편",
+    "count_other": "{{count}}편",
     "page": "{{current}}/{{total}} 쪽"
   },
-
   "pagination": {
     "region": "쪽 넘김",
     "prev": "이전",
     "next": "다음"
   },
-
   "archive": {
     "title": "아카이브",
     "empty": "아직 글이 없다.",
-    "total": "전체 {{count}}편",
+    "total_other": "전체 {{count}}편",
     "yearJump": "연도 바로가기",
-    "month": "{{month}}월",
-    "count": "{{count}}편"
+    "count_other": "{{count}}편"
   },
-
   "heatmap": {
-    "summary": "{{days}}일 동안 {{count}}편",
+    "summary_other": "{{days}}일 동안 {{count}}편",
     "noPost": "글 없음",
-    "dayCount": "{{count}}편",
-    "more": "외 {{count}}편",
-    "month": "{{month}}월",
+    "dayCount_other": "{{count}}편",
+    "more_other": "외 {{count}}편",
     "mon": "월",
     "wed": "수",
     "fri": "금"
   },
-
   "search": {
     "title": "검색",
     "heading": "글 검색",
@@ -73,9 +64,9 @@
     "clear": "검색어 지우기",
     "graphRegion": "글 구조",
     "graphLabel": "글 구조 그래프",
-    "noResult": "\"{{query}}\" 검색 결과가 없습니다.",
+    "noResult": "\"<em>{{query}}</em>\" 검색 결과가 없습니다.",
     "resultRegion": "검색 결과",
-    "resultCount": "{{count}}개",
+    "resultCount_other": "{{count}}개",
     "recentRegion": "최근 검색",
     "recent": "최근 검색",
     "clearAll": "전체 지우기",
@@ -83,7 +74,6 @@
     "tagRegion": "태그",
     "tags": "태그"
   },
-
   "settings": {
     "menu": "설정",
     "language": "언어",
@@ -97,24 +87,34 @@
     "color": "색상",
     "vivid": "Vivid",
     "soft": "Soft",
-    "neon": "Neon",
-    "neonDarkOnly": "neon 은 다크 전용이다"
+    "neon": "Neon"
   },
-
   "profile": {
     "region": "프로필",
     "noViews": "조회수 집계 전",
     "views": "조회"
   },
-
   "callout": {
     "note": "참고",
     "tip": "팁",
     "danger": "경고",
     "quote": "인용"
   },
-
   "about": {
     "title": "소개"
+  },
+  "months": {
+    "1": "1월",
+    "2": "2월",
+    "3": "3월",
+    "4": "4월",
+    "5": "5월",
+    "6": "6월",
+    "7": "7월",
+    "8": "8월",
+    "9": "9월",
+    "10": "10월",
+    "11": "11월",
+    "12": "12월"
   }
 }

@@ -9,6 +9,17 @@
  * 봐야 그래프의 선과 본문의 링크가 어긋나지 않는다. 그래서 한 파일에 둔다.
  */
 
+/**
+ * 링크가 아니라 그림인 대상.
+ *
+ * 앞에 ! 가 붙은 [[...]] 는 Obsidian 의 임베드다. 대상이 그림 파일이면 이어
+ * 읽을 글이 아니라 본문에 박히는 사진이므로, 그래프의 선으로도 세지 않고
+ * 깨진 링크로도 세지 않는다. 이 규칙을 여기 두는 이유는 [[...]] 문법을 읽는
+ * 곳이 여기 하나여야 하기 때문이다 — 본문을 훑는 쪽(lib/content/images)과
+ * 화면에 그리는 쪽(remark-wikilink)이 같은 목록을 본다.
+ */
+export const IMAGE_EXT = /\.(png|jpe?g|gif|webp|avif|svg)$/i;
+
 /** `[[대상]]` · `[[대상|별칭]]`. 대상에 `]`와 `|`는 못 들어간다. */
 const WIKILINK = /\[\[([^\]|\n]+?)(?:\|([^\]\n]+?))?\]\]/g;
 
@@ -28,9 +39,14 @@ export type Wikilink = {
 export function extractWikilinks(body: string): Wikilink[] {
   const found: Wikilink[] = [];
 
-  for (const match of stripCode(body).matchAll(WIKILINK)) {
+  const source = stripCode(body);
+
+  for (const match of source.matchAll(WIKILINK)) {
     const target = match[1].trim();
     if (target === '') continue;
+
+    // ![[사진.png]] — 임베드된 그림은 링크가 아니다.
+    if (source[match.index - 1] === '!' && IMAGE_EXT.test(target)) continue;
     found.push({ target, alias: match[2]?.trim() || undefined });
   }
 

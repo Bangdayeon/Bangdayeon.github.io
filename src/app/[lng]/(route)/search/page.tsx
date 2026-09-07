@@ -2,12 +2,14 @@ import type { Metadata } from 'next';
 
 import { layoutGraph } from '@/lib/graph-layout';
 import { getAllPosts, getGraph, getTagCounts } from '@/lib/posts';
+import { serverLocale, serverT } from '@/lib/t';
 
 import { SearchScreen } from '@/components/SearchScreen';
 
-export const metadata: Metadata = {
-  title: '검색',
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const { t } = await serverT();
+  return { title: t('search.title') };
+}
 
 /**
  * 검색 화면.
@@ -19,16 +21,19 @@ export const metadata: Metadata = {
  * 화면 폭을 JS 로 재서 하나만 그리면 모바일에서 데스크톱 그래프가 한 프레임
  * 비친다 — 둘 다 실어 보내고 CSS 가 고르게 한다.
  */
-export default function SearchPage() {
+export default async function SearchPage() {
+  const { t } = await serverT();
+  const locale = await serverLocale();
+
   return (
     <main className="mx-auto w-full max-w-[1100px] px-6 py-8">
-      <h1 className="sr-only">글 검색</h1>
+      <h1 className="sr-only">{t('search.heading')}</h1>
 
       <SearchScreen
-        posts={getAllPosts()}
-        tags={getTagCounts()}
-        graphWide={layoutGraph(getGraph(5))}
-        graphNarrow={layoutGraph(getGraph(3))}
+        posts={getAllPosts(locale)}
+        tags={getTagCounts(locale)}
+        graphWide={layoutGraph(getGraph(locale, 5))}
+        graphNarrow={layoutGraph(getGraph(locale, 3))}
       />
     </main>
   );

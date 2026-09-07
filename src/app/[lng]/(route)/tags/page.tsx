@@ -1,11 +1,15 @@
 import type { Metadata } from 'next';
 
 import { getTagCounts } from '@/lib/posts';
+import { serverLocale, serverT } from '@/lib/t';
 
 import { LocaleLink as Link } from '@/components/LocaleLink';
 import { PageTitle } from '@/components/PageTitle';
 
-export const metadata: Metadata = { title: '태그' };
+export async function generateMetadata(): Promise<Metadata> {
+  const { t } = await serverT();
+  return { title: t('tags.title') };
+}
 
 /**
  * 태그 목록.
@@ -15,15 +19,16 @@ export const metadata: Metadata = { title: '태그' };
  * 굵어 보였다 — 정도의 차이로 읽히지 않고 "저것만 다른 것"으로 읽힌다.
  * 얼마나 많은지는 칩 안의 수가 이미 말하고 있고, 목록은 어차피 많은 순이다.
  */
-export default function TagsPage() {
-  const tags = getTagCounts();
+export default async function TagsPage() {
+  const { t } = await serverT();
+  const tags = getTagCounts(await serverLocale());
 
   return (
     <main className="mx-auto w-full max-w-[820px] px-6 py-10">
-      <PageTitle title="태그" meta={`${tags.length}종`} />
+      <PageTitle title={t('tags.title')} meta={t('tags.kinds', { count: tags.length })} />
 
       {tags.length === 0 ? (
-        <p className="text-body text-ink-muted py-16 text-center">아직 태그가 없다.</p>
+        <p className="text-body text-ink-muted py-16 text-center">{t('tags.empty')}</p>
       ) : (
         <ul className="flex flex-wrap gap-2">
           {tags.map(({ tag, count }) => (

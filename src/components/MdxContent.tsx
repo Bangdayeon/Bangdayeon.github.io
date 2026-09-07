@@ -6,8 +6,10 @@ import { remarkCallout } from '@/lib/mdx/remark-callout';
 import { remarkWikilink } from '@/lib/mdx/remark-wikilink';
 import type { LinkTarget } from '@/lib/mdx/wikilink';
 import { getAllPosts } from '@/lib/posts';
+import { serverLocale } from '@/lib/t';
 
 import { Callout } from '@/components/Callout';
+import { Img } from '@/components/Img';
 import { LocaleLink } from '@/components/LocaleLink';
 
 /**
@@ -63,7 +65,7 @@ function LinkMark({ external }: { external: boolean }) {
   );
 }
 
-const COMPONENTS = {
+const BASE_COMPONENTS = {
   callout: Callout,
 
   h2: (props: React.ComponentProps<'h2'>) => (
@@ -151,17 +153,28 @@ const COMPONENTS = {
     <td {...props} className="border-line-subtle border-b px-3 py-2" />
   ),
 
-  // TODO: R2 이미지는 <Img> 로 바꾼다 (config/images.json 의 width/height/blur).
-  //       절대 규칙 8 — next/image 에 물리지 않는다.
-  img: (props: React.ComponentProps<'img'>) => (
-    // eslint-disable-next-line @next/next/no-img-element
-    <img {...props} alt={props.alt ?? ''} className="border-line my-6 rounded-lg border" />
-  ),
+  // img 는 여기 없다 — 어느 글에 실렸는지(scope)를 알아야 표를 짚을 수 있어서
+  // 렌더할 때 붙인다. 아래 MdxContent 를 볼 것.
 };
 
-export async function MdxContent({ source, className }: { source: string; className?: string }) {
+export async function MdxContent({
+  source,
+  scope,
+  className,
+}: {
+  source: string;
+  /**
+   * 이 본문이 실린 글의 id (고정 페이지는 `page/about`).
+   *
+   * 이미지 표의 열쇠 앞자리다. 부르는 쪽이 반드시 적게 한 이유는, 빠뜨리면
+   * 그림이 조용히 안 나오는 게 아니라 다른 글의 그림이 나올 수도 있기 때문이다.
+   */
+  scope: string;
+  className?: string;
+}) {
   // 위키링크를 풀려면 전체 글 목록이 필요하다. 파일명은 규약대로 조립한다.
-  const targets: LinkTarget[] = getAllPosts().map(post => ({
+  // 지금 언어로 세운 목록이라, 링크에 붙는 제목도 읽고 있는 언어를 따라간다.
+  const targets: LinkTarget[] = getAllPosts(await serverLocale()).map(post => ({
     id: post.id,
     slug: post.slug,
     title: post.title,
@@ -170,7 +183,14 @@ export async function MdxContent({ source, className }: { source: string; classN
 
   const { content } = await compileMDX({
     source,
-    components: COMPONENTS,
+    components: {
+      ...BASE_COMPONENTS,
+      // src 는 React 타입상 Blob 도 될 수 있지만(<img src={File}>), MDX 가 넘기는
+      // 것은 언제나 본문에 적힌 문자열이다.
+      img: ({ src, alt }: React.ComponentProps<'img'>) => (
+        <Img src={typeof src === 'string' ? src : undefined} alt={alt} scope={scope} />
+      ),
+    },
     options: {
       mdxOptions: {
         // unified 는 [플러그인, 옵션] 을 받아 자기가 호출한다. 미리 호출해서

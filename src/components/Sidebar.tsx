@@ -4,11 +4,14 @@ import { useId, useState } from 'react';
 
 import { usePathname } from 'next/navigation';
 
+import { useT } from 'next-i18next/client';
+
 import type { NavNode } from '@/config/nav';
 import type { Profile } from '@/config/profile';
 
 import { CATEGORY_COLOR, isCategory } from '@/lib/categories';
 import { cn } from '@/lib/cn';
+import { stripLocale } from '@/lib/i18n';
 
 import { LocaleLink as Link } from '@/components/LocaleLink';
 import { SidebarProfile } from '@/components/SidebarProfile';
@@ -57,6 +60,7 @@ function NavBranch({
   depth: number;
   activeHref: string;
 }) {
+  const { t } = useT();
   const children = node.children ?? [];
   const listId = useId();
 
@@ -102,7 +106,10 @@ function NavBranch({
             type="button"
             aria-expanded={open}
             aria-controls={listId}
-            aria-label={`${node.label} 하위 메뉴 ${open ? '접기' : '펼치기'}`}
+            aria-label={t('nav.submenu', {
+              name: node.label,
+              action: open ? t('nav.collapse') : t('nav.expand'),
+            })}
             className="text-ink-muted hover:text-ink focus-visible:outline-focus relative z-10 grid size-5 shrink-0 place-items-center focus-visible:outline-2"
           >
             <svg
@@ -161,7 +168,10 @@ export function Sidebar({
   profile: Profile;
   views: number | null;
 }) {
-  const pathname = usePathname();
+  const { t } = useT();
+  // nav 의 href 는 접두사 없는 경로다 (링크에 접두사를 붙이는 건 LocaleLink 의
+  // 몫이다). 주소를 그대로 대면 영어 화면에서 활성 항목이 하나도 안 잡힌다.
+  const pathname = stripLocale(usePathname());
   const activeHref = findActiveHref(nav, pathname);
   const panel = cn(
     'w-full transition-opacity duration-150 md:w-56',
@@ -176,7 +186,7 @@ export function Sidebar({
         'border-line bg-surface w-full shrink-0 transition-[width] duration-150 ease-out',
         'md:sticky md:top-14 md:h-[calc(100dvh-3.5rem)]',
         'md:overflow-x-hidden md:overflow-y-auto',
-        'md:[contain:layout_paint]',
+        'md:contain-[layout_paint]',
         'md:border-r',
         open ? 'border-b md:w-56 md:border-b-0' : 'md:w-0 md:border-r-transparent'
       )}
@@ -185,7 +195,7 @@ export function Sidebar({
         <SidebarProfile profile={profile} views={views} />
       </div>
 
-      <nav id={id} aria-label="사이트 메뉴" className={cn(panel, 'py-4')}>
+      <nav id={id} aria-label={t('nav.siteMenu')} className={cn(panel, 'py-4')}>
         <ul>
           {nav.map(node => (
             <NavBranch key={node.href} node={node} depth={0} activeHref={activeHref} />

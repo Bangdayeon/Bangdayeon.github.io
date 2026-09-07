@@ -1,6 +1,7 @@
 import type { CategoryNode } from '@/types/post';
 
 import { getCategoryTree } from '@/lib/posts';
+import { serverLocale, serverT } from '@/lib/t';
 
 /**
  * 좌측 네비 트리.
@@ -40,14 +41,23 @@ function toNavNode(node: CategoryNode): NavNode {
   };
 }
 
-export function buildNav(): NavNode[] {
+/**
+ * 메뉴는 언어를 타므로 서버에서 await 로 만든다.
+ *
+ * 카테고리 라벨은 getCategoryTree 가 이미 그 언어로 붙여서 준다 (CategoryNode.label).
+ * 고정 항목만 여기서 t() 로 읽는다.
+ */
+export async function buildNav(): Promise<NavNode[]> {
+  const { t } = await serverT();
+  const locale = await serverLocale();
+
   return [
-    { label: '홈', href: '/' },
+    { label: t('nav.home'), href: '/' },
 
-    ...getCategoryTree().map(toNavNode),
+    ...getCategoryTree(locale).map(toNavNode),
 
-    { label: '태그', href: '/tags', muted: true },
-    { label: '아카이브', href: '/archive', muted: true },
-    { label: '소개', href: '/about', muted: true },
+    { label: t('nav.tags'), href: '/tags', muted: true },
+    { label: t('nav.archive'), href: '/archive', muted: true },
+    { label: t('nav.about'), href: '/about', muted: true },
   ];
 }

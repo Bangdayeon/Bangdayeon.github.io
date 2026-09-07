@@ -1,6 +1,9 @@
 import { z } from 'zod';
 
 import { CATEGORIES, type Category, isCategory } from '@/lib/categories';
+import { isLocale } from '@/lib/i18n';
+
+import { DEFAULT_LOCALE, LOCALES, type Locale } from '@/i18n.config';
 
 /**
  * frontmatter 검증.
@@ -48,13 +51,22 @@ export type FileMeta = {
   subs: string[];
   /** 영문 소문자 + 하이픈. 파일명의 날짜는 뺀 부분. */
   slug: string;
+  /** 파일 이름 끝의 언어 접미사가 정한다. 접미사가 없으면 기본 언어. */
+  locale: Locale;
   /** 파일명 앞의 날짜. frontmatter 와 다르면 경고한다. */
   date: string;
   /** `category/…subs/slug`. 그대로 URL 이 된다. */
   id: string;
 };
 
-const FILENAME = /^(\d{4}-\d{2}-\d{2})-([a-z0-9]+(?:-[a-z0-9]+)*)\.mdx$/;
+/**
+ * `2026-08-11-slug.mdx` 는 한국어, `2026-08-11-slug.en.mdx` 는 그 글의 영어판.
+ *
+ * 기본 언어에는 접미사가 없다 — 주소에 접두사가 없는 것과 같은 규칙이고
+ * (i18n.config 의 hideDefaultLocale), 덕분에 이미 쓴 글의 파일 이름을 하나도
+ * 건드리지 않는다. slug 에는 점이 못 들어가므로 접미사와 헷갈릴 일도 없다.
+ */
+export const FILENAME = /^(\d{4}-\d{2}-\d{2})-([a-z0-9]+(?:-[a-z0-9]+)*)(?:\.([a-z]{2}))?\.mdx$/;
 
 /** 하위 카테고리 폴더 이름. slug 와 같은 규칙이다. */
 const SUB = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
@@ -103,6 +115,26 @@ export function parsePostPath(relativePath: string): FileMeta | { error: string 
     return { error: '파일명은 YYYY-MM-DD-slug.mdx (slug 는 소문자 영문 · 숫자 · 하이픈)' };
   }
 
-  const [, date, slug] = matched;
-  return { category, subs, slug, date, id: [category, ...subs, slug].join('/') };
+  const [, date, slug, suffix] = matched;
+
+  // 접미사가 붙어 있으면 아는 언어여야 한다. 모양은 맞고 준비는 안 된 언어
+  // (.fr.mdx)를 조용히 한국어 글로 세면 번역이 원문 자리를 밀어낸다.
+  if (suffix !== undefined && !isLocale(suffix)) {
+    return { error: `모르는 언어 접미사: .${suffix} (${LOCALES.join(' · ')} 중 하나)` };
+  }
+  if (suffix === DEFAULT_LOCALE) {
+    return {
+      error: `기본 언어(${DEFAULT_LOCALE})는 접미사를 붙이지 않는다 — ${date}-${slug}.mdx`,
+    };
+  }
+
+  return {
+    category,
+    subs,
+    slug,
+    locale: suffix ?? DEFAULT_LOCALE,
+    date,
+    // id 에는 언어가 안 들어간다. 번역은 같은 글이므로 주소도 하나여야 한다.
+    id: [category, ...subs, slug].join('/'),
+  };
 }

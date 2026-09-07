@@ -1,6 +1,8 @@
 import { cn } from '@/lib/cn';
 import { CALLOUT_TYPES, type CalloutType } from '@/lib/mdx/remark-callout';
 
+import { T } from '@/components/T';
+
 /**
  * Obsidian 콜아웃.
  *
@@ -47,11 +49,15 @@ const STYLES: Record<CalloutType, { box: string; mark: string; icon: string }> =
   },
 };
 
-const LABELS: Record<CalloutType, string> = {
-  note: '참고',
-  tip: '팁',
-  danger: '경고',
-  quote: '인용',
+/**
+ * 머리줄 문구. 값이 아니라 키다 — 이 컴포넌트는 MDX 컴파일 결과 안에서
+ * 그려지므로 await 를 걸 자리가 없다. 문구는 <T> 가 읽는다.
+ */
+const LABEL_KEYS: Record<CalloutType, string> = {
+  note: 'callout.note',
+  tip: 'callout.tip',
+  danger: 'callout.danger',
+  quote: 'callout.quote',
 };
 
 function isCalloutType(value: string): value is CalloutType {
@@ -84,7 +90,7 @@ export function Callout({
             strokeLinejoin="round"
           />
         </svg>
-        {title || LABELS[kind]}
+        {title || <T k={LABEL_KEYS[kind]} />}
       </p>
 
       {/* 콜아웃 안에서는 블록 사이 간격을 본문보다 좁힌다 — 본문 여백(p my-5 ·

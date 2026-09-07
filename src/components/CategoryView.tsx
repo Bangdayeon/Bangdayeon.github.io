@@ -3,6 +3,7 @@ import type { CategoryNode } from '@/types/post';
 import { categoryColor, categoryLabel } from '@/lib/categories';
 import { cn } from '@/lib/cn';
 import { getPostsIn } from '@/lib/posts';
+import { serverLocale, serverT } from '@/lib/t';
 
 import { LocaleLink as Link } from '@/components/LocaleLink';
 import { PAGE_SIZE, PageNav, pageCount } from '@/components/PageNav';
@@ -18,8 +19,11 @@ import { PostList } from '@/components/PostList';
  * 같고, 좌측 네비의 (n) 도 같은 수를 센다. 아래로 갈라지는 길은 목록 위의
  * 하위 카테고리 칩과 좌측 네비가 보여 준다.
  */
-export function CategoryView({ node, current }: { node: CategoryNode; current: number }) {
-  const posts = getPostsIn(node.segments);
+export async function CategoryView({ node, current }: { node: CategoryNode; current: number }) {
+  const { t } = await serverT();
+  const locale = await serverLocale();
+
+  const posts = getPostsIn(locale, node.segments);
   // 하위 카테고리 칩에 붙일 점 색. 맨 위 칸이 정한다.
   const dot = categoryColor(node.segments)?.dot;
   const total = pageCount(posts.length);
@@ -27,13 +31,13 @@ export function CategoryView({ node, current }: { node: CategoryNode; current: n
   // ['dev', 'nextjs'] → [{ label: 'dev', href: '/dev' }]
   const parents = node.segments.slice(0, -1).map((_, index) => {
     const path = node.segments.slice(0, index + 1);
-    return { label: categoryLabel(path), href: `/${path.join('/')}` };
+    return { label: categoryLabel(locale, path), href: `/${path.join('/')}` };
   });
 
   return (
     <main className="mx-auto w-full max-w-[820px] px-6 py-10">
       {parents.length > 0 && (
-        <nav aria-label="상위 카테고리" className="text-meta text-ink-muted mb-1">
+        <nav aria-label={t('category.parents')} className="text-meta text-ink-muted mb-1">
           {parents.map(parent => (
             <span key={parent.href}>
               <Link
@@ -50,7 +54,10 @@ export function CategoryView({ node, current }: { node: CategoryNode; current: n
 
       <PageTitle
         title={node.label}
-        meta={`${posts.length}편${total > 1 ? ` · ${current}/${total} 쪽` : ''}`}
+        meta={
+          t('category.count', { count: posts.length }) +
+          (total > 1 ? ` · ${t('category.page', { current, total })}` : '')
+        }
       />
 
       {node.children.length > 0 && (
@@ -61,7 +68,7 @@ export function CategoryView({ node, current }: { node: CategoryNode; current: n
          * 각진 상자에 카테고리 색 점을 달았다. 점은 이 사이트에서 줄곧
          * "이 글이 속한 칸"을 뜻해 왔고, 태그에는 한 번도 붙은 적이 없다.
          * 수를 괄호로 감싸는 것도 좌측 네비의 (n) 과 같은 표기다. */
-        <nav aria-label="하위 카테고리" className="mb-6 flex flex-wrap gap-2">
+        <nav aria-label={t('category.children')} className="mb-6 flex flex-wrap gap-2">
           {node.children.map(child => (
             <Link
               key={child.path}

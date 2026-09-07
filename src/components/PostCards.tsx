@@ -1,9 +1,12 @@
 import type { Post } from '@/types/post';
 
-import { CATEGORY_COLOR, categoryPath } from '@/lib/categories';
+import { CATEGORY_COLOR } from '@/lib/categories';
 import { cn } from '@/lib/cn';
 
+import { CategoryPath } from '@/components/CategoryPath';
+import { LocaleBadge } from '@/components/LocaleBadge';
 import { LocaleLink as Link } from '@/components/LocaleLink';
+import { T } from '@/components/T';
 
 /**
  * 카드로 늘어놓는 글 목록. 지금은 글 아래 '이어 읽기'가 쓴다.
@@ -35,12 +38,13 @@ export function PostCards({ posts }: { posts: Post[] }) {
                 className={cn('size-2 shrink-0 rounded-full', CATEGORY_COLOR[post.category].dot)}
               />
               <span className="text-meta-sm text-ink-muted truncate">
-                {categoryPath(post.category, post.subs)} · {post.date}
+                <CategoryPath category={post.category} subs={post.subs} /> · {post.date}
               </span>
+              <LocaleBadge locale={post.locale} />
               {/* draft 는 dev 에서만 목록에 들어온다 — 프로덕션 산출물엔 없다. */}
               {post.draft && (
                 <span className="text-meta-sm text-warning-ink bg-warning-subtle shrink-0 rounded px-1.5 py-0.5">
-                  초고
+                  <T k="post.draft" />
                 </span>
               )}
             </span>

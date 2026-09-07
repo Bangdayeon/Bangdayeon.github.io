@@ -2,7 +2,9 @@ import type { Post } from '@/types/post';
 
 import { CATEGORY_COLOR, categoryPath } from '@/lib/categories';
 import { cn } from '@/lib/cn';
+import { serverLocale, serverT } from '@/lib/t';
 
+import { LocaleBadge } from '@/components/LocaleBadge';
 import { LocaleLink as Link } from '@/components/LocaleLink';
 
 /**
@@ -21,7 +23,9 @@ import { LocaleLink as Link } from '@/components/LocaleLink';
  * 잔디밭(ArchiveHeatmap)이 같은 것을 하루 단위로 보여주게 되면서 지웠다 —
  * 눈금만 다른 같은 그림을 한 화면에 둘 놓을 이유가 없다.
  */
-export function ArchiveTimeline({ years }: { years: { year: string; posts: Post[] }[] }) {
+export async function ArchiveTimeline({ years }: { years: { year: string; posts: Post[] }[] }) {
+  const { t } = await serverT();
+
   return (
     <div>
       {years.map(({ year, posts }) => (
@@ -32,7 +36,9 @@ export function ArchiveTimeline({ years }: { years: { year: string; posts: Post[
             <div key={month} className="flex gap-3 md:gap-5">
               {/* 월 라벨은 첫 글의 날짜 줄과 눈높이를 맞춘다 (pt-3 = 글 줄의 py-3). */}
               <p className="w-9 shrink-0 pt-3 text-right md:w-12">
-                <span className="text-meta text-ink-subtle tabular-nums">{Number(month)}월</span>
+                <span className="text-meta text-ink-subtle tabular-nums">
+                  {t(`months.${Number(month)}`)}
+                </span>
               </p>
 
               <ul className="border-line-subtle min-w-0 flex-1 border-l">
@@ -55,18 +61,24 @@ export function ArchiveTimeline({ years }: { years: { year: string; posts: Post[
 }
 
 /** 연도 머리. 헤더(h-14) 아래에 붙어 따라 내려온다 — 스크롤 중에 지금 보는 해를 잃지 않게. */
-function YearHead({ year, posts }: { year: string; posts: Post[] }) {
+async function YearHead({ year, posts }: { year: string; posts: Post[] }) {
+  const { t } = await serverT();
+
   return (
     <div className="bg-surface sticky top-14 z-10">
       <div className="border-line flex items-center gap-3 border-b py-3">
         <h2 className="text-title-lg text-ink-strong tabular-nums">{year}</h2>
-        <span className="text-meta text-ink-muted">{posts.length}편</span>
+        <span className="text-meta text-ink-muted">
+          {t('archive.count', { count: posts.length })}
+        </span>
       </div>
     </div>
   );
 }
 
-function Row({ post, anchor }: { post: Post; anchor: boolean }) {
+async function Row({ post, anchor }: { post: Post; anchor: boolean }) {
+  const { t } = await serverT();
+  const locale = await serverLocale();
   const color = CATEGORY_COLOR[post.category];
 
   return (
@@ -93,12 +105,13 @@ function Row({ post, anchor }: { post: Post; anchor: boolean }) {
             {post.date.slice(5).replace('-', '.')}
           </time>
           <span className={cn('text-meta-sm', color.ink)}>
-            {categoryPath(post.category, post.subs)}
+            {categoryPath(locale, post.category, post.subs)}
           </span>
+          <LocaleBadge locale={post.locale} />
           {/* draft 는 dev 에서만 목록에 들어온다 — 프로덕션 산출물엔 없다. */}
           {post.draft && (
             <span className="text-meta-sm text-warning-ink bg-warning-subtle rounded px-1.5 py-0.5">
-              초고
+              {t('post.draft')}
             </span>
           )}
         </span>

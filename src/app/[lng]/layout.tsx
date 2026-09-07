@@ -10,7 +10,7 @@ import {
 
 import { SITE_DESCRIPTION, SITE_NAME } from '@/config/site';
 
-import { PREFS_BOOT_SCRIPT } from '@/lib/prefs';
+import { PrefsBoot } from '@/components/PrefsBoot';
 
 import '@/styles/globals.css';
 
@@ -70,8 +70,11 @@ export default async function RootLayout({
       <head>
         {/* 첫 페인트 전에 동기 실행 — 저장된 테마를 되살린다. 여기 말고는
             깜빡임 없이 복원할 자리가 없다 (Next 공식 가이드
-            preventing-flash-before-hydration 과 같은 방식). */}
-        <script dangerouslySetInnerHTML={{ __html: PREFS_BOOT_SCRIPT }} />
+            preventing-flash-before-hydration 과 같은 방식). 언어 전환은 이
+            레이아웃을 소프트 내비게이션으로 다시 렌더하므로 script 를 그대로
+            두면 실행되지 않는 script 가 다시 생긴다 — PrefsBoot 가 그 자리를
+            맡는다. */}
+        <PrefsBoot />
       </head>
       <body>
         <I18nProvider

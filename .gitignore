@@ -55,3 +55,7 @@ next-env.d.ts
 # 다시 만들려면 Pretendard 배포본의 PretendardVariable.woff2 를 이 폴더에 두고 pnpm font.
 /public/fonts/*.woff2
 !/public/fonts/*.subset.woff2
+
+# 이미지 원본: R2 로 올리고(pnpm img) 주소만 config/images.json 에 남는다.
+# vault 에 붙여넣은 사진은 커밋하지 않는다 — 한 번 들어가면 히스토리에서 안 빠진다.
+/src/content/**/_img/

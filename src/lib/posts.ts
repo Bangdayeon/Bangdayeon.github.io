@@ -4,6 +4,8 @@ import type { Category } from '@/lib/categories';
 import { CATEGORIES, categoryLabel } from '@/lib/categories';
 import { loadBody, loadPosts } from '@/lib/content/source';
 
+import type { Locale } from '@/i18n.config';
+
 /**
  * 글 데이터를 읽는 유일한 창구.
  *
@@ -12,15 +14,20 @@ import { loadBody, loadPosts } from '@/lib/content/source';
  *
  * dev 에서는 draft 도 섞여 나온다 — 쓰는 중인 글을 로컬에서 보라고 그렇게 뒀다.
  * 프로덕션 산출물에는 draft 가 애초에 없다.
+ *
+ * 함수들이 하나같이 언어를 먼저 받는다. 같은 id 의 두 언어판 중 어느 쪽을
+ * 세울지가 목록 · 트리 · 그래프 · 태그 수까지 전부 갈라 놓기 때문이다.
+ * 기본값을 두지 않는 것도 같은 이유다 — 안 넘기면 타입이 막아 준다. 언어는
+ * 주소에 있으므로 부르는 쪽은 serverLocale() 한 줄이면 된다 (lib/t.ts).
  */
 
 /** 전체 글, 최신순. */
-export function getAllPosts(): Post[] {
-  return loadPosts();
+export function getAllPosts(locale: Locale): Post[] {
+  return loadPosts(locale);
 }
 
-export function getPostById(id: string): Post | null {
-  return getAllPosts().find(post => post.id === id) ?? null;
+export function getPostById(locale: Locale, id: string): Post | null {
+  return getAllPosts(locale).find(post => post.id === id) ?? null;
 }
 
 /** 글 본문(MDX 원문). 파일이 사라졌으면 null. */
@@ -40,8 +47,8 @@ function dirOf(post: Post): string[] {
  * dev/frontend/react 의 글은 react 까지 들어가야 나온다. 폴더를 열면 그 폴더의
  * 내용물이 나오는 것과 같다. 좌측 네비의 (n) 도 같은 수를 센다.
  */
-export function getPostsIn(segments: string[]): Post[] {
-  return getAllPosts().filter(post => {
+export function getPostsIn(locale: Locale, segments: string[]): Post[] {
+  return getAllPosts(locale).filter(post => {
     const dir = dirOf(post);
     return dir.length === segments.length && segments.every((name, index) => dir[index] === name);
   });
@@ -54,11 +61,11 @@ export function getPostsIn(segments: string[]): Post[] {
  * count 는 그 폴더에 직접 들어 있는 글 수다 (getPostsIn 과 같은 기준).
  * 하위 카테고리 글은 하위의 몫이라 부모에 겹쳐 세지 않는다.
  */
-export function getCategoryTree(): CategoryNode[] {
+export function getCategoryTree(locale: Locale): CategoryNode[] {
   const paths = new Set<string>(CATEGORIES);
   const counts = new Map<string, number>();
 
-  for (const post of getAllPosts()) {
+  for (const post of getAllPosts(locale)) {
     const dir = dirOf(post);
 
     // 글이 든 폴더에만 한 편을 얹는다. 다만 조상 폴더는 마디로 세워 둬야
@@ -76,7 +83,7 @@ export function getCategoryTree(): CategoryNode[] {
     return {
       segments,
       path,
-      label: categoryLabel(segments),
+      label: categoryLabel(locale, segments),
       href: `/${path}`,
       count: counts.get(path) ?? 0,
       children: [...paths]
@@ -92,9 +99,9 @@ export function getCategoryTree(): CategoryNode[] {
 }
 
 /** 경로에 해당하는 마디. 없으면 null (라우트가 404 로 보낸다). */
-export function getCategoryNode(segments: string[]): CategoryNode | null {
+export function getCategoryNode(locale: Locale, segments: string[]): CategoryNode | null {
   let found: CategoryNode | null = null;
-  let level = getCategoryTree();
+  let level = getCategoryTree(locale);
 
   for (const name of segments) {
     found = level.find(node => node.segments[node.segments.length - 1] === name) ?? null;
@@ -105,15 +112,15 @@ export function getCategoryNode(segments: string[]): CategoryNode | null {
   return found;
 }
 
-export function getPostsByTag(tag: string): Post[] {
-  return getAllPosts().filter(post => post.tags.includes(tag));
+export function getPostsByTag(locale: Locale, tag: string): Post[] {
+  return getAllPosts(locale).filter(post => post.tags.includes(tag));
 }
 
 /** 연도별 묶음, 최신 연도부터. */
-export function getArchive(): { year: string; posts: Post[] }[] {
+export function getArchive(locale: Locale): { year: string; posts: Post[] }[] {
   const byYear = new Map<string, Post[]>();
 
-  for (const post of getAllPosts()) {
+  for (const post of getAllPosts(locale)) {
     const year = post.date.slice(0, 4);
     byYear.set(year, [...(byYear.get(year) ?? []), post]);
   }
@@ -124,9 +131,9 @@ export function getArchive(): { year: string; posts: Post[] }[] {
 }
 
 /** 태그 → 글 수. 많은 순, 같으면 이름순. */
-export function getTagCounts(): { tag: string; count: number }[] {
+export function getTagCounts(locale: Locale): { tag: string; count: number }[] {
   const counts = new Map<string, number>();
-  for (const post of getAllPosts()) {
+  for (const post of getAllPosts(locale)) {
     for (const tag of post.tags) counts.set(tag, (counts.get(tag) ?? 0) + 1);
   }
 
@@ -142,8 +149,8 @@ export function getTagCounts(): { tag: string; count: number }[] {
  * 태그가 많이 겹치는 글, 그래도 모자라면 같은 카테고리의 최신 글로 채운다.
  * 자동 추천이 손으로 적은 링크를 밀어내지 않게 하려는 순서다.
  */
-export function getRelatedPosts(post: Post, limit = 4): Post[] {
-  const all = getAllPosts().filter(candidate => candidate.id !== post.id);
+export function getRelatedPosts(locale: Locale, post: Post, limit = 4): Post[] {
+  const all = getAllPosts(locale).filter(candidate => candidate.id !== post.id);
   const picked: Post[] = [];
 
   const take = (candidates: Post[]) => {
@@ -187,8 +194,8 @@ export function getRelatedPosts(post: Post, limit = 4): Post[] {
  * 아니라 실타래가 된다. 상한은 맨 위 카테고리 기준이라 하위 카테고리가 몇 개로
  * 갈라지든 그림의 크기는 그대로다. 밀려난 글은 검색과 카테고리 페이지에 있다.
  */
-export function getGraph(perCategory: number): Graph {
-  const all = getAllPosts();
+export function getGraph(locale: Locale, perCategory: number): Graph {
+  const all = getAllPosts(locale);
 
   const nodes: GraphNode[] = [];
   const links: GraphLink[] = [];
@@ -259,7 +266,7 @@ export function getGraph(perCategory: number): Graph {
 
     nodes.push({
       id: hubId(path),
-      label: categoryLabel(segments),
+      label: categoryLabel(locale, segments),
       category: hub.category,
       kind: 'category',
       depth: segments.length,
