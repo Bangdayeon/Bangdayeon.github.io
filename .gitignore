@@ -59,3 +59,6 @@ next-env.d.ts
 # 이미지 원본: R2 로 올리고(pnpm img) 주소만 config/images.json 에 남는다.
 # vault 에 붙여넣은 사진은 커밋하지 않는다 — 한 번 들어가면 히스토리에서 안 빠진다.
 /src/content/**/_img/
+
+# 정적 내보내기 산출물 (pnpm build → GitHub Pages)
+/out

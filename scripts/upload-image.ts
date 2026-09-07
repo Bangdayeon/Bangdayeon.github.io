@@ -240,6 +240,24 @@ function collectScopes(): Scope[] {
   return found;
 }
 
+/**
+ * R2 대신 이 사이트 안에 둔다 — 도메인이 없어 R2 에 커스텀 도메인을 못 붙이는
+ * 동안의 자리다 (docs/deploy.md).
+ *
+ * 키가 원본 내용의 해시라 R2 에 올릴 때와 같은 이름이 된다. 나중에 도메인이
+ * 생기면 NEXT_PUBLIC_IMAGE_BASE_URL 을 채우고 `pnpm img` 를 한 번 더 돌리는
+ * 것으로 옮겨진다 — 표도 본문도 안 고친다.
+ *
+ * 이쪽 사진은 커밋 대상이다. 저장소가 그만큼 무거워지지만, 나중에
+ * git filter-repo 로 이력에서 걷어낼 수 있다.
+ */
+function writePublic(key: string, body: Buffer) {
+  const file = path.join(process.cwd(), 'public', ...key.split('/'));
+
+  fs.mkdirSync(path.dirname(file), { recursive: true });
+  fs.writeFileSync(file, body);
+}
+
 function readManifest(): ImageManifest {
   if (!fs.existsSync(MANIFEST_FILE)) return {};
   return JSON.parse(fs.readFileSync(MANIFEST_FILE, 'utf8')) as ImageManifest;
@@ -303,11 +321,6 @@ async function main() {
         continue;
       }
 
-      if (!DRY_RUN && !r2) {
-        problems.push('R2 열쇠가 없다 — .env.local 의 R2_* 네 칸을 채울 것');
-        break;
-      }
-
       const baked = await bake(local);
       bytesIn += source.length;
       bytesOut += baked.body.length;
@@ -316,8 +329,11 @@ async function main() {
 
       if (DRY_RUN) {
         console.log(`· ${line}`);
+      } else if (r2) {
+        await putObject(r2, key, baked.body, baked.contentType);
+        console.log(`✓ ${line}`);
       } else {
-        await putObject(r2!, key, baked.body, baked.contentType);
+        writePublic(key, baked.body);
         console.log(`✓ ${line}`);
       }
 
@@ -344,18 +360,17 @@ async function main() {
     console.log('✓ config/images.json 갱신 — 커밋에 같이 담을 것');
   }
 
-  if (!process.env.NEXT_PUBLIC_IMAGE_BASE_URL && Object.keys(manifest).length > 0) {
-    console.warn(
-      '⚠ NEXT_PUBLIC_IMAGE_BASE_URL 이 비어 있다 — 화면에서 이미지 주소를 만들 수 없다.\n' +
-        '  R2 버킷에 붙인 커스텀 도메인을 넣을 것 (r2.dev 는 캐시가 없고 속도 제한이 걸린다)'
-    );
-  }
+  const where = r2 ? 'R2' : 'public/ (저장소에 커밋된다)';
 
   console.log(
-    `\n${DRY_RUN ? '· (dry-run) ' : '✓ '}${uploaded}장` +
+    `\n${DRY_RUN ? '· (dry-run) ' : '✓ '}${uploaded}장 → ${where}` +
       (unchanged > 0 ? ` · 그대로 ${unchanged}장` : '') +
       (bytesIn > 0 ? ` · ${kb(bytesIn)} → ${kb(bytesOut)}` : '')
   );
+
+  if (!r2 && uploaded > 0) {
+    console.log('  R2 로 옮기려면 .env.local 의 R2_* 와 NEXT_PUBLIC_IMAGE_BASE_URL 을 채울 것');
+  }
 
   if (problems.length > 0) {
     console.error(`\n✖ ${problems.length}건을 처리하지 못했다.\n`);

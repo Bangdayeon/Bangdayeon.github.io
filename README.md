@@ -24,7 +24,8 @@ pnpm dev                     # http://localhost:3000
 | `pnpm index`                   | 콘텐츠 검증 + 색인 생성     |
 | `pnpm img`                     | 이미지 R2 업로드            |
 | `pnpm font`                    | 폰트 서브셋 생성            |
-| `pnpm build`                   | 색인 생성 후 프로덕션 빌드  |
+| `pnpm build`                   | 정적 내보내기 → `out/`      |
+| `pnpm build:server`            | 서버가 있는 곳용 빌드       |
 | `pnpm start`                   | 빌드 결과 실행              |
 | `pnpm lint`                    | ESLint (prettier 규칙 포함) |
 | `pnpm lint:fix`                | ESLint 자동 수정            |
@@ -53,7 +54,7 @@ src/
 
 public/        Next 제약으로 루트 고정
 scripts/       build-index.ts (pnpm index) · upload-image.ts (pnpm img)
-               subset-font.ts (pnpm font)
+               build-static.ts · export-fixup.ts (pnpm build) · subset-font.ts
 docs/          상세 명세
 ```
 
@@ -97,6 +98,16 @@ docs/          상세 명세
 좁히고 한글 완성형 · 라틴 · 문장부호만 남겨 절반 아래로 깎습니다. 한자는 빠져 있습니다
 (2만 자가 넘어 파일이 도로 커집니다. 필요하면 `scripts/subset-font.ts`의 범위를 켜세요).
 
+## 배포
+
+GitHub Pages 에 정적 파일로 올린다. `main` 에 push 하면 워크플로가 굽는다.
+서버가 없는 곳이라 proxy 와 308 리다이렉트를 쓸 수 없어서, 빌드 뒤
+`scripts/export-fixup.ts` 가 그 둘을 파일로 대신 만든다 — 한국어 산출물을
+루트로 올려 주소를 그대로 지키고, 옛 주소마다 문서를 한 장씩 굽는다.
+
+저장소 설정 · 하위 경로(`BASE_PATH`) · 나중에 Cloudflare 로 옮기는 길은
+**[docs/deploy.md](docs/deploy.md)** 에 있다.
+
 ## 규약
 
 - frontmatter는 `title` `date` `summary` `tags` `draft` 다섯 개뿐이다.
@@ -125,5 +136,6 @@ docs/          상세 명세
 - 분석 도구 (Plausible vs Umami vs Vercel Analytics) — 미설치.
   붙으면 /search 글 그래프의 카테고리별 글 선정 기준을 최신순에서 조회수순으로
   바꿀 수 있다. 선행 작업과 교체 지점은 `src/lib/posts.ts`의 `rankForGraph` 주석에 적어뒀다
-- 도메인 · 사이트 명칭
+- 도메인 · 사이트 명칭 — 이미지를 R2 로 서빙하려면 Cloudflare 에 올린 도메인이
+  필요하다. 그때까지 사진은 `public/` 에 둔다 (docs/deploy.md)
 - 디자인 토큰 (색 · 폰트 · 간격)

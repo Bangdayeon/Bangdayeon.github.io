@@ -37,8 +37,31 @@ function idRedirects() {
   ]);
 }
 
+/**
+ * 정적 내보내기 — 배포 빌드에서만 켠다 (scripts/build-static.ts 가 켠다).
+ *
+ * 항상 켜 두면 안 된다. 내보내기 모드에서는 proxy 가 아예 안 돌고, 주소에서
+ * 언어를 감추는 일을 그 proxy 가 하고 있다 — dev 에서 켜면 /dev/x 가 500,
+ * / 가 404 다. 글 쓰는 자리는 서버가 있는 채로 둔다.
+ *
+ * redirects 도 내보내기에서는 무시된다(빌드가 경고한다). 그래서 그때는 아예
+ * 넘기지 않고, 대신 scripts/export-fixup.ts 가 옛 주소마다 문서를 한 장씩
+ * 굽는다. 표(config/id-redirects.json)는 어느 쪽에서나 같은 정본이다.
+ */
+const isExport = process.env.NEXT_EXPORT === '1';
+
+/**
+ * GitHub Pages 에서 하위 경로에 서는 경우(user.github.io/room)를 위한 접두사.
+ *
+ * 저장소 이름이 <계정>.github.io 면 루트에 서므로 비워 둔다 — 나중에 도메인을
+ * 붙일 때 주소가 그대로여서, 발행한 글의 주소가 한 번도 안 바뀐다.
+ */
+const basePath = process.env.NEXT_PUBLIC_BASE_PATH || undefined;
+
 const nextConfig: NextConfig = {
-  redirects: idRedirects,
+  ...(isExport ? { output: 'export' as const } : { redirects: idRedirects }),
+
+  basePath,
 
   // 상위 디렉터리의 lockfile 을 workspace root 로 오인하지 않게 고정한다.
   turbopack: {

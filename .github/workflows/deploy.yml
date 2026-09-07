@@ -1,0 +1,63 @@
+name: Deploy
+
+# main 에 올라간 것을 그대로 GitHub Pages 에 굽는다.
+#
+# 빌드가 검증을 겸한다 — `pnpm index` 가 frontmatter · 태그 · 이미지를 보고
+# 하나라도 어긋나면 여기서 멈춘다. 잘못된 글이 배포되는 것보다 낫다.
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+# deploy-pages 가 요구하는 것들. contents 는 읽기만 한다.
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# 배포는 겹치면 안 된다. 앞선 것을 죽이지는 않는다 — 반쯤 올라간 사이트가
+# 남는 것보다 순서대로 끝나는 편이 낫다.
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # 얕은 클론이면 scripts/renames.ts 가 글의 이동을 못 본다.
+          # 그러면 옛 주소 리다이렉트가 조용히 빠진다.
+          fetch-depth: 0
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+
+      - run: pnpm build
+        env:
+          # 저장소 이름이 <계정>.github.io 가 아니면 사이트가 하위 경로에 선다.
+          # 그때만 BASE_PATH 를 저장소 변수에 넣는다 (예: /room).
+          NEXT_PUBLIC_BASE_PATH: ${{ vars.NEXT_PUBLIC_BASE_PATH }}
+          NEXT_PUBLIC_SITE_URL: ${{ vars.NEXT_PUBLIC_SITE_URL }}
+          NEXT_PUBLIC_IMAGE_BASE_URL: ${{ vars.NEXT_PUBLIC_IMAGE_BASE_URL }}
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: out
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

@@ -67,9 +67,10 @@ export function Img({
   }
 
   const entry = lookupImage(scope, src);
-  const url = entry && imageUrl(entry);
 
-  if (entry && url) {
+  if (entry) {
+    const url = imageUrl(entry);
+
     return (
       // eslint-disable-next-line @next/next/no-img-element -- 절대 규칙 8
       <img

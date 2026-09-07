@@ -3,7 +3,7 @@ import path from 'node:path';
 
 import type { Post } from '@/types/post';
 
-import { IMAGES, missingImages } from '@/lib/content/images';
+import { missingImages } from '@/lib/content/images';
 import {
   collectPostFiles,
   findDateMismatches,
@@ -80,14 +80,8 @@ function main() {
   for (const { post, body } of parsed) {
     if (post.draft) continue;
     for (const ref of missingImages(post.id, body)) {
-      errors.push(`  ${post.id}\n    이미지가 R2 에 없다: ${ref} — pnpm img 를 돌릴 것`);
+      errors.push(`  ${post.id}\n    아직 준비 안 된 이미지: ${ref} — pnpm img 를 돌릴 것`);
     }
-  }
-
-  if (Object.keys(IMAGES).length > 0 && !process.env.NEXT_PUBLIC_IMAGE_BASE_URL) {
-    console.error('\n✖ NEXT_PUBLIC_IMAGE_BASE_URL 이 비어 있다 — 이미지 주소를 만들 수 없다.');
-    console.error('  R2 버킷에 붙인 커스텀 도메인을 배포 환경변수에 넣을 것.\n');
-    process.exit(1);
   }
 
   if (errors.length > 0) {

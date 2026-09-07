@@ -3,6 +3,7 @@ import path from 'node:path';
 
 import manifest from '@/config/images.json';
 
+import { BASE_PATH } from '@/lib/base-path';
 import { CONTENT_DIR } from '@/lib/content/parse';
 import { IMAGE_EXT } from '@/lib/mdx/wikilink';
 
@@ -94,7 +95,7 @@ export function refBasename(ref: string): string {
   } catch {
     /* %가 인코딩이 아니라 파일 이름의 일부였다 */
   }
-  return decoded.split(/[\/]/).pop() ?? decoded;
+  return decoded.split(/[\\/]/).pop() ?? decoded;
 }
 
 /**
@@ -155,8 +156,24 @@ export function missingImages(scope: string, body: string): string[] {
   return [...missing.values()];
 }
 
-/** 표에서 읽은 오브젝트의 절대 주소. 베이스가 없으면 null — 부르는 쪽이 정한다. */
-export function imageUrl(entry: ImageEntry): string | null {
-  const base = process.env.NEXT_PUBLIC_IMAGE_BASE_URL?.replace(/\/+$/, '');
-  return base ? `${base}/${entry.key}` : null;
+/**
+ * 표에 적힌 것을 화면이 받아 갈 주소로.
+ *
+ * 사진이 어디 있느냐는 환경변수 하나가 정한다.
+ *
+ *   NEXT_PUBLIC_IMAGE_BASE_URL 있음  R2 (커스텀 도메인에서 직접 서빙)
+ *   없음                             이 사이트의 public/ (GitHub Pages 가 서빙)
+ *
+ * 키는 원본 내용의 해시라 어느 쪽에서나 같다. 그래서 R2 로 옮기는 일이 이
+ * 변수를 채우고 `pnpm img` 를 한 번 돌리는 것으로 끝나고, 화면 코드는 이
+ * 함수까지 포함해 한 줄도 안 바뀐다.
+ *
+ * 하위 경로에 서는 배포(user.github.io/room)에서는 접두사가 붙는다. next/image
+ * 를 안 쓰므로 basePath 를 Next 가 대신 붙여 주지 않는다 — 여기서 붙인다.
+ */
+export function imageUrl(entry: ImageEntry): string {
+  const remote = process.env.NEXT_PUBLIC_IMAGE_BASE_URL?.replace(/\/+$/, '');
+  if (remote) return `${remote}/${entry.key}`;
+
+  return `${BASE_PATH}/${entry.key}`;
 }

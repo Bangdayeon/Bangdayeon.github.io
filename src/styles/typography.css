@@ -16,6 +16,10 @@
    스택으로 렌더된다 — 동작에 문제는 없다. */
 @font-face {
   font-family: 'Pretendard';
+  /* CSS 는 basePath 를 모르므로 이 경로에는 접두사가 안 붙는다. 사이트가 루트에
+     서는 한(권장하는 모양 — docs/deploy.md) 문제가 없고, 하위 경로에 세우면 이
+     한 줄만 못 따라와 폴백 스택으로 렌더된다. 상대 경로로 적는 방법은 막혀
+     있다 — Turbopack 이 그걸 모듈로 해석하려 들어 빌드가 깨진다. */
   src: url('/fonts/PretendardVariable.subset.woff2') format('woff2-variations');
   font-weight: 400 700;
   font-display: swap;

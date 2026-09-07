@@ -4,6 +4,7 @@ import { useT } from 'next-i18next/client';
 
 import type { Profile } from '@/config/profile';
 
+import { asset } from '@/lib/base-path';
 import { cn } from '@/lib/cn';
 
 import { Logo } from '@/components/Logo';
@@ -53,7 +54,7 @@ export function SidebarProfile({
       {profile.avatar ? (
         // eslint-disable-next-line @next/next/no-img-element -- R2 이미지를 next/image 에 물리지 않는다 (README 규약)
         <img
-          src={profile.avatar.src}
+          src={asset(profile.avatar.src)}
           alt={profile.avatar.alt}
           width={64}
           height={64}
