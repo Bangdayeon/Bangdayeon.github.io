@@ -58,6 +58,5 @@ export async function buildNav(): Promise<NavNode[]> {
 
     { label: t('nav.tags'), href: '/tags', muted: true },
     { label: t('nav.archive'), href: '/archive', muted: true },
-    { label: t('nav.about'), href: '/about', muted: true },
   ];
 }

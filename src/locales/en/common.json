@@ -3,7 +3,6 @@
     "home": "Home",
     "tags": "Tags",
     "archive": "Archive",
-    "about": "About",
     "siteMenu": "Site menu",
     "menuExpand": "Open menu",
     "menuCollapse": "Close menu",
@@ -109,9 +108,6 @@
     "tip": "Tip",
     "danger": "Warning",
     "quote": "Quote"
-  },
-  "about": {
-    "title": "About"
   },
   "months": {
     "1": "Jan",

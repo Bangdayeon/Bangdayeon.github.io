@@ -41,14 +41,13 @@ src/
 │  └─ [lng]/
 │     ├─ layout.tsx · not-found.tsx
 │     └─ (route)/
-│     ├─ page.tsx                 /
-│     ├─ [category]/page.tsx      /{category}
-│     ├─ [category]/[...rest]/page.tsx
-│     │                            글 · 하위 카테고리 목록 · 쪽 넘김
-│     ├─ tags/page.tsx · tags/[tag]/page.tsx
-│     ├─ archive/page.tsx
-│     ├─ search/page.tsx        검색 · 최근 검색 · 태그 · 글 그래프
-│     └─ about/page.tsx
+│        ├─ page.tsx                 /
+│        ├─ [category]/page.tsx      /{category}
+│        ├─ [category]/[...rest]/page.tsx
+│        │                            글 · 하위 카테고리 목록 · 쪽 넘김
+│        ├─ tags/page.tsx · tags/[tag]/page.tsx
+│        ├─ archive/page.tsx
+│        └─ search/page.tsx           검색 · 최근 검색 · 태그 · 글 그래프
 ├─ components/ lib/ styles/ types/
 ├─ config/     images.json(★커밋 필수) · tag-alias.ts · id-redirects.json · nav.ts · site.ts
 ├─ content/    MDX 정본 (Obsidian vault 겸용). 카테고리 = 폴더, 하위 카테고리 = 폴더 안의 폴더

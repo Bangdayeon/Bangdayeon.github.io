@@ -3,7 +3,6 @@
     "home": "홈",
     "tags": "태그",
     "archive": "아카이브",
-    "about": "소개",
     "siteMenu": "사이트 메뉴",
     "menuExpand": "메뉴 펼치기",
     "menuCollapse": "메뉴 접기",
@@ -99,9 +98,6 @@
     "tip": "팁",
     "danger": "경고",
     "quote": "인용"
-  },
-  "about": {
-    "title": "소개"
   },
   "months": {
     "1": "1월",

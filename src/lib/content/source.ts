@@ -146,22 +146,3 @@ export function loadBody(post: Post): string | null {
 function body(file: string): string {
   return matter(fs.readFileSync(file, 'utf8')).content;
 }
-
-/**
- * content/page/*.mdx — 글이 아니라 고정 페이지 (about 등). 검증도 색인도 없다.
- *
- * 번역은 글과 같은 규칙이다 — `about.en.mdx` 가 있으면 그걸, 없으면 원문을
- * 읽는다. 고정 페이지는 목록에 서지 않으므로 배지를 붙일 자리가 없고, 번역이
- * 없다는 사실은 본문이 한국어라는 것으로 그대로 드러난다.
- */
-export function loadPage(name: string, locale: Locale): string | null {
-  const dir = path.join(CONTENT_DIR, 'page');
-
-  if (locale !== DEFAULT_LOCALE) {
-    const translated = path.join(dir, `${name}.${locale}.mdx`);
-    if (fs.existsSync(translated)) return body(translated);
-  }
-
-  const original = path.join(dir, `${name}.mdx`);
-  return fs.existsSync(original) ? body(original) : null;
-}

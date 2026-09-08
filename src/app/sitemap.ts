@@ -43,7 +43,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: absoluteUrl('/'), lastModified: latest, changeFrequency: 'weekly', priority: 1 },
     { url: absoluteUrl('/archive'), lastModified: latest, changeFrequency: 'weekly' },
     { url: absoluteUrl('/tags'), lastModified: latest, changeFrequency: 'weekly' },
-    { url: absoluteUrl('/about'), changeFrequency: 'yearly' },
   ];
 
   // 하위 카테고리까지 전부 편다 — 트리의 모든 마디가 주소를 하나씩 갖는다.
