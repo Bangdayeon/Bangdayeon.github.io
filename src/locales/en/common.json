@@ -21,7 +21,8 @@
     "empty": "No posts yet.",
     "relatedRegion": "Related posts",
     "related": "Read next",
-    "notTranslated": "Not translated yet"
+    "notTranslated": "Not translated yet",
+    "rating": "Rated {{score}} out of {{max}}"
   },
   "tags": {
     "title": "Tags",

@@ -1,4 +1,5 @@
 import type { Category } from '@/lib/categories';
+import type { Thumb } from '@/lib/content/image-url';
 
 import type { Locale } from '@/i18n.config';
 
@@ -37,6 +38,24 @@ export type Post = {
   /** 2~5개. config/tag-alias.ts 로 정규화된 값. */
   tags: string[];
   draft: boolean;
+  /**
+   * 별점 0~5 (0.5 단위). 리뷰에만 있고, 안 적으면 없다.
+   *
+   * 목록에서는 요약 아래, 글에서는 요약 옆에 선다. 카테고리를 보고 그리는 게
+   * 아니라 이 값이 있으면 그린다 — 리뷰라도 별점을 안 매긴 글이 있다.
+   */
+  rating?: number;
+  /**
+   * 목록 왼쪽에 세울 썸네일 — 본문의 첫 사진이다.
+   *
+   * frontmatter 칸이 아니다. 글에 사진을 넣었으면 그게 곧 썸네일이고, 따로
+   * 고를 일도 적을 일도 없다 (related 를 위키링크에서 뽑는 것과 같은 결이다).
+   *
+   * 밖에 걸린 주소(`![](https://…/x.webp)`)면 주소만 들고, 우리 사진이면 표에서
+   * 크기 · 대표색까지 들고 온다. 아직 `pnpm img` 로 안 올린 우리 사진이면 이
+   * 칸이 비고, 목록은 지금처럼 글자만으로 선다.
+   */
+  thumb?: Thumb;
   /**
    * 이어 읽을 글의 id 목록.
    *

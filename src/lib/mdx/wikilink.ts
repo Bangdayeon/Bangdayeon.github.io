@@ -1,3 +1,5 @@
+import { POST_EXT } from '@/lib/post-schema';
+
 /**
  * Obsidian 위키링크.
  *
@@ -64,7 +66,7 @@ export type LinkTarget = { id: string; slug: string; title: string; file: string
  * 부르는 쪽이 경고를 남기고 일반 텍스트로 둔다.
  */
 export function resolveWikilink(target: string, posts: LinkTarget[]): LinkTarget | null {
-  const needle = target.replace(/\.mdx$/i, '').trim();
+  const needle = target.replace(POST_EXT, '').trim();
   const bare = needle.includes('/') ? (needle.split('/').pop() ?? needle) : needle;
 
   return (

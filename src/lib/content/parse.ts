@@ -7,8 +7,10 @@ import { normalizeTag } from '@/config/tag-alias';
 import type { Post } from '@/types/post';
 
 import { CATEGORIES } from '@/lib/categories';
+import { firstImageRef, isExternalImage, lookupImage } from '@/lib/content/images';
+import { CONTENT_DIR } from '@/lib/content/paths';
 import { type LinkTarget, extractWikilinks, resolveWikilink } from '@/lib/mdx/wikilink';
-import { frontmatterSchema, parsePostPath } from '@/lib/post-schema';
+import { POST_EXT, frontmatterSchema, parsePostPath, stripPostExt } from '@/lib/post-schema';
 
 import type { Locale } from '@/i18n.config';
 
@@ -23,10 +25,12 @@ import type { Locale } from '@/i18n.config';
  * dev 는 건너뛸지 부르는 쪽이 정한다.
  */
 
-export const CONTENT_DIR = path.join(process.cwd(), 'src', 'content');
+/** 정의는 paths.ts 에 있다 (images.ts 와 서로 붙들지 않으려고). 부르는 쪽은 여기로 온다. */
+export { CONTENT_DIR };
 
 /**
- * `dev/2026-08-11-slug.mdx` · `dev/nextjs/2026-08-11-slug.mdx` 같은 상대 경로.
+ * `dev/2026-08-11-slug.md` · `dev/nextjs/2026-08-11-slug.mdx` 같은 상대 경로.
+ * 확장자는 `.md` · `.mdx` 둘 다 받는다 (post-schema 의 POST_EXT).
  *
  * 카테고리 폴더에서 시작해 아래로 내려간다 — 하위 카테고리는 폴더를 한 단 더
  * 판 것일 뿐이라 따로 등록할 곳이 없다. 카테고리 폴더만 훑으므로 content 바로
@@ -44,8 +48,7 @@ export function collectPostFiles(): string[] {
       if (entry.name.startsWith('.') || entry.name.startsWith('_')) continue;
 
       if (entry.isDirectory()) walk(`${relative}/${entry.name}`);
-      else if (entry.isFile() && entry.name.endsWith('.mdx'))
-        found.push(`${relative}/${entry.name}`);
+      else if (entry.isFile() && POST_EXT.test(entry.name)) found.push(`${relative}/${entry.name}`);
     }
   };
 
@@ -78,12 +81,28 @@ export function parsePostFile(relativePath: string): ParsedPost | { error: strin
     return { error: detail };
   }
 
+  // 별점은 리뷰의 것이다. 다른 칸에 적히면 목록 어디에도 안 나오므로,
+  // 조용히 무시하는 대신 여기서 잡는다.
+  if (parsed.data.rating !== undefined && meta.category !== 'review') {
+    return { error: 'rating 은 review 카테고리의 글에만 적는다' };
+  }
+
   const warnings: string[] = [];
   if (parsed.data.date !== meta.date) {
     // 파일명 날짜는 정렬용 표기일 뿐이고 정본은 frontmatter 다. 다르면
     // 목록 순서와 파일 이름이 어긋나 보이므로 알려만 준다.
     warnings.push(`파일명 날짜(${meta.date})와 frontmatter date(${parsed.data.date})가 다르다`);
   }
+
+  // 목록 왼쪽에 세울 썸네일 — 본문의 첫 사진이다.
+  //
+  // 밖에 걸린 주소면 그대로 쓴다 (본문에서 <Img> 가 하는 것과 같다). 우리
+  // 사진이면 표에서 크기 · 대표색까지 가져온다 — 그래야 목록이 자리를 미리
+  // 잡는다. 아직 안 올려서 표에 줄이 없으면 썸네일 없이 선다. dev 에서 본문의
+  // 그림은 원본을 실어 보여 주지만(<Img> 의 DevPreview) 목록은 그럴 수 없다 —
+  // 한 화면에 스무 편이 서고, 그 전부에 원본을 실으면 목록이 수십 MB 가 된다.
+  const ref = firstImageRef(content);
+  const thumb = !ref ? null : isExternalImage(ref) ? { src: ref } : lookupImage(meta.id, ref);
 
   return {
     post: {
@@ -97,10 +116,12 @@ export function parsePostFile(relativePath: string): ParsedPost | { error: strin
       summary: parsed.data.summary,
       tags: parsed.data.tags.map(normalizeTag),
       draft: parsed.data.draft,
+      ...(parsed.data.rating !== undefined && { rating: parsed.data.rating }),
+      ...(thumb && { thumb }),
       related: [],
     },
     body: content,
-    file: path.basename(relativePath, '.mdx'),
+    file: stripPostExt(path.basename(relativePath)),
     warnings,
   };
 }

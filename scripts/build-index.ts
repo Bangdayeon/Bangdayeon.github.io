@@ -56,7 +56,12 @@ function main() {
   const seen = new Set<string>();
   for (const { post } of parsed) {
     const key = `${post.id}:${post.locale}`;
-    if (seen.has(key)) errors.push(`  ${post.id} (${post.locale}) 가 두 번 있다`);
+    // 확장자만 다른 같은 글이 가장 흔한 원인이다 (.md 와 .mdx 를 둘 다 받는다).
+    if (seen.has(key)) {
+      errors.push(
+        `  ${post.id} (${post.locale}) 가 두 번 있다 — .md 와 .mdx 로 둘 다 있는 건 아닌지`
+      );
+    }
     seen.add(key);
   }
 
@@ -87,7 +92,10 @@ function main() {
   if (errors.length > 0) {
     console.error(`\n✖ 글 ${errors.length}편이 규약을 어겼다.\n`);
     console.error(errors.join('\n\n'));
-    console.error('\nfrontmatter 는 title · date · summary · tags · draft 다섯 개뿐이다.\n');
+    console.error(
+      '\nfrontmatter 는 title · date · summary · tags · draft 다섯 개다' +
+        ' (리뷰만 rating 을 더 적을 수 있다).\n'
+    );
     process.exit(1);
   }
 

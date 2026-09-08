@@ -50,7 +50,7 @@ src/
 │        └─ search/page.tsx           검색 · 최근 검색 · 태그 · 글 그래프
 ├─ components/ lib/ styles/ types/
 ├─ config/     images.json(★커밋 필수) · tag-alias.ts · id-redirects.json · nav.ts · site.ts
-├─ content/    MDX 정본 (Obsidian vault 겸용). 카테고리 = 폴더, 하위 카테고리 = 폴더 안의 폴더
+├─ content/    글 정본 (Obsidian vault 겸용). 카테고리 = 폴더, 하위 카테고리 = 폴더 안의 폴더
 └─ data/       빌드 산출물 (gitignore)
 
 public/        Next 제약으로 루트 고정
@@ -61,17 +61,18 @@ docs/          상세 명세
 
 경로 별칭은 `@/*` → `./src/*` 하나뿐입니다 (`@/lib/cn`, `@/config/tag-alias`).
 
-파일명 `YYYY-MM-DD-slug.mdx` → URL `/{category}/{slug}` (날짜 미포함).
+파일명 `YYYY-MM-DD-slug.md` → URL `/{category}/{slug}` (날짜 미포함). `.mdx` 도 받는다.
 카테고리 폴더 안에 폴더를 더 파면 하위 카테고리가 됩니다 —
-`dev/nextjs/2026-08-20-slug.mdx` → `/dev/nextjs/slug`. 깊이 제한은 없습니다.
+`dev/nextjs/2026-08-20-slug.md` → `/dev/nextjs/slug`. 깊이 제한은 없습니다.
 
 ## 글 쓰기
 
 `src/content/`가 곧 Obsidian vault입니다. 별도 변환이나 업로드 단계가 없습니다.
 템플릿과 문법 · 검증 오류 대처는 **[docs/writing.md](docs/writing.md)** 에 있습니다.
 
-1. `src/content/<카테고리>/YYYY-MM-DD-slug.mdx` 생성
+1. `src/content/<카테고리>/YYYY-MM-DD-slug.md` 생성
 2. frontmatter 다섯 개를 채운다. 미완성이면 `draft: true`로 둔다
+   (리뷰라면 `rating`을 더 적을 수 있다 — 목록과 글머리에 별점으로 선다)
 3. `pnpm dev` — 파일을 고치고 새로고침하면 바로 보인다 (watch 프로세스 없음)
 4. 다 쓰면 `draft: false` → git push
 
@@ -114,8 +115,9 @@ GitHub Pages 에 정적 파일로 올린다. `main` 에 push 하면 워크플로
 
 ## 규약
 
-- frontmatter는 `title` `date` `summary` `tags` `draft` 다섯 개뿐이다.
-  다른 키가 있으면 `pnpm index`가 거부한다 (zod `strictObject`)
+- frontmatter는 `title` `date` `summary` `tags` `draft` 다섯 개다.
+  다른 키가 있으면 `pnpm index`가 거부한다 (zod `strictObject`).
+  선택 칸은 리뷰의 `rating` (0~5, 0.5 단위) 하나뿐이고, review 밖에 적으면 거부한다
 - 이어 읽을 글은 frontmatter가 아니라 본문 `[[위키링크]]`에서 나온다.
   Obsidian에서 글을 잇는 행위가 그대로 /search 그래프의 선이 된다.
   한쪽에서만 걸어도 양쪽에 생기고, 가리키는 글이 없으면 경고만 남고 원문이 그대로 남는다
@@ -125,8 +127,15 @@ GitHub Pages 에 정적 파일로 올린다. `main` 에 push 하면 워크플로
 - 좌측 네비의 고정 항목은 홈 · 아카이브 · 태그 세 개다. 태그 아래에는 많이 쓴
   태그 열 개가 글 수 순으로 펼쳐져 선다 (`src/config/nav.ts` 의 `NAV_TAGS`).
   나머지 태그는 /tags 가 맡는다
-- 카테고리 화면과 좌측 네비의 (n) 은 그 폴더에 **직접** 든 글만 센다.
-  `dev/frontend/react` 의 글은 react 까지 들어가야 보인다 (폴더를 여는 것과 같다)
+- 카테고리 화면과 좌측 네비의 (n) 은 그 폴더 **아래** 글을 전부 센다.
+  `/dev` 목록에는 `dev/frontend/react` 의 글도 함께 서고, 좁혀 보는 길은
+  목록 위의 하위 카테고리 칩이다
+- 목록의 썸네일은 본문의 **첫 사진**이다. 고르는 칸이 없다. 비율은 원본 그대로이고
+  (세로로 아주 긴 것만 아래가 잘린다), 밖에 걸린 주소(`![](https://…/x.webp)`)도
+  그대로 쓴다. 우리 사진인데 아직 `pnpm img` 로 안 올렸으면 썸네일 없이 선다
+- 글 파일은 `.md` 와 `.mdx` 를 둘 다 받는다. 렌더는 똑같고(컴파일러가 파일이 아니라
+  문자열을 받는다), Obsidian 이 `.md` 만 노트로 열어서 `.md` 를 기본으로 둔다.
+  같은 글을 두 확장자로 두면 `pnpm index` 가 거부한다
 - slug는 영문 소문자 + 하이픈
 - 발행 후 `post.id`(`category/…/slug`)를 바꾸지 않는다 — 폴더를 옮기는 것도 id를 바꾸는 일이다
 - UI · 아이콘 · 애니메이션 라이브러리를 쓰지 않는다

@@ -39,6 +39,20 @@ export const frontmatterSchema = z.strictObject({
       `태그는 카테고리명과 겹칠 수 없다 (${CATEGORIES.join(' · ')})`
     ),
   draft: z.boolean(),
+  /**
+   * 별점. 리뷰만 쓴다 (다른 카테고리에 적히면 parsePostFile 이 잡는다).
+   *
+   * 다섯 개 규약을 늘리는 게 아니라, 리뷰라는 한 종류에만 붙는 선택 칸이다 —
+   * 안 적으면 목록도 글머리도 지금과 똑같이 선다. 본문에 ★★★★ 나 🟡🟡🟡🟡⚪
+   * 로 적어 두면 그 글을 열어야만 보이는데, 리뷰 목록에서 별점은 제목만큼
+   * 먼저 보고 싶은 값이라 frontmatter 로 뺐다.
+   */
+  rating: z
+    .number()
+    .min(0, '별점은 0 이상')
+    .max(5, '별점은 5 이하')
+    .multipleOf(0.5, '별점은 0.5 단위로 적는다')
+    .optional(),
 });
 
 export type Frontmatter = z.infer<typeof frontmatterSchema>;
@@ -60,13 +74,33 @@ export type FileMeta = {
 };
 
 /**
- * `2026-08-11-slug.mdx` 는 한국어, `2026-08-11-slug.en.mdx` 는 그 글의 영어판.
+ * 글 파일의 확장자 — `.md` 와 `.mdx` 둘 다다.
+ *
+ * 렌더는 어느 쪽이든 똑같다. 본문을 컴파일하는 next-mdx-remote 는 파일이
+ * 아니라 문자열을 받아서, 확장자가 컴파일러에 전달조차 되지 않는다
+ * (components/MdxContent.tsx). 콜아웃 · 위키링크도 remark 플러그인이 평범한
+ * 마크다운을 읽어 만든다 — MDX 문법이 아니다.
+ *
+ * 그런데 Obsidian 은 `.md` 만 노트로 연다. src/content 가 vault 겸용인 이상
+ * (절대 규칙) 거기서 안 열리는 확장자를 강요할 이유가 없다. 그래서 `.md` 를
+ * 받고, 이미 쓴 `.mdx` 도 그대로 둔다 — 한쪽으로 몰아 고칠 일이 없다.
+ */
+export const POST_EXT = /\.mdx?$/i;
+
+/** 확장자를 뗀 파일 이름. `2026-08-11-slug.en.md` → `2026-08-11-slug.en` */
+export function stripPostExt(name: string): string {
+  return name.replace(POST_EXT, '');
+}
+
+/**
+ * `2026-08-11-slug.md` 는 한국어, `2026-08-11-slug.en.md` 는 그 글의 영어판.
+ * (`.mdx` 도 같다.)
  *
  * 기본 언어에는 접미사가 없다 — 주소에 접두사가 없는 것과 같은 규칙이고
  * (i18n.config 의 hideDefaultLocale), 덕분에 이미 쓴 글의 파일 이름을 하나도
  * 건드리지 않는다. slug 에는 점이 못 들어가므로 접미사와 헷갈릴 일도 없다.
  */
-export const FILENAME = /^(\d{4}-\d{2}-\d{2})-([a-z0-9]+(?:-[a-z0-9]+)*)(?:\.([a-z]{2}))?\.mdx$/;
+export const FILENAME = /^(\d{4}-\d{2}-\d{2})-([a-z0-9]+(?:-[a-z0-9]+)*)(?:\.([a-z]{2}))?\.mdx?$/;
 
 /** 하위 카테고리 폴더 이름. slug 와 같은 규칙이다. */
 const SUB = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
@@ -80,8 +114,8 @@ const SUB = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 const RESERVED = new Set(['page']);
 
 /**
- * `dev/2026-08-11-next-16.mdx`        → { category: 'dev', subs: [], slug: 'next-16' }
- * `dev/nextjs/2026-08-11-next-16.mdx` → { category: 'dev', subs: ['nextjs'], … }
+ * `dev/2026-08-11-next-16.md`        → { category: 'dev', subs: [], slug: 'next-16' }
+ * `dev/nextjs/2026-08-11-next-16.md` → { category: 'dev', subs: ['nextjs'], … }
  *
  * 카테고리 폴더 아래로는 몇 단이든 팔 수 있다. 맨 위 한 단만 카테고리이고 그
  * 아래는 전부 하위 카테고리다 — 어느 쪽이든 frontmatter 는 여전히 모른다.
@@ -112,19 +146,21 @@ export function parsePostPath(relativePath: string): FileMeta | { error: string 
 
   const matched = FILENAME.exec(parts[parts.length - 1]);
   if (!matched) {
-    return { error: '파일명은 YYYY-MM-DD-slug.mdx (slug 는 소문자 영문 · 숫자 · 하이픈)' };
+    return {
+      error: '파일명은 YYYY-MM-DD-slug.md (.mdx 도 된다, slug 는 소문자 영문 · 숫자 · 하이픈)',
+    };
   }
 
   const [, date, slug, suffix] = matched;
 
   // 접미사가 붙어 있으면 아는 언어여야 한다. 모양은 맞고 준비는 안 된 언어
-  // (.fr.mdx)를 조용히 한국어 글로 세면 번역이 원문 자리를 밀어낸다.
+  // (.fr.md)를 조용히 한국어 글로 세면 번역이 원문 자리를 밀어낸다.
   if (suffix !== undefined && !isLocale(suffix)) {
     return { error: `모르는 언어 접미사: .${suffix} (${LOCALES.join(' · ')} 중 하나)` };
   }
   if (suffix === DEFAULT_LOCALE) {
     return {
-      error: `기본 언어(${DEFAULT_LOCALE})는 접미사를 붙이지 않는다 — ${date}-${slug}.mdx`,
+      error: `기본 언어(${DEFAULT_LOCALE})는 접미사를 붙이지 않는다 — ${date}-${slug}.md`,
     };
   }
 

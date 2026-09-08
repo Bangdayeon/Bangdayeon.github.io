@@ -8,6 +8,7 @@ import { LocaleBadge } from '@/components/LocaleBadge';
 import { LocaleLink } from '@/components/LocaleLink';
 import { MdxContent } from '@/components/MdxContent';
 import { PostCards } from '@/components/PostCards';
+import { Rating } from '@/components/Rating';
 
 /**
  * 글 한 편. 라우트가 글 · 본문 · 관련글을 다 찾아 넘겨준다 — 이 컴포넌트는
@@ -48,6 +49,10 @@ export async function PostView({
 
           <h1 className="text-title-lg text-ink-strong">{post.title}</h1>
           <p className="text-body text-ink-muted mt-2">{post.summary}</p>
+
+          {/* 별점은 리뷰에만 있다 (frontmatter 의 rating). 목록에서 본 그 별이
+              같은 자리 · 같은 모양으로 글머리에도 선다. */}
+          {post.rating !== undefined && <Rating value={post.rating} className="mt-2" />}
 
           <ul className="mt-4 flex flex-wrap gap-1.5">
             {post.tags.map(tag => (

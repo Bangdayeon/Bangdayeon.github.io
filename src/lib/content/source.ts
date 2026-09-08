@@ -13,6 +13,7 @@ import {
   linkPosts,
   parsePostFile,
 } from '@/lib/content/parse';
+import { POST_EXT, stripPostExt } from '@/lib/post-schema';
 
 import { DEFAULT_LOCALE, type Locale } from '@/i18n.config';
 
@@ -60,6 +61,18 @@ function readFromContent(): Post[] {
     for (const warning of result.warnings) console.warn(`[content] ${file} — ${warning}`);
 
     parsed.push(result);
+  }
+
+  // 같은 글이 .md 와 .mdx 로 둘 다 있으면 dev 는 먼저 온 것을 세운다 — 고친 쪽이
+  // 화면에 안 나오는 상태라 눈으로는 "왜 안 바뀌지"로만 보인다. 빌드는 여기서
+  // 멈추므로(build-index) dev 도 최소한 말은 해 준다.
+  const seen = new Set<string>();
+  for (const { post } of parsed) {
+    const key = `${post.id}:${post.locale}`;
+    if (seen.has(key)) {
+      console.warn(`[content] ${post.id} (${post.locale}) 가 두 번 있다 — .md · .mdx 둘 다 있나`);
+    }
+    seen.add(key);
   }
 
   for (const { id, dates } of findDateMismatches(parsed)) {
@@ -118,26 +131,30 @@ function pickLocale(posts: Post[], locale: Locale): Post[] {
  * 글 본문. 목록과 달리 본문은 어느 환경에서나 파일에서 읽는다 —
  * index.json 에 본문까지 넣으면 목록 한 번 읽는 데 사이트 전체가 딸려 온다.
  *
- * 파일명은 보통 `${date}-${slug}${접미사}.mdx` 지만, frontmatter 날짜를 고치고
+ * 파일명은 보통 `${date}-${slug}${접미사}.md` 지만, frontmatter 날짜를 고치고
  * 파일명을 안 바꿨을 수도 있어서 못 찾으면 폴더를 뒤져 slug 로 찾는다.
+ * 확장자는 `.md` · `.mdx` 둘 다 본다 (post-schema 의 POST_EXT).
  *
  * 접미사는 post.locale 이 정한다 — 목록에서 고른 그 언어판의 본문을 읽어야
- * 한다. 한국어판을 찾을 때 `-slug.mdx` 로 끝나는 파일만 보므로 `-slug.en.mdx`
+ * 한다. 한국어판을 찾을 때 `-slug` 로 끝나는 이름만 보므로 `-slug.en.md`
  * 가 섞여 들어오지 않는다.
  */
 export function loadBody(post: Post): string | null {
   const dir = path.join(CONTENT_DIR, post.category, ...post.subs);
   const suffix = post.locale === DEFAULT_LOCALE ? '' : `.${post.locale}`;
+  const stem = `${post.slug}${suffix}`;
 
-  const guess = path.join(dir, `${post.date}-${post.slug}${suffix}.mdx`);
-  if (fs.existsSync(guess)) return body(guess);
+  for (const ext of ['md', 'mdx']) {
+    const guess = path.join(dir, `${post.date}-${stem}.${ext}`);
+    if (fs.existsSync(guess)) return body(guess);
+  }
 
   if (!fs.existsSync(dir)) return null;
-  const found = fs
-    .readdirSync(dir)
-    .find(
-      name => name.endsWith(`-${post.slug}${suffix}.mdx`) || name === `${post.slug}${suffix}.mdx`
-    );
+  const found = fs.readdirSync(dir).find(name => {
+    if (!POST_EXT.test(name)) return false;
+    const base = stripPostExt(name);
+    return base.endsWith(`-${stem}`) || base === stem;
+  });
 
   return found ? body(path.join(dir, found)) : null;
 }

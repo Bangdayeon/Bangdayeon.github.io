@@ -126,7 +126,13 @@ function DevPreview({
     </span>
   );
 
-  if (!file) return notice(`이미지를 못 찾았다: ${src}`);
+  // 본문은 파일 이름만 가리키므로, 못 찾았다는 건 그 이름의 사진이 글 옆
+  // _img/ 에 없다는 뜻이다. 어디에 두면 되는지까지 같이 말한다 — 이름을
+  // 안 대면 열어 봐야 알고, 열어 봐도 무엇이 어긋났는지는 안 보인다.
+  if (!file) {
+    const where = `src/content/${path.dirname(scope)}/_img/${refBasename(src)}`;
+    return notice(`이미지를 불러오는데에 실패했습니다 — ${where} 에 사진을 두고 pnpm img`);
+  }
 
   const size = fs.statSync(file).size;
   if (size > INLINE_LIMIT) {

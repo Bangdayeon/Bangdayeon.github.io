@@ -3,8 +3,8 @@ import path from 'node:path';
 
 import manifest from '@/config/images.json';
 
-import { BASE_PATH } from '@/lib/base-path';
-import { CONTENT_DIR } from '@/lib/content/parse';
+import type { ImageEntry } from '@/lib/content/image-url';
+import { CONTENT_DIR } from '@/lib/content/paths';
 import { IMAGE_EXT } from '@/lib/mdx/wikilink';
 
 /**
@@ -21,20 +21,13 @@ import { IMAGE_EXT } from '@/lib/mdx/wikilink';
  * 올릴 일이 없다.
  */
 
-export type ImageEntry = {
-  /**
-   * R2 오브젝트 키. 이름 뒤에 원본 내용의 해시가 붙는다.
-   *
-   * 내용이 바뀌면 키가 바뀌므로 CDN 캐시를 비울 일이 없다 (immutable 로
-   * 올린다). 같은 사진을 두 글에서 쓰면 키가 같아 오브젝트도 하나다.
-   */
-  key: string;
-  /** 실제로 올라간 크기. width/height 를 박아야 이미지가 뜰 때 글이 안 밀린다. */
-  w: number;
-  h: number;
-  /** 대표색 `#rrggbb`. 내려받기 전 그 자리를 채운다 (blur 대신 — 표가 가볍다). */
-  c: string;
-};
+/**
+ * 표 한 줄과 주소 만들기는 lib/content/image-url.ts 에 있다 — 클라이언트도
+ * 그 둘만은 써야 해서(<PostList> 의 썸네일) fs 가 안 딸린 조각으로 떼어 뒀다.
+ * 부르는 쪽은 여기만 알면 되도록 그대로 내보낸다.
+ */
+export type { ImageEntry };
+export { imageUrl } from '@/lib/content/image-url';
 
 export type ImageManifest = Record<string, ImageEntry>;
 
@@ -87,6 +80,34 @@ export function extractImageRefs(body: string): string[] {
   return [...found];
 }
 
+/**
+ * 본문에 처음 나오는 이미지 — 목록의 썸네일이 이걸 쓴다.
+ *
+ * extractImageRefs 로 안 하는 이유는 두 가지다. 그쪽은 문법별로 모아서
+ * `![[a.png]]` 가 첫 줄에 있어도 아래쪽 `![](b.png)` 가 먼저 나오고 (썸네일은
+ * "맨 위 사진"이어야 한다), 밖에 걸린 주소를 아예 뺀다 (그쪽은 "올려야 할
+ * 사진"을 세는 목록이라 그게 맞다). 썸네일은 밖에 건 사진도 걸 수 있다.
+ *
+ * 밖에 건 주소에는 확장자를 따지지 않는다 — `![]()` 로 적은 이상 그림이고,
+ * 주소 끝이 `.webp?w=800` 이나 확장자 없는 길일 수도 있다.
+ */
+export function firstImageRef(body: string): string | null {
+  const source = stripCode(body);
+  const found: { at: number; ref: string }[] = [];
+
+  for (const match of source.matchAll(MARKDOWN_IMAGE)) {
+    const ref = match[1].trim();
+    if (isExternalImage(ref) || IMAGE_EXT.test(ref)) found.push({ at: match.index, ref });
+  }
+
+  for (const match of source.matchAll(EMBED)) {
+    const ref = match[1].trim();
+    if (IMAGE_EXT.test(ref)) found.push({ at: match.index, ref });
+  }
+
+  return found.sort((a, b) => a.at - b.at)[0]?.ref ?? null;
+}
+
 /** `_img/Pasted%20image.png` → `Pasted image.png`. 못 푸는 문자열은 그대로 둔다. */
 export function refBasename(ref: string): string {
   let decoded = ref;
@@ -114,8 +135,9 @@ export function lookupImage(scope: string, ref: string): ImageEntry | null {
  * vault 안의 원본. `pnpm img` 가 올릴 것을 찾을 때, 그리고 dev 가 아직 안 올린
  * 그림을 미리 보여 줄 때 쓴다.
  *
- * 글이 든 폴더를 기준으로 두 군데만 본다 — 적힌 경로 그대로, 그리고 `_img/`.
- * vault 전체를 뒤지지 않는 이유는 같은 이름의 사진이 폴더마다 있기 때문이다.
+ * 글이 든 폴더를 기준으로만 본다 — 적힌 경로 그대로, 그리고 `_img/`. vault
+ * 전체를 뒤지지 않는 이유는 같은 이름의 사진이 폴더마다 있기 때문이다.
+ * 못 찾으면 같은 폴더에서 확장자 · 대소문자만 다른 이름을 한 번 더 찾는다.
  */
 export function findLocalImage(scope: string, ref: string): string | null {
   const noteDir = path.join(CONTENT_DIR, path.dirname(scope));
@@ -133,6 +155,23 @@ export function findLocalImage(scope: string, ref: string): string | null {
     // 본문이 ../.. 로 vault 밖을 가리키면 무시한다.
     if (!resolved.startsWith(path.resolve(CONTENT_DIR))) continue;
     if (fs.existsSync(resolved) && fs.statSync(resolved).isFile()) return resolved;
+  }
+
+  // 이름은 맞는데 확장자나 대소문자가 어긋난 경우까지는 찾아 준다. 사진을
+  // .png 로 받아 두고 본문에는 .webp 라고 적는 일(반대도)이 실제로 잦고, 그때
+  // 화면에 서는 건 "이미지를 불러오는데에 실패했습니다" 한 줄뿐이라 무엇이
+  // 어긋났는지가 안 보인다. 굽는 건 어차피 `pnpm img` 라 확장자는 참고사항이다.
+  const stem = base.slice(0, base.length - path.extname(base).length).toLowerCase();
+
+  for (const dir of [path.join(noteDir, '_img'), noteDir]) {
+    if (!fs.existsSync(dir)) continue;
+
+    const found = fs.readdirSync(dir).find(name => {
+      if (!IMAGE_EXT.test(name)) return false;
+      return name.slice(0, name.length - path.extname(name).length).toLowerCase() === stem;
+    });
+
+    if (found) return path.join(dir, found);
   }
 
   return null;
@@ -154,26 +193,4 @@ export function missingImages(scope: string, body: string): string[] {
   }
 
   return [...missing.values()];
-}
-
-/**
- * 표에 적힌 것을 화면이 받아 갈 주소로.
- *
- * 사진이 어디 있느냐는 환경변수 하나가 정한다.
- *
- *   NEXT_PUBLIC_IMAGE_BASE_URL 있음  R2 (커스텀 도메인에서 직접 서빙)
- *   없음                             이 사이트의 public/ (GitHub Pages 가 서빙)
- *
- * 키는 원본 내용의 해시라 어느 쪽에서나 같다. 그래서 R2 로 옮기는 일이 이
- * 변수를 채우고 `pnpm img` 를 한 번 돌리는 것으로 끝나고, 화면 코드는 이
- * 함수까지 포함해 한 줄도 안 바뀐다.
- *
- * 하위 경로에 서는 배포(user.github.io/room)에서는 접두사가 붙는다. next/image
- * 를 안 쓰므로 basePath 를 Next 가 대신 붙여 주지 않는다 — 여기서 붙인다.
- */
-export function imageUrl(entry: ImageEntry): string {
-  const remote = process.env.NEXT_PUBLIC_IMAGE_BASE_URL?.replace(/\/+$/, '');
-  if (remote) return `${remote}/${entry.key}`;
-
-  return `${BASE_PATH}/${entry.key}`;
 }

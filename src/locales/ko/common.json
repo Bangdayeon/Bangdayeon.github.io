@@ -20,7 +20,8 @@
     "empty": "아직 글이 없다.",
     "relatedRegion": "관련 글",
     "related": "이어 읽기",
-    "notTranslated": "아직 번역하지 않은 글"
+    "notTranslated": "아직 번역하지 않은 글",
+    "rating": "별점 {{score}}/{{max}}"
   },
   "tags": {
     "title": "태그",

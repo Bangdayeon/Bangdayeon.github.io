@@ -12,7 +12,7 @@ import {
   refBasename,
 } from '@/lib/content/images';
 import { CONTENT_DIR, collectPostFiles } from '@/lib/content/parse';
-import { parsePostPath } from '@/lib/post-schema';
+import { POST_EXT, parsePostPath, stripPostExt } from '@/lib/post-schema';
 
 import { loadEnvLocal } from './env';
 
@@ -224,10 +224,10 @@ function collectScopes(): Scope[] {
   const pageDir = path.join(CONTENT_DIR, 'page');
   if (fs.existsSync(pageDir)) {
     for (const name of fs.readdirSync(pageDir)) {
-      if (!name.endsWith('.mdx')) continue;
+      if (!POST_EXT.test(name)) continue;
 
-      // about.mdx · about.en.mdx → page/about
-      const base = name.slice(0, -'.mdx'.length).replace(/\.[a-z]{2}$/, '');
+      // about.md · about.en.mdx → page/about
+      const base = stripPostExt(name).replace(/\.[a-z]{2}$/, '');
 
       found.push({
         scope: `page/${base}`,
