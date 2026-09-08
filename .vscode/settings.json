@@ -26,6 +26,11 @@
   },
   "eslint.useFlatConfig": true,
 
+  // .mdx 를 마크다운으로 연다 — 기본 미리보기(Ctrl+K V)를 쓰려고. 본문 문법이
+  // 마크다운 + Obsidian 문법(콜아웃 · [[위키링크]])뿐이라 잃는 게 없다.
+  // 저장할 때 포맷될 걱정도 없다 — src/content 는 .prettierignore 에 있다 (절대 규칙 6).
+  "files.associations": { "*.mdx": "markdown" },
+
   // 줄바꿈은 LF 고정 (.prettierrc 의 endOfLine 과 .gitattributes 와 맞춘다).
   "files.eol": "\n",
   "files.insertFinalNewline": true,
