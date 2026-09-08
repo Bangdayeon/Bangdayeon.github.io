@@ -14,10 +14,10 @@ import { PostList } from '@/components/PostList';
  * 카테고리 한 칸의 글 목록. /{category} · /{category}/{하위} · 쪽 넘김이 전부
  * 이걸 쓴다.
  *
- * 목록에는 그 폴더에 직접 든 글만 나온다 — dev/frontend/react 의 글은
- * react 까지 들어가야 보인다. 폴더를 열면 그 폴더의 내용물이 나오는 것과
- * 같고, 좌측 네비의 (n) 도 같은 수를 센다. 아래로 갈라지는 길은 목록 위의
- * 하위 카테고리 칩과 좌측 네비가 보여 준다.
+ * 목록에는 그 폴더 아래 글이 전부 나온다 — /dev 에 서면 dev/frontend/react 의
+ * 글도 함께 선다. 상위 카테고리는 아래를 다 아우르는 이름이고, 좌측 네비의
+ * (n) · 칩의 (n) · 여기 '몇 편'이 전부 같은 수를 가리킨다. 좁혀 보고 싶으면
+ * 목록 위의 하위 카테고리 칩으로 한 단 내려가면 된다.
  */
 export async function CategoryView({ node, current }: { node: CategoryNode; current: number }) {
   const { t } = await serverT();

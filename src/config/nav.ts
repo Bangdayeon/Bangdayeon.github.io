@@ -37,8 +37,8 @@ function toNavNode(node: CategoryNode): NavNode {
   return {
     label: node.label,
     href: node.href,
-    // 그 폴더에 직접 든 글 수다. 눌렀을 때 나오는 목록과 같은 기준이라,
-    // 하위에만 글이 있는 중간 카테고리는 (0) 으로 선다.
+    // 그 폴더 아래 글을 전부 센 수다 (하위 카테고리 것까지). 눌렀을 때 나오는
+    // 목록과 같은 기준이라, 하위에만 글이 있는 카테고리도 제 수로 선다.
     count: node.count,
     children: node.children.length > 0 ? node.children.map(toNavNode) : undefined,
   };
