@@ -16,7 +16,7 @@ import { stripLocale } from '@/lib/i18n';
 import { LocaleLink as Link } from '@/components/LocaleLink';
 import { SidebarProfile } from '@/components/SidebarProfile';
 
-/* 카테고리가 아닌 고정 항목(홈 · 태그 · 아카이브 · 소개)의 활성 도트 색. */
+/* 카테고리가 아닌 항목(홈 · 아카이브 · 태그와 그 아래 태그들)의 활성 도트 색. */
 const DEFAULT_DOT = 'bg-primary';
 function activeDot(href: string) {
   const root = href.split('/')[1] ?? '';
