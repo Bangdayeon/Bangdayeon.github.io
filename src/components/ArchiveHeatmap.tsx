@@ -29,6 +29,18 @@ const PITCH = CELL + GAP;
 const WEEKDAY_WIDTH = 20;
 
 /**
+ * 눈금 글자(요일 열 · 월 이름)와 격자 사이.
+ *
+ * 칸 사이 여백(GAP)과 같은 값을 쓰면 글자가 격자에 붙어 첫 열의 일부처럼
+ * 읽힌다 — 눈금과 표는 다른 층이라 그 사이가 칸 사이보다 넓어야 갈린다.
+ * 요일 열은 이 값만큼 옆으로, 월 이름 줄은 이 값만큼 위로 떨어진다.
+ *
+ * 월 이름 줄이 marginInlineStart 로 격자의 첫 열에 맞추므로 여기를 고치면
+ * 그쪽도 같이 움직인다 (MonthRow 는 이 상수를 그대로 본다).
+ */
+const LABEL_GAP = 8;
+
+/**
  * 농도 다섯 단.
  *
  * 0 은 유채색이 아니다 — 안 쓴 날을 연한 파랑으로 칠하면 "조금 썼다"로 읽힌다.
@@ -105,7 +117,7 @@ export async function ArchiveHeatmap({ year, posts }: { year: string; posts: Pos
         hover 가 없으면 애초에 열리지 않는다. 이 화면에서 글로 가는 길은
         원래도 마우스를 위한 지름길이었고, 정본은 카테고리 목록과 검색이다.
       */}
-      <div className="-mx-1 overflow-x-auto overscroll-x-contain px-1 pb-1 lg:overflow-x-visible">
+      <div className="scrollbar-slim -mx-1 overflow-x-auto overscroll-x-contain px-1 pb-1 lg:overflow-x-visible">
         {/*
           격자는 aria-hidden 이다 — 371개의 칸을 하나씩 읽히면 그게 더 나쁘고,
           위 caption 이 같은 내용을 글자로 말한다 (바로 위 카테고리 띠와 같은
@@ -116,7 +128,7 @@ export async function ArchiveHeatmap({ year, posts }: { year: string; posts: Pos
         <div aria-hidden="true" className="w-max">
           <MonthRow year={number} start={start} weeks={weeks} />
 
-          <div className="flex" style={{ gap: GAP }}>
+          <div className="flex" style={{ gap: LABEL_GAP }}>
             <WeekdayColumn />
 
             <div
@@ -267,7 +279,7 @@ async function MonthRow({ year, start, weeks }: { year: number; start: number; w
   }
 
   return (
-    <div className="relative h-4" style={{ marginInlineStart: WEEKDAY_WIDTH + GAP }}>
+    <div className="relative mb-1.5 h-4" style={{ marginInlineStart: WEEKDAY_WIDTH + LABEL_GAP }}>
       {labels.map(({ week, month }) => (
         <span
           key={week}
