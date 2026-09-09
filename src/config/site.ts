@@ -6,16 +6,20 @@ export const SITE_DESCRIPTION = "'나' 아카이브";
 /**
  * 헤더에 언어 전환 버튼을 세울지.
  *
- * 지금 src/locales/en/common.json 이 전부 빈 자리표시자다. i18n.config 의
- * returnEmptyString: false 덕에 빈 키는 한국어로 떨어지므로, 영어를 골라도
- * 주소만 /en/… 으로 바뀌고 화면은 그대로다 — 눌러도 아무 일이 안 일어나는
- * 버튼이 된다. 번역을 채우면 true 로 되돌린다.
+ * 한동안 false 였다. src/locales/en/common.json 이 빈 자리표시자여서, 영어를
+ * 골라도 주소만 /en/… 으로 바뀌고 화면은 그대로였기 때문이다 — 눌러도 아무
+ * 일이 안 일어나는 버튼이었다.
  *
- * 끄는 것은 버튼뿐이고 라우팅은 살아 있다. /en/… 주소는 계속 열리고,
- * 정적 생성도 두 언어를 그대로 굽는다 (generateI18nStaticParams).
- * 대신 크롤러에게는 보이지 않게 막아 둔다 — app/robots.ts.
+ * 이제 UI 문구가 다 채워졌고 리뷰 글에도 영문판(…-slug.en.md)이 붙어서 켠다.
+ * 번역이 없는 글은 여전히 한국어로 떨어진다 (i18n.config 의
+ * returnEmptyString: false). 그래서 이 값이 뜻하는 것은 "영어판이 완성됐나"가
+ * 아니라 "눌렀을 때 화면이 실제로 바뀌나"다.
+ *
+ * 라우팅은 이 값과 무관하게 살아 있다. /en/… 주소는 계속 열리고, 정적 생성도
+ * 두 언어를 그대로 굽는다 (generateI18nStaticParams). 크롤러 차단은 별개다 —
+ * app/robots.ts 를 함께 볼 것.
  */
-export const SHOW_LANG_SWITCH: boolean = false;
+export const SHOW_LANG_SWITCH: boolean = true;
 
 /**
  * 사이트의 절대 주소 — sitemap · robots 가 쓴다. 끝에 슬래시 없이.

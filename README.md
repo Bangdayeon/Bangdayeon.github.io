@@ -153,7 +153,8 @@ GitHub Pages 에 정적 파일로 올린다. `main` 에 push 하면 워크플로
   (`src/config/site.ts` 의 `SHOW_LANG_SWITCH`). 라우팅과 정적 생성은 그대로
   살아 있어서 `/en/…` 주소는 열리고, 문구를 채우면 한 줄로 되돌린다.
   같은 이유로 sitemap 은 한국어 주소만 싣고 robots.txt 가 `/en/` 을 막는다
-- 한국어 검색 라이브러리 — 지금은 제목 · 요약 · 태그 부분일치뿐이다 (`src/lib/search.ts`)
+- 한국어 검색 라이브러리 — 지금은 제목 · 요약 · 태그 부분일치에 초성 매칭까지다.
+  형태소 분석(어간 · 조사 분리)은 없다 (`src/lib/search.ts`)
 - 분석 도구 (Plausible vs Umami vs Vercel Analytics) — 미설치.
   붙으면 /search 글 그래프의 카테고리별 글 선정 기준을 최신순에서 조회수순으로
   바꿀 수 있다. 선행 작업과 교체 지점은 `src/lib/posts.ts`의 `rankForGraph` 주석에 적어뒀다

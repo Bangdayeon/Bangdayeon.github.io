@@ -16,7 +16,7 @@
     "title": "Latest posts",
     "total_one": "{{count}} post",
     "total_other": "{{count}} posts",
-    "viewAll": "View all"
+    "more": "Show more"
   },
   "post": {
     "draft": "Draft",

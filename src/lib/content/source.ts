@@ -112,19 +112,28 @@ export function loadPosts(locale: Locale): Post[] {
   return pickLocale(isDev ? readFromContent() : readFromIndex(), locale);
 }
 
-/** 같은 id 가 여럿이면 이 언어판을, 없으면 먼저 온 것을 남긴다 (입력은 최신순). */
+/**
+ * 이 언어로 쓰인 글만 남긴다. 다른 언어판으로 대신하지 않는다.
+ *
+ * 예전에는 번역이 없으면 한국어판을 그 자리에 세웠다. 화면이 비지 않는다는
+ * 장점이 있었지만, 같은 본문이 /글 과 /en/글 두 주소에서 그대로 나왔다 —
+ * 검색엔진이 보기에 중복 문서다. robots.ts 가 /en/ 을 통째로 막아 두는 것으로
+ * 버텼는데, 그건 번역을 채워도 영어판이 검색에 안 잡힌다는 뜻이었다.
+ *
+ * 그래서 대신 세우지 않기로 한다. 번역이 없는 글은 그 언어에서 아예 없는 글이다.
+ *   - 목록 · 카테고리 개수에서 빠진다
+ *   - generateStaticParams 가 그 경로를 만들지 않고, dynamicParams = false 라
+ *     주소 자체가 존재하지 않는다 (404)
+ *   - sitemap 도 그 언어를 hreflang 으로 짝지어 주지 않는다
+ *
+ * 양쪽 모두에 대칭으로 적용된다. 영어로만 쓴 글은 한국어 화면에 안 나온다 —
+ * 한쪽만 예외를 두면 "번역이 없으면 없는 글"이라는 규칙이 반쪽이 된다.
+ *
+ * id 로 묶어 고르던 일이 없어졌지만 중복은 여전히 걸린다. 같은 id · 같은
+ * 언어가 두 번 있으면 pnpm index 가 빌드를 멈춘다 (scripts/build-index.ts).
+ */
 function pickLocale(posts: Post[], locale: Locale): Post[] {
-  const byId = new Map<string, Post>();
-
-  for (const post of posts) {
-    const standing = byId.get(post.id);
-    // Map 은 같은 키에 다시 넣어도 자리(=날짜 순서)를 지킨다.
-    if (!standing || (post.locale === locale && standing.locale !== locale)) {
-      byId.set(post.id, post);
-    }
-  }
-
-  return [...byId.values()];
+  return posts.filter(post => post.locale === locale);
 }
 
 /**

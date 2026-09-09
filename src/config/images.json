@@ -1,4 +1,28 @@
 {
+  "review/movie/alienoid/2022-07-24-alienoid-01.webp": {
+    "key": "img/2022-07-24-alienoid-01-f9adf829.webp",
+    "w": 1221,
+    "h": 768,
+    "c": "#f8f8f8"
+  },
+  "review/movie/alienoid/2022-07-24-alienoid-02.webp": {
+    "key": "img/2022-07-24-alienoid-02-84be5bd4.webp",
+    "w": 1080,
+    "h": 1080,
+    "c": "#f8f8f8"
+  },
+  "review/movie/alienoid/2022-07-24-alienoid-03.webp": {
+    "key": "img/2022-07-24-alienoid-03-56f9a087.webp",
+    "w": 1080,
+    "h": 1080,
+    "c": "#f8f8f8"
+  },
+  "review/movie/disobedience/2021-12-31-disobedience.webp": {
+    "key": "img/2021-12-31-disobedience-dfd28ed4.webp",
+    "w": 220,
+    "h": 326,
+    "c": "#382828"
+  },
   "review/movie/doctor-strange/2022-02-19-doctor-strange.webp": {
     "key": "img/2022-02-19-doctor-strange-dddef8d6.webp",
     "w": 1280,
