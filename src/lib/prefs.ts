@@ -53,6 +53,60 @@ export const FORCED_THEME: Partial<Record<Palette, Theme>> = {
  */
 export const PREFS_BOOT_SCRIPT = `(function(){try{var d=document.documentElement;var p=localStorage.getItem("${PALETTE_KEY}");if(p==="soft"||p==="neon"||p==="retro")d.classList.add("palette-"+p);var f={neon:"dark",retro:"light"}[p];var t=localStorage.getItem("${THEME_KEY}");if(f)d.classList.add(f);else if(t==="dark"||t==="light")d.classList.add(t)}catch(e){}})()`;
 
+/* 서버에는 DOM 이 없다. <html> 에 클래스가 없는 상태 = 아래 기본값. */
+export const SERVER_THEME: Theme = 'system';
+export const SERVER_PALETTE: Palette = 'vivid';
+
+/**
+ * 저장된 값을 <html> class 로 되돌린다 — 위 부트 스크립트와 같은 일을 모듈에서.
+ *
+ * 부트 스크립트만으로는 부족한 자리가 하나 있다: 언어 전환이다.
+ * 주소의 [lng] 가 바뀌면 그 세그먼트의 React key(`lng|ko|d` → `lng|en|d`)가
+ * 달라져서 루트 레이아웃 전체가 언마운트 후 다시 마운트된다. 그런데 <html> ·
+ * <head> · <body> 는 React 의 싱글턴이라, 다시 붙일 때 React 가 그 요소의
+ * 속성을 전부 지우고 JSX 가 든 것만 다시 쓴다 (react-dom 의
+ * acquireSingletonInstance). lang 은 JSX 에 있으니 살아 돌아오지만, 테마 ·
+ * 팔레트 class 는 JSX 가 든 값이 아니라서 그대로 사라진다 — 언어를 바꾸면
+ * 화면이 시스템 기본 모드로 돌아가던 것이 이것이다.
+ *
+ * 부트 스크립트는 이때 다시 돌지 않는다. React 가 DOM 으로 꽂은 <script> 는
+ * 브라우저가 실행하지 않기 때문이다 (PrefsBoot 의 머리말). 그래서 같은 복원을
+ * 여기 함수로 한 벌 두고, PrefsBoot 가 마운트될 때 레이아웃 이펙트로 부른다 —
+ * 속성을 지운 그 커밋 안에서 되돌아오므로 화면에는 한 프레임도 비치지 않는다.
+ *
+ * applyTheme / applyPalette 를 부르지 않는 이유는 저장이다. 저 둘은 "사용자가
+ * 골랐다"는 뜻이라 localStorage 에 쓰는데, 여기서 하는 일은 읽어서 되돌리는
+ * 것뿐이다.
+ */
+export function restorePrefs() {
+  const root = document.documentElement;
+
+  let palette: Palette = SERVER_PALETTE;
+  let theme: Theme = SERVER_THEME;
+
+  // 못 읽으면 기본값으로 둔다 (store 와 같은 이유 — 사파리 프라이빗 모드).
+  try {
+    const savedPalette = window.localStorage.getItem(PALETTE_KEY);
+    if (savedPalette === 'soft' || savedPalette === 'neon' || savedPalette === 'retro')
+      palette = savedPalette;
+
+    const savedTheme = window.localStorage.getItem(THEME_KEY);
+    if (savedTheme === 'dark' || savedTheme === 'light') theme = savedTheme;
+  } catch {
+    // 기본값으로 간다.
+  }
+
+  // 팔레트가 테마를 강제하면 저장된 테마보다 그쪽이 이긴다 — 부트 스크립트가
+  // 팔레트를 먼저 읽는 것과 같은 순서다.
+  theme = FORCED_THEME[palette] ?? theme;
+
+  root.classList.toggle('palette-soft', palette === 'soft');
+  root.classList.toggle('palette-neon', palette === 'neon');
+  root.classList.toggle('palette-retro', palette === 'retro');
+  root.classList.toggle('dark', theme === 'dark');
+  root.classList.toggle('light', theme === 'light');
+}
+
 /* ---------- 외부 스토어 ----------
    진짜 상태는 <html> 이 들고 있다. 선택 UI 는 useSyncExternalStore 로 그걸
    구독한다 — useState + useEffect 로 흉내내면 하이드레이션 직후 한 번 더
@@ -129,7 +183,3 @@ export function applyPalette(palette: Palette) {
   if (forced) applyTheme(forced);
   else emit();
 }
-
-/* 서버에는 DOM 이 없다. <html> 에 클래스가 없는 상태 = 아래 기본값. */
-export const SERVER_THEME: Theme = 'system';
-export const SERVER_PALETTE: Palette = 'vivid';
