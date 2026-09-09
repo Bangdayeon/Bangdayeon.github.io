@@ -100,7 +100,7 @@ async function Row({ post, anchor }: { post: Post; anchor: boolean }) {
           )}
         />
 
-        <span className="mb-0.5 flex items-center gap-2">
+        <span className="mb-0.5 flex flex-wrap items-center gap-x-2 gap-y-1">
           <time dateTime={post.date} className="text-meta text-ink-muted tabular-nums">
             {post.date.slice(5).replace('-', '.')}
           </time>

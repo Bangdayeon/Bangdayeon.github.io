@@ -113,6 +113,9 @@
   --swatch-neon-1: #29b6ff;
   --swatch-neon-2: #ff3d6e;
   --swatch-neon-3: #14ff9b;
+  --swatch-retro-1: #000080;
+  --swatch-retro-2: #c0c0c0;
+  --swatch-retro-3: #008080;
 
   /* ====================================================================
      시맨틱 — 라이트
@@ -130,6 +133,14 @@
   --sem-surface-subtle: var(--ramp-50);
   --sem-surface-muted: var(--ramp-100);
   --sem-surface-inverse: var(--ramp-900);
+
+  /* 모바일 서랍 뒤에 까는 막. 코드블록과 같은 이유로 어느 테마에서나 어둡다 —
+     뒤를 가리는 일에 테마는 상관이 없다. 그래서 아래 다크 블록들에 다시 적지
+     않는다 (:root 에만 있으면 .dark 에서도 그대로 산다).
+
+     surface-inverse 를 쓸 수는 없다. 그건 라이트에서 ramp-900, 다크에서
+     ramp-0 이라 다크 테마에서 막이 하얗게 번쩍인다. */
+  --sem-overlay: color-mix(in oklab, var(--ramp-950) 55%, transparent);
 
   /* 구분선 */
   --sem-line-subtle: var(--ramp-100);
@@ -531,6 +542,113 @@
   --hue-green-ink-d: #6effc0; /* 15.90 */
 }
 
+/* retro — Windows 95/98. 라이트 전용.
+   회색 크롬(#c0c0c0) 위에 VGA 16색을 얹는다. 다른 팔레트와 달리 색만으로는
+   완성되지 않는다 — 각진 모서리 · 베벨 · 폰트는 styles/retro.css 가 맡는다.
+   여기서는 램프만 갈아끼우는 이 파일의 규칙을 그대로 지킨다(아래 두 줄 예외).
+
+   중성색은 회색 기울기가 0 이다 (R = G = B). Win95 의 회색은 실제로 순회색이었고,
+   여기에 파란 기를 남기면 남색 액센트와 섞여 화면이 탁해진다.
+
+   램프의 방향이 다른 팔레트와 다르다 — 배경(ramp-0)이 이미 중간 회색이라
+   surface-subtle(호버)이 밝아지지 않고 어두워진다. 의도한 것이다. Win95 의
+   상호작용은 "떠오름"이 아니라 "눌림"이다.
+
+   아래 -d(다크용) 값은 -d 없는 것과 같은 값을 가리킨다. retro 는 .light 없이
+   렌더되지 않으므로(prefs.ts 의 FORCED_THEME 과 부트 스크립트가 보장한다)
+   화면에 나올 경로가 없다. 그래도 채워 두는 이유는 neon 블록과 같다 — 비워
+   두면 기본 팔레트의 색이 이 회색 판 위로 섞여 나온다. */
+:root.palette-retro {
+  color-scheme: light;
+
+  /* 중성 램프 — 순회색. R = G = B 를 깨지 말 것. */
+  --ramp-0: #c0c0c0; /* 배경 · 크롬. Win95 의 얼굴색이다 */
+  --ramp-50: #b4b4b4; /* 호버 — 밝아지는 게 아니라 어두워진다 */
+  --ramp-100: #a8a8a8;
+  --ramp-200: #999999;
+  --ramp-300: #808080; /* Win95 의 그림자 회색 */
+  --ramp-400: #606060;
+  --ramp-500: #404040;
+  --ramp-600: #303030;
+  --ramp-700: #202020;
+  --ramp-800: #101010;
+  --ramp-900: #000000;
+  --ramp-950: #000000; /* Win95 의 글자는 순검정이다 — ink 와 ink-strong 이 같다 */
+  /* 라이트 ink-strong 11.54 · ink 11.54 · ink-muted 5.70 AA · ink-subtle 2.93
+     코드블록 21.00 · 그 위의 글자(ramp-100) 8.90 */
+
+  /* --sem-* 를 덮는 건 이 두 줄뿐이다. 이 팔레트에서는 ramp-0 이 흰색이 아니라
+     중간 회색(#c0c0c0)이라, vivid 면 위에 얹으라고 되어 있는 기본값이 그대로는
+     성립하지 않는다.
+       primary-on  회색을 남색 위에 얹으면 8.80 으로 통과는 하지만, Win95 의
+                   선택 막대는 남색 위 흰 글자다. 그 그림을 살린다 (16.01).
+       error-on    회색을 순빨강 위에 얹으면 2.20 으로 AA 미달이다. 먹색으로
+                   뒤집으면 5.25 로 통과한다 (흰색은 4.00 이라 아슬하다).
+     success · warning 은 기본값이 이미 ramp-900(먹색)이라 손댈 것이 없다. */
+  --sem-primary-on: #ffffff; /* 16.01 */
+  --sem-error-on: var(--ramp-950); /*  5.25 */
+
+  /* blue — primary · dev. Win95 의 남색이 이 팔레트의 중심이다. */
+  --hue-blue-subtle: #d4d4ec;
+  --hue-blue-vivid: #000080; /*  8.80 · 위에 흰 글자 16.01 */
+  --hue-blue-ink: #000080; /*  8.80 */
+  --hue-blue-strong: #0000a0; /*  7.71  hover — 남색은 진해질 데가 없어 밝힌다 */
+  /* 포커스 링은 검정이다. Win95 의 포커스는 점선 사각형이었고 색이 없었다 —
+     점선 자체는 retro.css 가 그린다. 여기서는 3:1 하한만 책임진다. */
+  --hue-blue-focus: #000000; /* 11.54 */
+  --hue-blue-subtle-d: #d4d4ec;
+  --hue-blue-vivid-d: #000080;
+  --hue-blue-ink-d: #000080;
+  --hue-blue-strong-d: #0000a0;
+  --hue-blue-focus-d: #000000;
+
+  /* purple — design */
+  --hue-purple-subtle: #e4d0e4;
+  --hue-purple-vivid: #800080; /*  5.18 · 면 전용 */
+  /* VGA Purple 그대로 두면 호버 면(#b4b4b4) 위에서 4.54 로 하한에 붙는다.
+     목록 한 줄에 손을 얹었을 때 기준을 놓칠 뻔한 색은 통과한 게 아니라
+     아슬한 것이다. 한 단 내려 여유를 둔다. */
+  --hue-purple-ink: #730073; /*  5.87 · 호버 면 5.15 */
+  --hue-purple-subtle-d: #e4d0e4;
+  --hue-purple-vivid-d: #800080;
+  --hue-purple-ink-d: #730073;
+
+  /* red — review · error */
+  --hue-red-subtle: #eed2d2;
+  --hue-red-vivid: #ff0000; /*  2.20 · 면 전용. 위에 먹색 글자 5.25 */
+  --hue-red-ink: #800000; /*  6.02  maroon */
+  --hue-red-subtle-d: #eed2d2;
+  --hue-red-vivid-d: #ff0000;
+  --hue-red-ink-d: #800000;
+
+  /* orange — log · diary.
+     VGA 16색에 주황이 없다. 가장 가까운 건 올리브인데 yellow 가 이미 쓴다.
+     여섯 색이 카테고리 여섯 개에 1:1 로 묶여 있어 하나를 비울 수 없으므로,
+     16색 밖의 #ff7f00 을 쓴다 — 이 팔레트에서 유일하게 VGA 를 벗어나는 값이다. */
+  --hue-orange-subtle: #eedcc4;
+  --hue-orange-vivid: #ff7f00; /*  2.53 · 면 전용. 위에 먹색 글자 8.29 */
+  --hue-orange-ink: #6e2b00; /*  5.68 · 호버 면 4.98. 같은 이유로 한 단 내렸다 */
+  --hue-orange-subtle-d: #eedcc4;
+  --hue-orange-vivid-d: #ff7f00;
+  --hue-orange-ink-d: #6e2b00;
+
+  /* yellow — toon · warning */
+  --hue-yellow-subtle: #eeeac4;
+  --hue-yellow-vivid: #ffff00; /*  1.07 · 면 전용. 위에 먹색 글자 19.56 */
+  --hue-yellow-ink: #4d3b00; /*  5.95  올리브를 글자용으로 내린 단 */
+  --hue-yellow-subtle-d: #eeeac4;
+  --hue-yellow-vivid-d: #ffff00;
+  --hue-yellow-ink-d: #4d3b00;
+
+  /* green — travel · success */
+  --hue-green-subtle: #cce4cc;
+  --hue-green-vivid: #00ff00; /*  1.37 · 면 전용. 위에 먹색 글자 15.30 */
+  --hue-green-ink: #004d1a; /*  5.56 */
+  --hue-green-subtle-d: #cce4cc;
+  --hue-green-vivid-d: #00ff00;
+  --hue-green-ink-d: #004d1a;
+}
+
 /* ====================================================================
    Tailwind 유틸리티 생성
    inline 이어야 유틸리티가 값을 복사하지 않고 var() 를 그대로 참조한다.
@@ -548,6 +666,7 @@
   --color-surface-subtle: var(--sem-surface-subtle);
   --color-surface-muted: var(--sem-surface-muted);
   --color-surface-inverse: var(--sem-surface-inverse);
+  --color-overlay: var(--sem-overlay);
 
   --color-line-subtle: var(--sem-line-subtle);
   --color-line: var(--sem-line);

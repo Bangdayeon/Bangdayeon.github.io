@@ -17,10 +17,13 @@ import { PostListSkeleton, Skeleton } from '@/components/Skeleton';
  * 페이지가 빌드 때 구워지고 Next 가 화면에 들어온 링크를 미리 받아 두므로,
  * 빠른 회선에서는 대개 스치지도 않는다. 느린 회선 · 첫 방문 · 페이로드가 큰
  * 화면(검색은 글 색인과 그래프 좌표를 통째로 싣는다)에서 값을 한다.
+ *
+ * 바깥 상자는 page.tsx 들과 한 글자도 다르면 안 된다 — 다르면 뼈대에서 내용으로
+ * 바뀌는 순간 글이 옆으로 튄다. 여백을 고칠 때 여기도 같이 고칠 것.
  */
 export default function Loading() {
   return (
-    <main aria-busy="true" className="mx-auto w-full max-w-[820px] px-6 py-10">
+    <main aria-busy="true" className="mx-auto w-full max-w-[820px] px-4 py-10 sm:px-6">
       {/* 뼈대는 aria-hidden 이라 스크린리더에는 이 한 줄만 남는다. */}
       <p role="status" className="sr-only">
         불러오는 중

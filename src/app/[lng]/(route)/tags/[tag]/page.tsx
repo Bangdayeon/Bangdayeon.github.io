@@ -44,7 +44,7 @@ export default async function TagPage({ params }: Params) {
   const posts = getPostsByTag(await serverLocale(), name);
 
   return (
-    <main className="mx-auto w-full max-w-[820px] px-6 py-10">
+    <main className="mx-auto w-full max-w-[820px] px-4 py-10 sm:px-6">
       <PageTitle title={name} meta={t('tags.count', { count: posts.length })} />
 
       <PostList posts={posts} emptyText={<T k="tags.postsEmpty" />} />

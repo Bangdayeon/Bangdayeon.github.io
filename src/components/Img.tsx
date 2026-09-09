@@ -62,7 +62,15 @@ export function Img({
   if (isExternalImage(src)) {
     return (
       // eslint-disable-next-line @next/next/no-img-element -- 절대 규칙 8
-      <img src={src} alt={text} loading="lazy" decoding="async" className={cn(FRAME, className)} />
+      <img
+        src={src}
+        alt={text}
+        loading="lazy"
+        decoding="async"
+        // 밖에 걸린 주소는 크기를 모른 채 온다 — 1000px 짜리 포스터가 375px
+        // 화면을 밀어내지 않게, 폭 상한만은 우리 사진과 똑같이 건다.
+        className={cn(FRAME, 'h-auto max-w-full', className)}
+      />
     );
   }
 

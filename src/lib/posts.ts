@@ -148,6 +148,27 @@ export function getTagCounts(locale: Locale): { tag: string; count: number }[] {
 }
 
 /**
+ * 최근에 쓴 태그부터 몇 개만.
+ *
+ * 검색 화면이 쓴다. 거기 태그는 전부를 보여주는 목록이 아니라 "요즘 뭘
+ * 쓰고 있나"를 짚어 주는 자리다 — 전부는 /tags 가 맡는다. 많이 쓴 순
+ * (getTagCounts)으로 세우면 몇 해 전에 몰아 쓴 태그가 맨 앞에 굳어서
+ * 목록이 좀처럼 안 바뀐다.
+ *
+ * 순서는 정렬이 아니라 Map 의 삽입 순서가 정한다. getAllPosts 가 최신순이라
+ * (parse.ts 가 그렇게 굽는다) 태그를 처음 만나는 차례가 곧 그 태그를 마지막에
+ * 쓴 글의 차례다. 개수는 자르기 전에 전부 세므로 잘려 나간 뒤에도 정확하다.
+ */
+export function getRecentTags(locale: Locale, limit: number): { tag: string; count: number }[] {
+  const counts = new Map<string, number>();
+  for (const post of getAllPosts(locale)) {
+    for (const tag of post.tags) counts.set(tag, (counts.get(tag) ?? 0) + 1);
+  }
+
+  return [...counts].slice(0, limit).map(([tag, count]) => ({ tag, count }));
+}
+
+/**
  * 글 아래에 붙일 관련글.
  *
  * 순서가 곧 우선순위다 — 내가 직접 이어 둔 글(위키링크)이 먼저고, 그다음은

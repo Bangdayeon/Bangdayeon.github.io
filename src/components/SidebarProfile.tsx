@@ -47,7 +47,7 @@ export function SidebarProfile({
     <section
       aria-label={t('profile.region')}
       className={cn(
-        'border-line-subtle flex flex-col items-center gap-3 border-b px-4 py-4 text-center',
+        'border-line-subtle flex flex-col items-center gap-2 border-b px-4 py-3 text-center md:gap-3 md:py-4',
         className
       )}
     >
@@ -59,15 +59,15 @@ export function SidebarProfile({
           width={64}
           height={64}
           decoding="async"
-          className="border-line-subtle size-16 rounded-full border object-cover"
+          className="border-line-subtle size-11 rounded-full border object-cover md:size-16"
         />
       ) : (
         // 사진이 없을 때. 빈 원을 두면 로딩 실패처럼 보여서 마크를 넣는다.
         <span
           aria-hidden="true"
-          className="bg-surface-muted text-ink-muted border-line-subtle grid size-16 place-items-center rounded-full border"
+          className="bg-surface-muted text-ink-muted border-line-subtle grid size-11 place-items-center rounded-full border md:size-16"
         >
-          <Logo className="size-8" />
+          <Logo className="size-5 md:size-8" />
         </span>
       )}
 

@@ -50,7 +50,10 @@ export function PostList({
             {/* min-w-0 이 없으면 요약의 truncate 가 안 먹는다 — flex 칸은
                 기본이 내용만큼 넓어서 줄어들 줄을 모른다. */}
             <span className="min-w-0 flex-1">
-              <span className="mb-1 flex items-center gap-2">
+              {/* 카테고리 길 · 날짜 · 원문 배지 · 초고 배지가 한 줄에 선다.
+                  깊은 하위 카테고리(개발 / 프론트엔드 / React)까지 오면 375px
+                  에서 넘치므로 접는다. */}
+              <span className="mb-1 flex flex-wrap items-center gap-x-2 gap-y-1">
                 <span
                   aria-hidden="true"
                   className={cn('size-2 shrink-0 rounded-full', CATEGORY_COLOR[post.category].dot)}

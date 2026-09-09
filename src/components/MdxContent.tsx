@@ -135,14 +135,14 @@ const BASE_COMPONENTS = {
     <pre
       {...props}
       className={cn(
-        'text-code bg-code-surface text-code-ink border-code-line my-6 overflow-x-auto rounded-lg border p-4 font-mono [tab-size:2]',
+        'text-code bg-code-surface text-code-ink border-code-line my-6 overflow-x-auto overscroll-x-contain rounded-lg border p-4 font-mono [tab-size:2]',
         '[&>code]:border-0 [&>code]:bg-transparent [&>code]:p-0 [&>code]:text-inherit'
       )}
     />
   ),
 
   table: (props: React.ComponentProps<'table'>) => (
-    <div className="my-6 overflow-x-auto">
+    <div className="my-6 overflow-x-auto overscroll-x-contain">
       <table {...props} className="text-body-sm w-full border-collapse" />
     </div>
   ),
@@ -217,5 +217,9 @@ export async function MdxContent({
     },
   });
 
-  return <div className={cn('text-ink', className)}>{content}</div>;
+  // 본문에 벌거벗은 URL 이 링크 글자로 서는 글이 있다 (동아일보 기사 주소처럼).
+  // overflow-wrap 은 상속되는 성질이라 여기 한 번 걸면 p · li · td · a 가 다
+  // 따라온다 — 렌더러마다 붙이면 새로 추가하는 태그에서 또 빠뜨린다.
+  // <pre> 는 white-space: pre 라 영향을 받지 않는다. 코드는 지금처럼 가로로 민다.
+  return <div className={cn('text-ink break-words', className)}>{content}</div>;
 }

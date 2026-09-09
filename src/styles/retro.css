@@ -1,0 +1,251 @@
+/* ==========================================================================
+   retro 팔레트의 모양 — Windows 95/98
+   --------------------------------------------------------------------------
+   colors.css 는 "팔레트는 램프만 갈아끼운다"를 규칙으로 지킨다. retro 는 색만
+   바꿔서는 안 나오는 첫 팔레트라 — 각진 모서리 · 입체 베벨 · 시스템 폰트가
+   있어야 Win95 로 읽힌다 — 램프 바깥의 것들을 이 파일 하나에 모아 둔다.
+   colors.css 를 열었을 때 규칙이 깨져 있지 않게 하려는 격리다.
+
+   이 파일은 @layer 로 감싸지 않는다. 이유가 있다.
+
+     Tailwind 는 토큰을 @layer theme 에, 유틸리티를 @layer utilities 에 넣는다.
+     캐스케이드 레이어에서는 레이어 밖 규칙이 레이어 안 규칙을 이긴다 —
+     명시도와 무관하게. 그래서 여기 있는 규칙들은 .rounded-full 처럼 값이 박혀
+     나오는 유틸리티까지 !important 없이 덮는다. @layer 를 붙이는 순간
+     그 성질이 사라지고 파일 전체에 !important 를 달아야 한다.
+
+   모든 규칙은 :root.palette-retro 로 시작한다. 다른 팔레트에는 한 글자도
+   새지 않는다.
+   ========================================================================== */
+
+:root.palette-retro {
+  /* ---------- 각진 모서리 ----------
+     .rounded-lg / -md / -xl / -xs 는 border-radius: var(--radius-*) 로 나가므로
+     변수만 0 으로 내리면 잡힌다. 아래 * 규칙이 필요한 건 값이 박혀 나오는
+     .rounded(.25rem)와 .rounded-full(3.4e38px) 때문이다. */
+  --radius-xs: 0;
+  --radius-sm: 0;
+  --radius-md: 0;
+  --radius-lg: 0;
+  --radius-xl: 0;
+  --radius-2xl: 0;
+  --radius-3xl: 0;
+  --radius-4xl: 0;
+
+  /* ---------- 폰트 ----------
+     globals.css 의 body 가 var(--font-sans) 를 런타임에 읽으므로 이 한 줄로
+     사이트 전체가 바뀐다. font-sans 유틸리티는 컴포넌트 어디에서도 쓰지 않는다.
+
+     새 폰트 파일을 받지 않는다 — Windows 에는 이 스택이 전부 깔려 있어 그 시절
+     글꼴이 그대로 나오고, 다른 OS 는 마지막 sans-serif 로 무난히 떨어진다.
+     한글은 굴림이 받는다 (MS Sans Serif 에 한글이 없다). */
+  --font-sans: Tahoma, 'MS Sans Serif', '굴림', Gulim, sans-serif;
+
+  /* ---------- 푸딩 끄기 ----------
+     사이드바의 현재 위치 점은 푸딩처럼 부풀며 나타난다 (motion.css 의
+     pudding-rise). Win95 에 물렁하게 부푸는 UI 는 없었으니 이 팔레트에서는
+     끈다. 끄면 점은 그냥 켜져 있는 네모가 된다.
+
+     동시에 이건 아래 border-radius: 0 이 놓치는 구멍을 막는 일이기도 하다.
+     그 키프레임은 border-radius 를 50% 에서 직접 굴리는데, 캐스케이드에서
+     애니메이션 선언은 보통 선언보다 위라 * 규칙이 이기지 못한다. 파일 전체에
+     !important 를 들이는 대신 토큰을 비운다 — .animate-pudding-rise 는
+     animation: var(--animate-pudding-rise) 로 나가므로 이 한 줄이면 된다. */
+  --animate-pudding-rise: none;
+
+  /* ---------- 베벨 ----------
+     Win95 의 입체감은 테두리 한 겹이 아니라 네 겹이다. 바깥쪽 흰색/검정이
+     빛과 그림자의 끝을 잡고, 안쪽 밝은 회색/회색이 면을 깎아 보이게 한다.
+     border-style: outset 으로 흉내내면 두 겹밖에 안 나와 밋밋하다.
+
+     inset box-shadow 라서 요소의 크기를 바꾸지 않는다 — border 로 그렸다면
+     레이아웃이 2px 씩 밀렸을 것이다. */
+  --bevel-out:
+    inset 1px 1px #fff, inset -1px -1px #000, inset 2px 2px #dfdfdf, inset -2px -2px #808080;
+  --bevel-in:
+    inset 1px 1px #808080, inset -1px -1px #fff, inset 2px 2px #000, inset -2px -2px #dfdfdf;
+
+  /* 창 뒤에 깔리는 바탕. 램프에 넣지 않는다 — 이 색은 글자도 면도 지지 않고
+     오직 바탕으로만 쓰여서 시맨틱 토큰을 만들 자리가 없다.
+
+     Win95 의 기본값은 순청록(#008080)인데 그대로 쓰면 채도가 너무 세다.
+     화면에서 가장 넓은 면인데 이 판의 유일한 유채색이라, 회색 창과 붙는
+     순간 눈이 바탕으로 먼저 간다 — 읽을 것은 창 안에 있는데. 색상(180°)은
+     그대로 두고 채도만 100% → 26% 로 내렸다. 설정 패널의 색상 원은 팔레트의
+     성격을 보여주는 자리라 순청록(--swatch-retro-3)을 그대로 둔다. */
+  --win-desktop: #3f6b6b;
+}
+
+/* 둥근 데가 한 군데도 없어야 한다. 설정 패널의 색상 원 네 개도 같이 사각형이
+   되는데, 그게 맞다 — Win95 에 둥근 것은 없었다. */
+:root.palette-retro *,
+:root.palette-retro *::before,
+:root.palette-retro *::after {
+  border-radius: 0;
+}
+
+/* ==========================================================================
+   솟은 면 — 눌리는 것과 크롬
+   ========================================================================== */
+
+/* 세 가지를 뺀다.
+     details > div > button       드롭다운 패널의 메뉴 한 줄. Win95 에서 메뉴
+                                  항목은 버튼이 아니라 남색으로 반전되는 막대다.
+     [role='group'] button        설정의 색상 칸. 지금 고른 팔레트를 ring 으로
+                                  표시하는데 ring 도 box-shadow 라, 베벨이
+                                  덮으면 어느 것을 골랐는지 사라진다.
+     form[role='search'] button   검색어 지우기(X). 파인 흰 입력칸 안이라
+                                  20px 짜리 회색 입체 버튼이 되면 우측 베벨과
+                                  맞붙어 낀 것처럼 보인다. Win95 의 편집 칸
+                                  안에는 버튼이 없었고, 있었다면 글리프였다.
+
+   예외는 여기 한 곳에만 적는다. 아래에 따로 되돌리는 규칙을 쓰면 명시도가
+   이 셀렉터보다 낮아 먹지 않는다 — :not() 이 인자의 명시도를 그대로 얹기
+   때문에 이 줄은 이미 (0,3,5) 다. */
+:root.palette-retro
+  :is(button, summary):not(details > div > button):not([role='group'] button):not(
+    form[role='search'] button
+  ) {
+  background-color: var(--color-surface);
+  box-shadow: var(--bevel-out);
+  border-color: transparent; /* 베벨이 테두리를 대신한다 */
+}
+
+/* 누르는 동안 빛과 그림자가 뒤집히고 내용이 1px 우하로 밀린다 — Win95 버튼이
+   실제로 그렇게 움직였다. transform 대신 padding 을 밀면 글자가 흔들린다. */
+:root.palette-retro
+  :is(button, summary):not(details > div > button):not([role='group'] button):not(
+    form[role='search'] button
+  ):active {
+  box-shadow: var(--bevel-in);
+}
+:root.palette-retro
+  :is(button, summary):not(details > div > button):not([role='group'] button):not(
+    form[role='search'] button
+  ):active
+  > * {
+  transform: translate(1px, 1px);
+}
+
+/* 드롭다운 패널 · 사이드바 · 말풍선(Callout) · 카드 — 떠 있는 면.
+   Dropdown 은 details > div 로 패널을 그린다 (Dropdown.tsx). shadow-lg 로
+   띄우던 그림자는 베벨이 대신하므로 여기서 덮인다. */
+:root.palette-retro details > div,
+:root.palette-retro aside {
+  box-shadow: var(--bevel-out);
+  border-color: transparent;
+}
+
+/* 헤더는 툴바다. 위쪽 하이라이트 없이 아래쪽 그림자만 줘서 화면 맨 위에
+   붙어 있는 것처럼 보이게 한다.
+
+   body 의 직계 자식만 잡는다. header 는 세 곳에 있고 (사이트 헤더 ·
+   글 상세의 제목 묶음 · 아카이브의 페이지 머리) 나머지 둘은 본문 안의
+   의미 구획이라 툴바가 아니다. AppShell 이 Header 를 프래그먼트로 내보내서
+   사이트 헤더만 body 바로 밑에 선다. */
+:root.palette-retro body > header {
+  box-shadow:
+    inset 0 -1px #000,
+    inset 0 -2px #808080;
+  border-bottom-color: transparent;
+}
+
+/* ==========================================================================
+   파인 면 — 읽고 쓰는 자리
+   ========================================================================== */
+
+/* ==========================================================================
+   창 · 바탕 · 클라이언트 영역
+   --------------------------------------------------------------------------
+   Win95 화면은 세 겹이다. 청록 데스크톱 위에 회색 창이 뜨고, 그 창 안쪽에
+   흰 클라이언트 영역(문서 · 목록)이 파여 있다. --sem-surface 하나로는 이
+   세 겹을 표현할 수 없어서 — 램프는 값 하나만 든다 — 여기서 겹을 나눈다.
+   이 파일에서 색 체계를 벗어나는 유일한 자리다.
+
+   처음에는 main 자체를 흰색으로 뒀는데, main 이 화면의 대부분을 차지하는
+   구조라 그 흰 면이 회색 크롬을 가장자리로 밀어내고 화면 전체를 들어올렸다.
+   Win95 로 읽히지도 않았다 — 그 시절 화면의 인상은 흰 종이가 아니라 청록
+   위에 뜬 회색 창이다. 그래서 흰색은 실제로 읽는 자리에만 남긴다. */
+
+/* 1겹 — 데스크톱. globals.css 의 base 가 body 를 회색으로 칠하는데, 그러면
+   창과 바탕이 같은 색이라 창의 경계가 사라진다. */
+:root.palette-retro body {
+  background-color: var(--win-desktop);
+}
+
+/* 2겹 — 창. main 의 px-6 py-10 이 그대로 창틀의 여백이 된다. 데스크톱에서
+   솟아 있어야 하므로 파인 게 아니라 솟은 베벨이다.
+   배경색을 명시하는 게 중요하다 — 비워 두면 아래 청록이 그대로 비친다. */
+:root.palette-retro main {
+  background-color: var(--color-surface);
+  box-shadow: var(--bevel-out);
+}
+
+/* 3겹 — 클라이언트 영역. 글(article)과 목록(ul)이 실제로 읽는 자리다.
+   main 의 직계 자식만 잡는다 — 안쪽의 태그 목록이나 카드 격자까지 흰
+   상자로 파내면 창 안에 창이 겹친다.
+   글 밑의 '관련 글'(section)도 같은 자리라 함께 넣는다. */
+:root.palette-retro main > article,
+:root.palette-retro main > ul,
+:root.palette-retro main > section {
+  background-color: #fff;
+  box-shadow: var(--bevel-in);
+  padding: 0.75rem;
+}
+
+/* 검색창 · 코드블록 — 입력하거나 옮겨 붙이는 자리는 파여 있다.
+   SearchLauncher 는 form[role='search'] 가 테두리와 배경을 들고 있다. */
+:root.palette-retro form[role='search'] {
+  background-color: #fff;
+  box-shadow: var(--bevel-in);
+  border-color: transparent;
+}
+
+/* 안의 input 은 outline-none 이라 포커스를 이 form 이 테두리 색으로 낸다
+   (focus-within:border-primary). 위에서 테두리를 투명으로 만들었으니 그
+   표시를 여기서 돌려준다 — 이 파일은 레이어 밖이라 유틸리티를 이기므로,
+   안 적으면 검색창에 포커스가 있는지 화면에서 알 수 없다. */
+:root.palette-retro form[role='search']:focus-within {
+  border-color: var(--color-primary);
+}
+
+:root.palette-retro pre {
+  box-shadow: var(--bevel-in);
+  border-color: transparent;
+}
+
+/* ==========================================================================
+   메뉴 · 포커스
+   ========================================================================== */
+
+/* Win95 의 메뉴 항목은 버튼이 아니다 — 마우스가 얹히면 줄 전체가 남색으로
+   반전된다. 기본 팔레트의 옅은 회색 호버를 그 반전으로 갈아끼운다.
+   색상 칸(div[role='group'])은 이 셀렉터에 걸리지 않는다 — 패널의 직계
+   자식이 아니라 그 group 안에 있다. */
+:root.palette-retro details > div > button:hover {
+  background-color: var(--color-primary);
+  color: var(--color-primary-on);
+}
+
+/* 잠긴 칸(neon 의 라이트 · retro 의 다크)까지 반전되면 고를 수 있어 보인다.
+   pointer-events 는 이미 막혀 있지만 :hover 는 그것과 무관하게 걸린다. */
+:root.palette-retro details > div > button[aria-disabled='true']:hover {
+  background-color: transparent;
+  color: var(--color-ink);
+}
+
+/* Win95 의 포커스는 색이 없는 1px 점선 사각형이었다. 색은 --sem-focus 가
+   이미 먹색이니 여기서는 모양만 바꾼다.
+
+   outline-style 을 직접 적으면 안 된다. 검색 입력창은 outline-none 을 달고
+   있고(포커스는 바깥 form 이 테두리로 표시한다) 이 파일은 레이어 밖이라
+   유틸리티를 이기므로, 껐던 링이 도로 살아난다. 그래서 Tailwind 가
+   outline-* 유틸리티의 style 을 담아 두는 변수만 바꾼다 — outline-none 은
+   outline-style: none 을 직접 적어서 이 변수를 보지 않는다.
+
+   offset 은 건드리지 않는다. 안쪽에 그릴 자리는 컴포넌트가 이미
+   -outline-offset-2 로 정해 뒀다. */
+:root.palette-retro :focus-visible {
+  --tw-outline-style: dotted;
+  outline-width: 1px;
+}

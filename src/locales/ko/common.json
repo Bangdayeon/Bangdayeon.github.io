@@ -6,6 +6,8 @@
     "siteMenu": "사이트 메뉴",
     "menuExpand": "메뉴 펼치기",
     "menuCollapse": "메뉴 접기",
+    "menuOpen": "메뉴 열기",
+    "menuClose": "메뉴 닫기",
     "submenu": "{{name}} 하위 메뉴 {{action}}",
     "expand": "펼치기",
     "collapse": "접기"
@@ -39,7 +41,8 @@
   "pagination": {
     "region": "쪽 넘김",
     "prev": "이전",
-    "next": "다음"
+    "next": "다음",
+    "page": "{{page}}쪽"
   },
   "archive": {
     "title": "아카이브",
@@ -87,7 +90,8 @@
     "color": "색상",
     "vivid": "Vivid",
     "soft": "Soft",
-    "neon": "Neon"
+    "neon": "Neon",
+    "retro": "Retro"
   },
   "profile": {
     "region": "프로필",

@@ -159,6 +159,9 @@ type Baked = { body: Buffer; contentType: string; w: number; h: number; c: strin
  *
  * svg 는 다시 굽지 않는다 — 래스터로 만들면 벡터인 이유가 사라진다.
  * 움직이는 gif 는 animated webp 로 간다 (장수를 세어 알아본다).
+ *
+ * 이미 webp 로 저장해 둔 사진은 그대로 둘 때가 있다. 아래 keepOriginal 참고 —
+ * 굽는 일이 손해로 끝나는 경우다.
  */
 async function bake(file: string): Promise<Baked> {
   const input = fs.readFileSync(file);
@@ -187,14 +190,37 @@ async function bake(file: string): Promise<Baked> {
     .toBuffer();
 
   // 회전과 축소가 끝난 결과에서 다시 잰다 — 원본 metadata 는 회전 전 값이다.
-  const out = await sharp(body).metadata();
-  const { dominant } = await sharp(body).stats();
+  /* 다시 구운 게 원본보다 크면 원본을 쓴다.
+     
+     굽는 일이 하는 것은 넷이다 — 1600px 초과분 축소 · webp 변환 · EXIF 회전을
+     픽셀에 굽기 · 표에 적을 치수와 대표색 재기. 앞의 셋이 전부 할 일이 없는
+     사진(이미 webp · 1600px 이하 · 회전값 없음)이면 남는 건 재인코딩뿐인데,
+     이미 압축된 webp 를 같은 품질로 한 번 더 구우면 용량은 늘고 화질은 한
+     세대 더 깎인다. 실제로 1366px 짜리 포스터가 183KB → 193KB 로 늘었다.
+
+     치수와 대표색은 재인코딩 없이 원본에서 그대로 잰다 — 표는 어차피 채워진다.
+     오브젝트 키는 원본 내용의 해시라(objectKey) 이 갈림과 무관하게 같은
+     이름이 나온다. 그래서 예전에 구워 올린 사진을 --force 로 다시 돌리면
+     같은 파일 이름에 원본 바이트가 덮인다 — 고아 파일이 남지 않는다.
+
+     조건을 셋 다 보는 이유는 크기 비교만으로는 부족해서다. 축소나 회전이
+     필요한 사진은 결과가 더 작아도 원본을 쓰면 안 된다 — 그건 용량이 아니라
+     픽셀이 달라져야 하는 경우다. */
+  const needsResize = (meta.width ?? 0) > MAX_WIDTH;
+  const needsRotate = (meta.orientation ?? 1) !== 1;
+  const needsConvert = meta.format !== 'webp';
+  const keepOriginal = !needsResize && !needsRotate && !needsConvert && body.length >= input.length;
+
+  const chosen = keepOriginal ? input : body;
+
+  const out = await sharp(chosen).metadata();
+  const { dominant } = await sharp(chosen).stats();
   const hex = [dominant.r, dominant.g, dominant.b]
     .map(value => value.toString(16).padStart(2, '0'))
     .join('');
 
   return {
-    body,
+    body: chosen,
     contentType: 'image/webp',
     w: out.width ?? 0,
     // animated 는 height 가 장수만큼 이어 붙은 값이라 한 장 높이를 쓴다.

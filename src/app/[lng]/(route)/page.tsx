@@ -13,7 +13,7 @@ export default async function HomePage() {
   const posts = getAllPosts(await serverLocale());
 
   return (
-    <main className="mx-auto w-full max-w-[820px] px-6 py-10">
+    <main className="mx-auto w-full max-w-[820px] px-4 py-10 sm:px-6">
       <PageTitle title={t('home.title')} meta={t('home.total', { count: posts.length })} />
 
       <PostList posts={posts.slice(0, LATEST)} />

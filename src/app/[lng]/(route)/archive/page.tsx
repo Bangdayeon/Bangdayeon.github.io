@@ -9,7 +9,6 @@ import { getArchive } from '@/lib/posts';
 import { serverLocale, serverT } from '@/lib/t';
 
 import { ArchiveHeatmap } from '@/components/ArchiveHeatmap';
-import { ArchiveTimeline, yearId } from '@/components/ArchiveTimeline';
 import { LocaleLink as Link } from '@/components/LocaleLink';
 
 import type { Locale } from '@/i18n.config';
@@ -22,9 +21,10 @@ export async function generateMetadata(): Promise<Metadata> {
 /**
  * 전체 글을 시간축으로.
  *
- * 머리에 그 해 · 그 카테고리가 얼마나 쌓였는지를 먼저 보여주고(요약 띠),
- * 그 아래를 연표가 받는다. 아카이브는 "쌓인 양"이 곧 내용이라 목록만
- * 늘어놓으면 그게 안 보인다.
+ * 무엇을 썼는지(카테고리 띠)와 언제 썼는지(해마다 한 장씩)만 보여준다.
+ * 아카이브는 "쌓인 양"이 곧 내용이라, 글이 늘수록 목록은 읽히지 않고
+ * 스크롤만 길어진다 — 글을 하나씩 짚어 가는 길은 카테고리 목록과 검색이
+ * 이미 맡고 있으므로 여기서는 그림만 남긴다.
  */
 export default async function ArchivePage() {
   const { t } = await serverT();
@@ -35,7 +35,7 @@ export default async function ArchivePage() {
 
   if (posts.length === 0) {
     return (
-      <main className="mx-auto w-full max-w-[820px] px-6 py-10">
+      <main className="mx-auto w-full max-w-[820px] px-4 py-10 sm:px-6">
         <h1 className="text-display text-ink-strong mb-1">{t('archive.title')}</h1>
         <p className="text-body text-ink-muted py-16 text-center">{t('archive.empty')}</p>
       </main>
@@ -47,7 +47,7 @@ export default async function ArchivePage() {
   const to = yearMonth(posts[0]);
 
   return (
-    <main className="mx-auto w-full max-w-[820px] px-6 py-10">
+    <main className="mx-auto w-full max-w-[820px] px-4 py-10 sm:px-6">
       <header className="mb-8">
         <h1 className="text-display text-ink-strong">{t('archive.title')}</h1>
         <p className="text-meta text-ink-muted mt-1 tabular-nums">
@@ -63,28 +63,7 @@ export default async function ArchivePage() {
             <ArchiveHeatmap key={year} year={year} posts={yearPosts} />
           ))}
         </div>
-
-        {/* 해가 하나뿐이면 바로가기가 곧 현재 위치라 의미가 없다. */}
-        {years.length > 1 && (
-          <nav aria-label={t('archive.yearJump')} className="mt-6">
-            <ul className="flex flex-wrap gap-2">
-              {years.map(({ year, posts: yearPosts }) => (
-                <li key={year}>
-                  <a
-                    href={`#${yearId(year)}`}
-                    className="text-meta text-ink hover:bg-surface-subtle hover:text-primary-ink border-line focus-visible:outline-focus inline-flex items-baseline gap-1.5 rounded-full border px-3 py-1 tabular-nums transition-colors focus-visible:outline-2"
-                  >
-                    {year}
-                    <span className="text-meta-sm text-ink-muted">{yearPosts.length}</span>
-                  </a>
-                </li>
-              ))}
-            </ul>
-          </nav>
-        )}
       </header>
-
-      <ArchiveTimeline years={years} />
     </main>
   );
 }

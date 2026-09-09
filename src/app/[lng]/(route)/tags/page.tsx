@@ -24,7 +24,7 @@ export default async function TagsPage() {
   const tags = getTagCounts(await serverLocale());
 
   return (
-    <main className="mx-auto w-full max-w-[820px] px-6 py-10">
+    <main className="mx-auto w-full max-w-[820px] px-4 py-10 sm:px-6">
       <PageTitle title={t('tags.title')} meta={t('tags.kinds', { count: tags.length })} />
 
       {tags.length === 0 ? (

@@ -53,27 +53,45 @@ type Option<T extends string> = {
   active: string;
   /** 트리거에서 이 라벨만 보이게 하는 클래스. 트리거에 현재 값을 세우는 목록만 갖는다. */
   show?: string;
-  /** neon 팔레트에서 고를 수 없는 칸. */
-  lockedByNeon?: boolean;
+  /** 이 칸을 잠그는 팔레트들. 키보드 가드가 본다 (포인터는 아래 lock 이 막는다). */
+  lockedIn?: readonly Palette[];
+  /** 같은 잠금을 CSS 로 거는 클래스. lockedIn 과 짝이다 — 왜 둘인지는 LOCK_* 주석. */
+  lock?: string;
 };
 
+/* 잠금은 CSS 가 건다. disabled 속성은 JS 를 기다려야 하고, 그러면 하이드레이션
+   전 한 프레임 동안 못 고르는 칸이 멀쩡해 보인다 (아래 OptionList 주석).
+
+   그래서 잠금이 두 벌이다 — 화면은 이 클래스가, 키보드는 lockedIn 을 보는
+   onClick 가드가 막는다. 클래스는 문자열 상수여야 한다. Tailwind 는 소스를
+   글자로 훑어서 유틸리티를 만들기 때문에, 팔레트 이름을 템플릿으로 조립하면
+   그 클래스가 CSS 에 아예 생성되지 않는다. */
+const LOCK_NEON = 'palette-neon:pointer-events-none palette-neon:opacity-40';
+const LOCK_RETRO = 'palette-retro:pointer-events-none palette-retro:opacity-40';
+
 const THEME_OPTIONS: readonly Option<Theme>[] = [
+  // 시스템은 양쪽 다 막는다 — OS 가 무엇을 고르든 그 팔레트가 못 견디는
+  // 모드로 갈 수 있어서다. 나머지 둘은 서로 반대쪽 팔레트에만 잠긴다.
   {
     value: 'system',
     key: 'settings.system',
     active: 'theme-system:bg-primary-subtle theme-system:text-primary-ink',
-    lockedByNeon: true,
+    lockedIn: ['neon', 'retro'],
+    lock: `${LOCK_NEON} ${LOCK_RETRO}`,
   },
   {
     value: 'light',
     key: 'settings.light',
     active: 'theme-light:bg-primary-subtle theme-light:text-primary-ink',
-    lockedByNeon: true,
+    lockedIn: ['neon'],
+    lock: LOCK_NEON,
   },
   {
     value: 'dark',
     key: 'settings.dark',
     active: 'theme-dark:bg-primary-subtle theme-dark:text-primary-ink',
+    lockedIn: ['retro'],
+    lock: LOCK_RETRO,
   },
 ];
 
@@ -118,6 +136,12 @@ const PALETTE_OPTIONS: readonly PaletteOption[] = [
   },
   { value: 'soft', key: 'settings.soft', active: 'palette-soft:ring-2', swatch: swatch('soft') },
   { value: 'neon', key: 'settings.neon', active: 'palette-neon:ring-2', swatch: swatch('neon') },
+  {
+    value: 'retro',
+    key: 'settings.retro',
+    active: 'palette-retro:ring-2',
+    swatch: swatch('retro'),
+  },
 ];
 
 function Caret() {
@@ -154,13 +178,13 @@ function OptionList<T extends string>({
   options,
   value,
   onChange,
-  locked = false,
+  palette,
 }: {
   options: readonly Option<T>[];
   value: T;
   onChange: (value: T) => void;
-  /** 지금 잠금 조건이 성립하는지 (neon 팔레트). 어느 칸이 잠기는지는 옵션이 안다. */
-  locked?: boolean;
+  /** 지금 팔레트. 어느 칸이 잠기는지는 옵션이 lockedIn 으로 안다. */
+  palette?: Palette;
 }) {
   const { t } = useT();
 
@@ -171,10 +195,10 @@ function OptionList<T extends string>({
           key={option.value}
           type="button"
           aria-pressed={value === option.value}
-          aria-disabled={option.lockedByNeon && locked ? true : undefined}
+          aria-disabled={palette && option.lockedIn?.includes(palette) ? true : undefined}
           // pointer-events-none 이 포인터는 막지만 키보드는 여기서 막는다.
           onClick={() => {
-            if (option.lockedByNeon && locked) return;
+            if (palette && option.lockedIn?.includes(palette)) return;
             onChange(option.value);
           }}
           className={cn(
@@ -183,7 +207,7 @@ function OptionList<T extends string>({
             option.active,
             // 잠금은 CSS 가 건다. disabled 속성은 JS 를 기다려야 하고, 그러면
             // 하이드레이션 전 한 프레임 동안 못 고르는 칸이 멀쩡해 보인다.
-            option.lockedByNeon && 'palette-neon:pointer-events-none palette-neon:opacity-40'
+            option.lock
           )}
         >
           {t(option.key)}
@@ -210,12 +234,7 @@ function ThemeSection({ first = false }: { first?: boolean }) {
   return (
     <>
       <SectionLabel first={first}>{t('settings.theme')}</SectionLabel>
-      <OptionList
-        options={THEME_OPTIONS}
-        value={theme}
-        onChange={applyTheme}
-        locked={palette === 'neon'}
-      />
+      <OptionList options={THEME_OPTIONS} value={theme} onChange={applyTheme} palette={palette} />
     </>
   );
 }

@@ -35,7 +35,7 @@ export async function CategoryView({ node, current }: { node: CategoryNode; curr
   });
 
   return (
-    <main className="mx-auto w-full max-w-[820px] px-6 py-10">
+    <main className="mx-auto w-full max-w-[820px] px-4 py-10 sm:px-6">
       {parents.length > 0 && (
         <nav aria-label={t('category.parents')} className="text-meta text-ink-muted mb-1">
           {parents.map(parent => (

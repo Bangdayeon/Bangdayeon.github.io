@@ -1,1 +1,14 @@
-{}
+{
+  "review/movie/doctor-strange/2022-02-19-doctor-strange.webp": {
+    "key": "img/2022-02-19-doctor-strange-dddef8d6.webp",
+    "w": 1280,
+    "h": 1810,
+    "c": "#f8f8f8"
+  },
+  "review/movie/sing-2/2022-02-18-sing-2.webp": {
+    "key": "img/2022-02-18-sing-2-26a3a1e2.webp",
+    "w": 1366,
+    "h": 1938,
+    "c": "#f8f8f8"
+  }
+}

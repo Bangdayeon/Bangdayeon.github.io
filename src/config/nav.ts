@@ -79,9 +79,10 @@ const NAV_TAGS = 10;
  * 아카이브보다 아래에 선다. 카테고리가 글이 든 폴더라면 태그는 그것을
  * 가로지르는 길이라, 고정 항목 중에서도 마지막이 맞다.
  *
- * 처음부터 펼쳐 둔다. 접으면 어떤 태그가 있는지가 클릭 한 번 뒤로 숨는데,
- * 이 사이트에서 태그는 카테고리 다음으로 글을 찾는 길이다. 접는 것은
- * 여전히 할 수 있다 (Sidebar 의 토글).
+ * 접은 채로 선다. 펼쳐 두면 열 줄이 늘 붙어 있어 메뉴의 절반이 태그가 되고,
+ * 정작 위의 카테고리가 밀려난다 — 좁은 화면의 서랍에서 특히 그렇다. 지금
+ * 보고 있는 글의 태그가 그 안에 있으면 Sidebar 가 알아서 펼친다
+ * (hasActiveDescendant).
  *
  * 순서는 getTagCounts 가 정한다 — 많은 순, 같으면 이름순이다.
  *
@@ -96,7 +97,6 @@ function tagsNode(locale: Locale, label: string): NavNode {
     label,
     href: '/tags',
     muted: true,
-    defaultOpen: true,
     // 태그가 하나도 없으면 children 자체를 두지 않는다 — 빈 목록을 주면
     // 펼칠 것이 없는 자리에 토글 버튼만 선다.
     children:

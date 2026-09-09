@@ -3,7 +3,6 @@ import type { Post } from '@/types/post';
 import { cn } from '@/lib/cn';
 import { serverT } from '@/lib/t';
 
-import { dayId } from '@/components/ArchiveTimeline';
 import { LocaleLink as Link } from '@/components/LocaleLink';
 
 /**
@@ -103,16 +102,16 @@ export async function ArchiveHeatmap({ year, posts }: { year: string; posts: Pos
         켜 두면 칸 위로 떠야 할 팝오버가 격자 높이에서 잘린다.
 
         lg 아래에서는 팝오버가 잘리지만 그 폭은 손가락으로 보는 화면이고,
-        hover 가 없으면 애초에 열리지 않는다. 같은 글이 바로 아래 연표에
-        전부 링크로 있으므로 길이 막히는 것도 아니다.
+        hover 가 없으면 애초에 열리지 않는다. 이 화면에서 글로 가는 길은
+        원래도 마우스를 위한 지름길이었고, 정본은 카테고리 목록과 검색이다.
       */}
-      <div className="-mx-1 overflow-x-auto px-1 pb-1 lg:overflow-x-visible">
+      <div className="-mx-1 overflow-x-auto overscroll-x-contain px-1 pb-1 lg:overflow-x-visible">
         {/*
           격자는 aria-hidden 이다 — 371개의 칸을 하나씩 읽히면 그게 더 나쁘고,
           위 caption 이 같은 내용을 글자로 말한다 (바로 위 카테고리 띠와 같은
-          방식). 팝오버 안의 링크도 함께 가려지지만, 그 글들은 바로 아래
-          연표에 링크로 다 있다 — 여기 링크는 마우스를 위한 지름길이지
-          유일한 통로가 아니다.
+          방식). 팝오버 안의 링크도 함께 가려지지만, 여기 링크는 마우스를 위한
+          지름길이지 유일한 통로가 아니다 — 글로 가는 정본은 카테고리 목록과
+          검색이다.
         */}
         <div aria-hidden="true" className="w-max">
           <MonthRow year={number} start={start} weeks={weeks} />
@@ -153,17 +152,11 @@ export async function ArchiveHeatmap({ year, posts }: { year: string; posts: Pos
                 return (
                   <span key={ms} style={box} className="group relative">
                     {/*
-                      칸을 누르면 연표의 그 날짜 줄로 내려간다. 팝오버는 이
-                      링크의 자식이 아니라 형제다 — 팝오버 안에도 링크가 있어서
-                      겹쳐 놓으면 <a> 안의 <a> 가 된다.
-
-                      tabIndex 를 빼는 건 격자가 aria-hidden 이기 때문이다.
-                      보이지도 읽히지도 않는 것에 탭이 멈추면 그게 더 나쁘다 —
-                      같은 글이 바로 아래 연표에 링크로 다 있다.
+                      칸 자체는 누를 것이 없다. 예전에는 아래 연표의 그 날짜
+                      줄로 내려가는 링크였는데, 연표를 걷어내면서 갈 곳이
+                      없어졌다 — 글로 가는 길은 옆의 팝오버가 든 링크다.
                     */}
-                    <a
-                      href={`#${dayId(date)}`}
-                      tabIndex={-1}
+                    <span
                       className={cn(
                         'block size-full rounded-[2px]',
                         LEVEL_CLASS[levelOf(dayPosts.length)]
@@ -220,7 +213,7 @@ async function DayPopover({
   return (
     <span
       className={cn(
-        'absolute z-30 hidden group-hover:block',
+        'absolute z-20 hidden group-hover:block',
         below ? 'top-full pt-1' : 'bottom-full pb-1',
         alignStart ? 'start-0' : 'end-0'
       )}

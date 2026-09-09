@@ -4,8 +4,10 @@
     "tags": "Tags",
     "archive": "Archive",
     "siteMenu": "Site menu",
-    "menuExpand": "Open menu",
-    "menuCollapse": "Close menu",
+    "menuExpand": "Expand menu",
+    "menuCollapse": "Collapse menu",
+    "menuOpen": "Open menu",
+    "menuClose": "Close menu",
     "submenu": "{{action}} {{name}} submenu",
     "expand": "Expand",
     "collapse": "Collapse"
@@ -43,7 +45,8 @@
   "pagination": {
     "region": "Pagination",
     "prev": "Previous",
-    "next": "Next"
+    "next": "Next",
+    "page": "Page {{page}}"
   },
   "archive": {
     "title": "Archive",
@@ -97,7 +100,8 @@
     "color": "Color",
     "vivid": "Vivid",
     "soft": "Soft",
-    "neon": "Neon"
+    "neon": "Neon",
+    "retro": "Retro"
   },
   "profile": {
     "region": "Profile",
