@@ -41,12 +41,18 @@ export function Rating({ value, className }: { value: number; className?: string
       <Stars className="text-line-strong" />
 
       {/* 노랑은 warning 과 같은 색이다. 뜻이 겹쳐서가 아니라 이 사이트에 노랑이
-          한 갈래뿐이라 그렇다 — 별점 전용 색을 하나 더 세울 만큼 다른 자리가 아니다. */}
+          한 갈래뿐이라 그렇다 — 별점 전용 색을 하나 더 세울 만큼 다른 자리가 아니다.
+
+          ink 단이 아니라 vivid 단을 쓴다. ink 는 글자용이라 라이트에서 AA 를
+          지려고 노랑을 갈색까지 내리는데(#8a5f00), 별은 글자가 아니라 면이라
+          그 단에서는 노랑으로 안 읽힌다 — 다크에서만 노란 별이 됐다. vivid 는
+          "면 전용" 단이고 네 팔레트 모두 두 모드에서 노랑을 유지한다.
+          별의 뜻은 색이 아니라 아래 sr-only 한 줄이 진다. */}
       <span
         className="absolute inset-y-0 left-0 overflow-hidden"
         style={{ width: `${filled * 100}%` }}
       >
-        <Stars className="text-warning-ink" />
+        <Stars className="text-warning" />
       </span>
 
       {/* 별 다섯 개가 스크린리더에 '별 별 별 별 별' 로 읽히지 않게, 모양은
