@@ -10,17 +10,35 @@ import {
 
 import { SITE_DESCRIPTION, SITE_NAME } from '@/config/site';
 
+import { isLocale } from '@/lib/i18n';
+
 import { Analytics } from '@/components/Analytics';
 import { PrefsBoot } from '@/components/PrefsBoot';
 
 import '@/styles/globals.css';
 
-import { i18nConfig } from '@/i18n.config';
+import { DEFAULT_LOCALE, i18nConfig } from '@/i18n.config';
 
-export const metadata: Metadata = {
-  title: SITE_NAME,
-  description: SITE_DESCRIPTION,
-};
+/**
+ * 제목 · 설명도 언어를 탄다 (config/site 의 표).
+ *
+ * 정적 metadata 객체로는 안 된다 — 그 자리에서는 지금 언어를 알 수 없어서
+ * 영어 주소에도 한국어 제목이 나간다. params 로 받으므로 요청 헤더를 읽지
+ * 않고, 정적 생성도 그대로다 (아래 RootLayout 의 주석과 같은 이유).
+ */
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ lng: string }>;
+}): Promise<Metadata> {
+  const { lng } = await params;
+  const locale = isLocale(lng) ? lng : DEFAULT_LOCALE;
+
+  return {
+    title: SITE_NAME[locale],
+    description: SITE_DESCRIPTION[locale],
+  };
+}
 
 /**
  * 두 언어를 모두 미리 굽는다. 쿠키로 언어를 정하지 않는 이유가 이것이다 —

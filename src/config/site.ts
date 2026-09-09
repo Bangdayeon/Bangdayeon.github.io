@@ -1,7 +1,23 @@
-/** 사이트 명칭. metadata(title)와 헤더 로고 옆 제목이 같은 값을 본다. */
-export const SITE_NAME = '감자의 오묘한 모험';
+import type { Locale } from '@/i18n.config';
 
-export const SITE_DESCRIPTION = "'나' 아카이브";
+/**
+ * 사이트 명칭. metadata(title)와 헤더 로고 옆 제목이 같은 값을 본다.
+ *
+ * 언어마다 한 벌이다. locales/*.json 이 아니라 여기 있는 이유는 이게 화면의
+ * UI 문구가 아니라 사이트의 이름이기 때문이다 — 번역이 비어 있을 때 다른
+ * 언어로 떨어지는 i18next 의 fallbackLng 규칙이 이름에는 맞지 않는다
+ * (PROFILE 도 같은 이유로 config 에 있다). 표라서 언어를 하나 늘리면 타입이
+ * 빠진 칸을 잡아 준다.
+ */
+export const SITE_NAME: Record<Locale, string> = {
+  ko: '감자의 오묘한 모험',
+  en: 'POTATO THE DEVELOPER',
+};
+
+export const SITE_DESCRIPTION: Record<Locale, string> = {
+  ko: "'나' 아카이브",
+  en: "An archive of 'me'",
+};
 
 /**
  * 헤더에 언어 전환 버튼을 세울지.
