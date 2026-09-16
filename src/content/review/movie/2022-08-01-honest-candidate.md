@@ -7,7 +7,7 @@ rating: 3
 draft: false
 ---
 
-![정직한 후보 포스터](https://i.namu.wiki/i/LB0IL_aT9Jcg58dm_TOG_0AUF673zZAt5dcVNP4lM01cwqTsVqayS83EtFpWfV8Vgq__uM500Bnhu--JBUr6PBTk4QBnWJfaDUH3IlaVfjXm2iYKtIWlK8WEvvv27MOAHXkgUhcH7IkqnMPOkelmlw.webp)
+![정직한 후보 포스터](https://i.namu.wiki/i/h957eRnxiXbbO8gk7X6KZQ4nGQHIU49vIXqc6WZKVrT_GFRs5cvZ0jYq4_N2OWfszZT0Pjq1c-WYe3RbAUBjC_W_PRNylor0Ty2arphVM8y8pdZtnxDUHGvDjBCvP1-xOLMe7dPFrAp_APhJRfYsBQ.webp)
 
 ## 줄거리
 

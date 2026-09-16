@@ -7,7 +7,7 @@ rating: 5
 draft: false
 ---
 
-![신데렐라2 포스터](https://i.namu.wiki/i/9NHtPLlihL-VFnhHh7nUDQzGm5yHJtd5xzPS8lhtQbHKFOgfw8FI4bqFHLfungozXAABcJ9JZj-ODw-uyZ9WKYaleb8QGXO04FOMAli7NobrA2cpaWP9rL3t0sXOynxDledpjLVhOX85p1BX644cAQ.webp)
+![신데렐라2 포스터](https://i.namu.wiki/i/m4jFLv6gfR169bdmsxw1pKmgI1dejRErC2SFUZ22Z-J2VoDjK7cY6txyuCuToJ6nnXXINjxUwQN6dmmnK3tNu9UMPeAdrDLzj-itK50vz4oYeIIngPkpKZ0aAlT0pdc587SyoePHOdL-hPaPAlZ-zg.webp)
 
 
 스포 O

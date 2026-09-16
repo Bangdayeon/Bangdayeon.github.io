@@ -7,7 +7,7 @@ rating: 4
 draft: false
 ---
 
-![닥터스트레인지 포스터](https://i.namu.wiki/i/5XaEO6GGvL-jftPJCzEsANz7WKJ_mTWGwYJ397RSHFB42fhaEtXg8leP89LBntNr_GfjMenPGg-XvrNW-S5h7gKJbVVwTRzIqT0cC-CowNCNwwUmiId5nk93Z5KBHic8RBHOQiWRFqsPgCgnHChEaw.webp)
+![닥터스트레인지 포스터](https://i.namu.wiki/i/1Uc4oFuxAP72Z0ALaOwSw07jKSuTIHqpZbas2qd1mFA61nNAwRFXZHVvk6C1Tpz3ya8AyeBGca3dElfJEjY4jWU4yLzzSKOSgOMSuHAlUU2m4NGFZt88YtRr3x7TksgGw5l_hITiFldxaihBL3fSnQ.webp)
 
 재밌게 봤다.
 

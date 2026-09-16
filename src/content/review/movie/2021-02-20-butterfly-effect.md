@@ -7,7 +7,7 @@ rating: 4
 draft: false
 ---
 
-![나비효과 포스터](https://i.namu.wiki/i/v0vo54JciC65rZNv5be2eTHwGtD36G5_N3953LMI1vGMIWAsWqiHXnCoaUB42lQTBSsrmJ2S2fPdDr2XMztd06G7gRUEc-7oxjeK_EMihTbZO6aSOHC4kBXgnYaA7wDdzB5uhdo_ulZbXduE_H4TUQ.webp)
+![나비효과 포스터](https://i.namu.wiki/i/Wdcx9XNff57jxfj7-RkYQ20u02o4VWvwvyGoboeQnPWFADPkeX7k2jC4A8dpzWD9DNxbaDnfbGe9pqPKPG13sepjsds90cjARf_8F5KqG3-t9meDJ2CvEptW45_o4P1lMBUKn3Sl2vezvXzxXj6otQ.webp)
 
 나비효과를 드디어 봤다! 2004년이니까 내가 5살 때 나온 거다. 타임슬립 영화를 몇 개 봤는지 기억은 잘 안나는데... 어바웃타임, 시간여행자의 아내, 너의 이름은, 인터스텔라, 7번째 내가 죽던 날, 엣지오브투모로우 정도 되는 것 같다.
 

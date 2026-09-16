@@ -7,7 +7,7 @@ rating: 5
 draft: false
 ---
 
-![드래곤 길들이기 포스터](https://i.namu.wiki/i/HEOg2VtkNmaB5S1FxybLcISEboDHUiJx6NoYYIr6Nx8E9jdBnGZwWVYvUzZpf-V4qhCZomGVgVbVCjMDCMNLSTjUjBUJbJCTcyYF47mmXR2A31kocJqyGyw1mCnnQBeH-_FMTTekKzK8GuA0Q6VXFw.webp)
+![드래곤 길들이기 포스터](https://i.namu.wiki/i/4RT19wSqxdOo-LpaZX2v8rKoitBAx1R0RPaFD5Yvyf-zhrjFGNOrYsiE158X-QWpG3mcwZ4q4gUfvbYau5EQqY389RSB6FLFjl-9pRwzyN2Sa7OTfZSq4Oh6VSoq_rD0K0mP1IdiB7cbsRPYkt_gqQ.webp)
 
 ## 줄거리
 

@@ -7,7 +7,7 @@ rating: 5
 draft: false
 ---
 
-![금발이 너무해 포스터](https://i.namu.wiki/i/FRZ1IApl3Q5VF5pEXQLL7MHXn6NR1EvpPbnfOkuK5312HUuHMdhdFMqsVDGndUXHmeSDIAH42Pnq3uEjI6MFDbub3U1N7mi47YmnGM0SYw_j1S8dOFzw0Ds4Lf1KXLvmVb-VBhHlsVlcL00-o3c1Ag.webp)
+![금발이 너무해 포스터](https://i.namu.wiki/i/NwLcAmPas_FBasXLeVV4JsPr6CqAgpkbSKYG657eE7Shwf3Oc0qACybmWtO6OI2cbvOcCwdP4MsfgRYN8uxorv8zT-cW5pw2tnhdLsR228khL45CWrIQDZh-KlusK_5BwTttgsVXbvG20PRRtjBufQ.webp)
 
 정말 처음부터 끝까지 답답하지 않게 밝은 영화다.
 

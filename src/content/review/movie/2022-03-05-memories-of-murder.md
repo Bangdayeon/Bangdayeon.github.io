@@ -7,7 +7,7 @@ rating: 4
 draft: false
 ---
 
-![살인의 추억 포스터](https://i.namu.wiki/i/8M084FWZ0Unnj3jBUMNs1rCTLSLGM5i9oXtZrQmf8DWw_PO_F4sk1CqOiI7Jd76LcmhPYU1pOxmg51X0XIUXjQPdCYjKoni5IFZE-Z1h16eHT6P5mlk8y2KmWF0LRTaPSOQwu6hTKDxCrJ-y7YU1_w.webp)
+![살인의 추억 포스터](https://i.namu.wiki/i/Q9Piel8irr1xY77kENYRodMH7Ke3vQeMNtROx66c9SMwk4kw8iUqJIHySXLtLUO0U8LQgrTTRItd3YAqAXzDtRJSZ6R2ogn_X1T4frMxhXDkCfdhDn2AZzeLFgV2vCj0Xb4nlUg2dtocUsO654Q9CA.webp)
 
 이 유명한 걸 드디어 봤다. 정~~~~말 답답하다. 아니 깝깝하다.
 

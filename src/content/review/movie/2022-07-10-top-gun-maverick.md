@@ -7,7 +7,7 @@ rating: 5
 draft: false
 ---
 
-![탑건 매버릭 포스터](https://i.namu.wiki/i/j1KSvHzuHuKXyBEfdfFiVbHsXoO4SVqen2EXL2-Jx6arSbmgmLScmBGob2e-XrC5LsZoLh-mtOZB2ZR1KyyqcvT4yuALarZXtlBqAly168NT91fj9JVZNfK5RXOdzrd-2lWKonc4nkpOjwqfpbK3tQ.webp)
+![탑건 매버릭 포스터](https://i.namu.wiki/i/xR963BYXgl-p2hfTFol73HqquGnrqiCl2cKrxoEoHnaJujMUvU4MAw6PvizZfac0k5LzuC_HxI0c54F2_wZbm11ipQZEJJun5ii0qahROKjbZ_kAcRUkNMluJlNdtSG58OzK_V11m4GJth4Gla7WVw.webp)
 
 ## 줄거리
 

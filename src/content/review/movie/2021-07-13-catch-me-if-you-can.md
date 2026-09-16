@@ -7,7 +7,7 @@ rating: 5
 draft: false
 ---
 
-![캐치미 이프 유 캔 포스터](https://i.namu.wiki/i/hE1oPyUNnXOMUYwhuDAymviZgDcN6x12n9yIgp77TcA0XOEN8VKYcJg346SQsaXeEKi5YsHjocyVa1wsJeE8a36yPwFLMKOmS0hPKokxYDu2GLmID2MQilT6E_82pRneMFL6i_bpTafqH3PJC-WyTg.webp)
+![캐치미 이프 유 캔 포스터](https://i.namu.wiki/i/Ly7DvylRTVwJiA6udbsStbJ6HNcDakxuHwcVi79SufYzgUXSXJCuS6XPxdKvSw5iQ1iwT_FWGjLHJHxetoU_Jt0jCQnHocxvTusebpdbnMpHj4He_DdCDZkRojJ09T1y4VUlrgGR2GUeUyB6grim5A.webp)
 
 실화 바탕이라는 게 정말 신기한 영화다. 킬링타임용으로 너무 좋다.
 

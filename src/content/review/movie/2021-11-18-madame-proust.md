@@ -7,7 +7,7 @@ rating: 4
 draft: false
 ---
 
-![마담 프루스트의 비밀정원 포스터](https://i.namu.wiki/i/QkgOFg36tYR-txxJ_-06s7HbcbKfAoYPTLbljNAjUSDYyZgxvdNHZ1wNoFyXCYRLNIfudsRh3tSiJDc_Vj1soDQGcwKgbOnozMFPA3qfYrZg3uDjGZVNY-gP0bzXg_UlH-nSsVYzu-K8UUCqlyU0IA.webp)
+![마담 프루스트의 비밀정원 포스터](https://i.namu.wiki/i/-I_rpwRrCbr4Y2jgVo5x4d35ohwJKT1-MbQTBIregP-EFMa6H-TuXjIHibKd2SuYgW9Hag5CY6AkpNyaMOI0pcREpK3ikotm3HbfTHyZlfyetNkY7QY0ALEyNNswOsndN-JF5GRhhrygCu7Q5NXVXQ.webp)
 
 스포 O
 

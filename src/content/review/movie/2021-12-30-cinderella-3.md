@@ -7,7 +7,7 @@ rating: 5
 draft: false
 ---
 
-![신데렐라3 포스터](https://i.namu.wiki/i/Cac4LoT5V5GGt-38HP9HXe4il0Km5RW6GEHyIuNmNtFGbNDP-bk-oSs5Wa4Rg9g8ryeQg6oV5ArXW6FBaDhfFsDK0zSXeVwIOs4Dw1eA-YE3o1KgHDKljY-2hgoTsTads-QFh8wOAxFU632EsFIP-g.webp)
+![신데렐라3 포스터](https://i.namu.wiki/i/aWfdPQ6CziuQjj_Ftt5D2ZNEXQrkTgHFctz1jeJOnOCE1cRS8WD_5H_hCOH2G_G-qVP8Xnw2WSKHyvBHYmUksP06fC64uOoYEhANTsJ0z8DPHnIqx3C5gqJUR3xQ34PwEF9oPNPXDnb0VFUowdCC6w.webp)
 
 
 스포 O

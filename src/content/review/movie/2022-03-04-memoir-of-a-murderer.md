@@ -7,7 +7,7 @@ rating: 3
 draft: false
 ---
 
-![살인자의 기억법 포스터](https://i.namu.wiki/i/-01WlwIK_pU5O_zUFeapiEo63stko57IoaYuY84IbyYLtVfQUo8xYrFDnOYGyNwPzDgJDVfVCfqXuAhQFKJvcR1orEd4rVeavfpBJ0CGtOgmdUwf7YikQNE39U0_D0IbuZ7LFRqOo9621lpcoOyX0A.webp)
+![살인자의 기억법 포스터](https://i.namu.wiki/i/prrxnDH_6-f68glTwO4fGgLwy61p2zHKfPvRrhiLVi9x2EPbPaqGTnGDjGvDzacjL-8-h9iCHGwk6Aa9pxfYLSSySintPO-FIkokuO4_SbFLf-bLrulKkrbd-Beh8UWn5XO72b_GSlsHz8yEOpSM7A.webp)
 
 사람이 안 똑똑할 때의 장점: 끝까지 영화 재밌게 볼 수 있음
 재밌게 봤다. 근데 좀 답답하다.. 경찰이 나쁘고 딸이 안타깝다

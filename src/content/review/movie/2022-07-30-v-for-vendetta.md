@@ -7,7 +7,7 @@ rating: 2
 draft: false
 ---
 
-![브이 포 벤데타 포스터](https://i.namu.wiki/i/BrPIQR4DpgQNBw2cB2CT2lzk_aL4MjUbLUa3UX8WM2TVA0J8gkB4NBQr5DFh0Tb-JrVCGnZPFYT9PRM8LqNbS49BUtdAVXAz_s3jk5Sfm-5MUTBmODmK_KifCdAlO-BQbMFYSSPRAGvdqF_HPHgA8w.webp)
+![브이 포 벤데타 포스터](https://i.namu.wiki/i/3KkePSMtlwJMUYMMOIfD0HA-3X9RJXNvhiKezzGQNZOV_zFh6E7meMnXpocseQjyKD6CAfH9ZgMsEaPh4N-a70ldd0GhCEq8Fr7I6AdDmcW3MjwrEd0YqLW_akqiKlrjxkLylRAx0JWoflfpqb2iaw.webp)
 
 스포 O
 

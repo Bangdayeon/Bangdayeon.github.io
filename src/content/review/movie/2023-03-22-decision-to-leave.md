@@ -7,7 +7,7 @@ rating: 4
 draft: false
 ---
 
-![헤어질 결심 포스터](https://i.namu.wiki/i/gXJZ5WiYK4lfmQYO-vgS0vkTOQcENuTnod2HvCxwRJeqgEo45J82eIdHJdy7CpQK5w4U08IRNI2wF3_SvvZ5NdQiB7AeIW3DH2gpteUS9c5sMYVcbB89HnnJIMkFpZpNAcKcGassVK3oMX-2G4UlIQ.webp)
+![헤어질 결심 포스터](https://i.namu.wiki/i/cZGwEqgpSVc9nVkZHfjYmy9ADlGZwv-vElSDdUA_7zs5Bdi0W_tMBQafuUvrAnCvSa-VPBbZDbdiLQX8K-FrSRkpSeQW4nM2afC6ngTYK08kug4l0DCddr-2eekbvxdBa22fzmLtOsFvWt6vMmYaLA.webp)
 
 감독 : 박찬욱
 

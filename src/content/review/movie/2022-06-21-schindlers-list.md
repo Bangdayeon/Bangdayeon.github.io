@@ -7,7 +7,7 @@ rating: 5
 draft: false
 ---
 
-![쉰들러 리스트 포스터](https://i.namu.wiki/i/nomi-tsP5X0lCuvluK3WrjYMiUsYWtLfor7GaEyhd5JYzJUY8qhiYRPUW8IvKXIEoLIsF1J1TXLra_kDMWbhvryFK514wMg_GRAzJngXEZOk7CkVolUxx1HpQ-lTzYiAvtQ_RgdLGFTeroMUFdLYFw.webp)
+![쉰들러 리스트 포스터](https://i.namu.wiki/i/-5ct8KbD8lL1g8c9sx323sAHNgUbUBN9tSPYeQSWVoIYvlsoJwm-wkVkf_ZLnMx-sQJ67VGszpvG2COmLS14PkwnCUYZBoBgUFd1T4ZIVb4iaNta0ONGoaHKRrU4q9jFOwCTUqfcvppIyaorufnZPA.webp)
 
 ## 줄거리
 

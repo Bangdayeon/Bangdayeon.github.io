@@ -7,7 +7,7 @@ rating: 4
 draft: false
 ---
 
-![스파이더맨: 노 웨이 홈 포스터](https://i.namu.wiki/i/fFxfA82Y1EVwo80L2OPIZeKaJV-UqmdR-c9bUG9VuvpohAbEsfZOzJmqtyqgohvKd6X8IbGx_IIfr580vds2E9BkSWmXWWSqQuOPZMxbFmPGdBLyv9W9Ux3GMEwTZqV0wCH7du_VOr1mV1Fx7lkY9g.webp)
+![스파이더맨: 노 웨이 홈 포스터](https://i.namu.wiki/i/-09-WueTOHnMDURUyZs0Zi6fNteNwwVdi_4iahWIJz8cW6D4R_N39E02rRKnjrnRZ14KL3IX1qedqV8mFCg0q3YOpBPufYlrTgWpf9J8cEHdqnzOFZ8AHjGKj8tFx_38wiufpU0B8caJq2xXvVN6GQ.webp)
 
 스포 O
 

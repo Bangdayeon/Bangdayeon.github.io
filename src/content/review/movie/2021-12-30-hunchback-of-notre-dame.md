@@ -7,7 +7,7 @@ rating: 5
 draft: false
 ---
 
-![노틀담의 꼽추 포스터](https://i.namu.wiki/i/_rJ1WyJNoqTWR9UKUJ5lAuDMq6120QuYjGROKirLrRBK5KXkQ-oqrip1GSngSIR_XTA7OodETwdPvgV4esq1amkITm0kkmln53dZh40pyZVFmuKXe7F5F4ImcOyHPv5zd-JXtwQ-WKNYRp8h-HoR2A.webp)
+![노틀담의 꼽추 포스터](https://i.namu.wiki/i/gMV2PDtc7TTh9GOfECCm827zknA1Ed0RthNk7CU-IazoVHpOgemLOEgKF2lH0M0gCCyH2mN-HgegMXTCkIpK3-L5NRFzaVhUdumYA_kGlhC2JjgXN_XyfoEWXMNlMZIzH4RsAr5d7L2lVeZjxFMsMw.webp)
 
 스포 O
 

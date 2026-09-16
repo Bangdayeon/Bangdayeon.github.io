@@ -7,7 +7,7 @@ rating: 5
 draft: false
 ---
 
-![바스터즈: 거친 녀석들 포스터](https://i.namu.wiki/i/io0yKLn_gkVr5HHYJEjl6iJkr8mPAT_as8buVi1rvY4sdXDqWdIn5Y_irOhDkLtTSspHHdyiJtL61wKVnzBHC31NzySKSCbbEUXQAo7NX7RCd6aeb3A_fflqZLYU_cC62ORwpEyQSKp8KQ4B9Jdk0Q.webp)
+![바스터즈: 거친 녀석들 포스터](https://i.namu.wiki/i/nBv-0yuCAn7TxDOk9x4gDfrzs_lQHxuodc0K-NCiCT2JGH5OXO2E5M0WrNzvwCWyTAJY3fFwOWlkDJYUqd5RqDHSHGT9kZJM-FESOAuXmAnnZOkBWONaazJojTqSxqCRfB48DY9t0Hd0UAS9nN0Z4Q.webp)
 
 스포 O
 

@@ -7,7 +7,7 @@ rating: 4
 draft: false
 ---
 
-![화이트 칙스 포스터](https://i.namu.wiki/i/uB2szjTHmEfUUk06bF9Xfhvy_wz_ehpx0u2ceC7q-qOUKnGcT0S8WCKZDrjZP18bufTfsfJNqvIanCwvczMjowlDg2Qz4fD2SAV7ewS4Nz8jjST8FMtqH-gYWZ5gOc_QFOaNYpOQJ8ppgyBL3sR1dQ.webp)
+![화이트 칙스 포스터](https://i.namu.wiki/i/lfofKdgy7D2UQYu1yDvB_-keHGC1_jk0e_wvqqJeAIM18BrY9mXmyFEsKWEhkftuiUprH2jiB_uHfbOym0fiTvELiXsqWrX8d_ACL_tYUfvvfkY-Ty5Zq_Blx3aTS9VeL8C6gD-9qv5X0KG7CPOfIw.webp)
 
 ## 줄거리
 

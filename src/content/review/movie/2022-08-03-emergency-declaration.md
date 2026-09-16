@@ -7,7 +7,7 @@ rating: 2
 draft: false
 ---
 
-![비상선언 포스터](https://i.namu.wiki/i/CrNYJ4rTtuKme-20cYD_UxXZBl6_S4AblYWUW5BxY9aGUTgWGklqM0EgR7fLgrspJ9qxtNZy4ACHQqc8DeLDKbxMhNlJmgTP4Qv1izvawJz3X6kBWq5eTmuuEjaEQ113eybyzBBVLGM7niM2AylkYA.webp)
+![비상선언 포스터](https://i.namu.wiki/i/yKQgKfwMeuhgB4JYC6VXnmYJNm2QKl9aOC4YHFXI4AN5UsNxWxZ2A705N0k9V5aS0almt82ZNsV3NVIMrmrx4ZcQtO5emiAJarjkAUqiEwp803KKmiY6SAhHf-JBRiabZXnX4XBkKy1ksfAby7YGbw.webp)
 
 ## 줄거리
 

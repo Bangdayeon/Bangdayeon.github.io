@@ -7,7 +7,7 @@ rating: 3
 draft: false
 ---
 
-![언터처블: 1퍼센트의 우정 포스터](https://i.namu.wiki/i/Tra9kwt--5QLL4yDObw33W55JTGkxO1Cx15ru4SnvfHSsyr89y9g2xSPTtraxDR6Al8-nV9jHc7uXQVY2CmyqIP_e-70z_uJRuQPjSMAa4cWMlt4GI90auBI90ll8yEgclEU0nxtzqht9dKtGGsFyw.webp)
+![언터처블: 1퍼센트의 우정 포스터](https://i.namu.wiki/i/cxiJgGU-WUnWq9AV_wgxTFC9lKyqjcuad3HNh38MLRYqOOXFMyb_BYZpPyGCwH8VsFjYX_HTGfwDLuxY42qS_AKm1uu4TKnopyhow4VjWjgu_DuqQRo8h67WK7OVIusMOtjLLf6TFsfq-Rw1EKYrZA.webp)
 
 ## 줄거리
 

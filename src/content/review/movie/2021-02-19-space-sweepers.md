@@ -7,7 +7,7 @@ rating: 3
 draft: false
 ---
 
-![승리호 포스터](https://i.namu.wiki/i/5qW_15GAc7M5gXKhvDQAMTTGNa9nUfT0El5bl6aBxaJ__dctVQZpX-AP1kaIHU8Ia_ohjAh9f7tD-7cRooFAJmrusSpXJHObSLP2vxpNQZLx-nGGrMCNyMJcRjKnsEUdToHm4qUFVkKfpMegVFRT-w.webp)
+![승리호 포스터](https://i.namu.wiki/i/OFlsy7SpjOQvvGKtdvTjX0nEZNnj8FvYBlpPMJkqyAjiPM15p0ZH_cqfoRTHoDb7Rlw_GXtOI8nfuoRjScHH2R_1vY8e9aHLRWlfByeaUNg6YOd18DlVGDdaKCUEioyMUMNu315qhIRWIEJHz2uDQA.webp)
 
 내가 잘 안 보는 장르의 집합체임에도 불구하고 봤다.
 

@@ -7,7 +7,7 @@ rating: 5
 draft: false
 ---
 
-![셔터 아일랜드 포스터](https://i.namu.wiki/i/W8Rhm3yTXoOT34K6t6VJQpJhZt_fVvnHI2e8XCLEtOvmEXAbIBdD3zC-j7FggbE7En18rj_5jcWtMqLLxdzibEHjWiwGe2FbXRTw1M6wE18l4Lw7_lbmeS2cn1o2NK7qW9_lmq3QJftKVflyow1PHg.webp)
+![셔터 아일랜드 포스터](https://i.namu.wiki/i/bl87ldj-vjtMLRTQ8QQYF_2Q_F2hGQ8YUAY0yDDjXbrmfh7dR0AMw7Flq1yao3KaozZNlQS59_Lgwzf0Om21tZa_QbqK2eyV5wjhnAeFy-Z06y3sRO5OGRbgGB41t6_2tOKJ5YFYIP0MH1IAYrJd9w.webp)
 
 스포 O
 

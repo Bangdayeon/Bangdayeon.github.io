@@ -7,7 +7,7 @@ rating: 3
 draft: false
 ---
 
-![더 배트맨 포스터](https://i.namu.wiki/i/IrrgsUDyPBxDiHl5smXXuYHtv65PsBV-aUwlG74VCcbme-VTFvTon3LLwPs4LSznibo0OWDfoVGCDJ9Qi42usxSSs7Fqw70X78lzAsNADJFDlCGv-ZCohTpumwTiCLIHejy6xWv8oHWN4PU0gegQxw.webp)
+![더 배트맨 포스터](https://i.namu.wiki/i/jSHMR0b40yObVbQnJop3Wh0yN0mcQFp3cZWkFc0lJ0gk98v5_R4y6-Gi2kgP9JRo7TfIll-5UHFzM-H7aS95tovrLj5iT6aWpyTDn44TG8_z1Y28uVZCg5_KcuCx5o88lLNg9wEDv3vLiIebX6ENVw.webp)
 
 전에 다크나이트 한 번 보려다 초반에 재미없어서 껐던 적이 있다. 그 날 볼 기분이 아니었을지도.. 그래도 일단 한 번 봐본 첫 DC 히어로 영화다. 그래서 다른 DC영화들과 어떻게 분위기가 다른 게 있나 그런 건 잘 모른다.
 

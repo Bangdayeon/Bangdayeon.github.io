@@ -7,7 +7,7 @@ rating: 4
 draft: false
 ---
 
-![돈룩업 포스터](https://i.namu.wiki/i/Kwk5cpUWsb7SlzmplpUjzthbtNNu4cHubeRp9hCHWVWgr1SQtkSX13UtcLW6PuTDs5CDflLudqU3dXVNT42Hv085_8wdsPhQUaWN7kQAIJPlkbJ9oxOmocabqZcskZUpkeQgbhqIGCJj9REGYJZdIw.webp)
+![돈룩업 포스터](https://i.namu.wiki/i/4R22Ivxe8VnSCz7pdVcnMDES-EFElYqdTE0v1YxjjfRfKlDhp8_aDmQUBruNFfJt91OcnPdKNDUwX0XLPSx2wlyxrChtCLlsthgvFLqJ07IGMOY-zM0ShSxw_ye6inEdfP3x3fxJYR6rNjDwO3wMeg.webp)
 
 스포 O
 

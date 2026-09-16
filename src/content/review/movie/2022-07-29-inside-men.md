@@ -7,7 +7,7 @@ rating: 4
 draft: false
 ---
 
-![내부자들 포스터](https://i.namu.wiki/i/h_A4vNxr9_juaqtD4trfAHBtRe5leYACadQB1XsBdAqbnwSRMI7kfFqh-Se4tTC1uKZZeKMgjPKTTRn7pYcuqq-1MOwzzMzVGNkMaWhyqlfo42XIgO7NXk3gwQD4xwN0rXK9JUwU53C0dwggZS8mdA.webp)
+![내부자들 포스터](https://i.namu.wiki/i/SRWqDbBJwD18caz9A1W3epaCGX3QXlww5Dw-bxRWtmRg4lohWdaI53g226rnkcKDGgFqetYWj8wQ2YXZHCi4AAhRhuvlmyuk3IhLoi1sZHnQ2kMKGCkwQLwWlH0RXo29uP5-JuWhOlysr7vCbjHoFw.webp)
 
 스포 O
 

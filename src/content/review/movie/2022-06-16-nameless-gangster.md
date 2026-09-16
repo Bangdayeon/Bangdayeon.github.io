@@ -7,7 +7,7 @@ rating: 4
 draft: false
 ---
 
-![범죄와의 전쟁 포스터](https://i.namu.wiki/i/qoULIt3hXfPyiEn-4sviqyBsryj1b-_1RRAq3A2-BEllgmCeDv07RVL0cpqkrNUEVKS-Rwq7JxaTS-pbyjdxzR6p5mehk7myelg3Vu3L65hH24SN3PM-ufA_CahAmQF0TtIBFbLOHf-gLIgyf0iK8g.webp)
+![범죄와의 전쟁 포스터](https://i.namu.wiki/i/tqsS23L2USm9R2AFIfJGQMj9n3JUGZxMorGG7D-6WiNu94PhpaxUGoTOICu5fop5MDphL4UHwCdXz-Dxh9KSfp24S1w43Bu-pe9qix7zLtDcGv5eQPFE38yq_9u-Ppe7Ws1XSB2AFauQ8a8gukdP5g.webp)
 
 유명한 한국영화를 보면 항상 신기하다.
 

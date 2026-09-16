@@ -7,7 +7,7 @@ rating: 3
 draft: false
 ---
 
-![블랙위도우 포스터](https://i.namu.wiki/i/ZzD26D7O00VS4SY3YW9m7uWYCVuxUzB6h4VhqZ32linAdxJEMyImTSbMdsb6c3lEYBr0kJGpgkL66zpg0bDiOdt4r76xdI5YJSGE_evk1hja3Ai2cwxu7ZFV9L4C1YyRjvRIr8UIICUohPCv2xb_QA.webp)
+![블랙위도우 포스터](https://i.namu.wiki/i/lDWLiMsWhvFAMJABhf6GAuLqjKEkPe-2HgzfDkQDAAyX0CPR5pPZjOvvVDW1UUOc8ieS8mw-jdPWwzfv_mEf4KVaocLb178KZlRTK86Z6pIgohvZdS3DwT4fJQI9hWIhddQXil80cGzymGEcK1uVLA.webp)
 
 사실 액션을 잘 보는 편도 아니고 마블도 몇개 안봐서...
 

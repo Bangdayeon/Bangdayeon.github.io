@@ -7,7 +7,7 @@ rating: 5
 draft: false
 ---
 
-![퀸카로 살아남는 법 포스터](https://i.namu.wiki/i/uNtOthjlV5_gtPYJ0D5Hf6YFMISi7XI9WooB5uQty_UnSsn3twIsB40RyXJZUJ0YTan9CZom6wMq6enEOB1z0L1Q4lMhaVWWExEuuAy0tLlnh8nyCwZcCxW5wDJZJpwO3942w_m5MHE5QGqQT9b4hg.webp)
+![퀸카로 살아남는 법 포스터](https://i.namu.wiki/i/a-t3FwoPn9IYbnPRyLPyDOF7NIdGEGvDE4pmN4_Hwtz1yOcE5Py7COQMg8fJFfCRXuEoJAeJrRKqa5O22HYVasV4IZiLZBTLeewomvp5EtOs_-662tD5Lrx2st3ThUD8bZJVH0EF0p0vr0NqQYm8Eg.webp)
 
 가볍고 재밌게 보기 좋은 하이틴이다.
 
