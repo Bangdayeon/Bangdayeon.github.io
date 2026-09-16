@@ -1,7 +1,3 @@
-/**
- * 감자 마크. 아이콘 라이브러리를 쓰지 않는다 (README 규약).
- * currentColor 라서 헤더 글자색을 그대로 따라간다.
- */
 export function Logo({ className }: { className?: string }) {
   return (
     <svg viewBox="0 0 24 24" aria-hidden="true" className={className}>
