@@ -1,0 +1,558 @@
+---
+title: "Gradient는 왜 끊겨 보일까?"
+date: 2026-09-16
+summary: "CSS Gradient에서 보이는 banding의 원인과 해결"
+tags: [css, gradient, front-end]
+draft: false
+---
+
+웹사이트를 보다 보면 그라데이션이 완전히 매끈하지 않고 색이 **층층이 끊겨 보이는 경우**가 있다.
+
+이런 현상을 **Gradient Banding**이라고 한다.
+
+그렇다면 왜 이런 현상이 생기고, 웹에서는 어떻게 완화할 수 있을까?
+
+같은 색을 사용한 Gradient를 기준으로 두고 여러 방법을 직접 비교해봤다.
+
+
+> [!note] 렌더링되는 Gradient는 모니터, 브라우저, GPU, 디스플레이 색 심도 등에 따라 보이는 정도가 조금씩 다를 수 있다.
+
+---
+
+## 0. gradient 처리 결과 미리 보기
+작은 미리보기에서는 Gradient의 미세한 차이나 banding이 잘 보이지 않을 수 있어, 동일한 조건을 넓은 화면에서 비교할 수 있는 별도의 페이지를 만들었다.
+
+<a
+  href="/playground/gradient"
+  target="_blank"
+  rel="noopener noreferrer"
+  className="text-sm font-medium transition hover:text-neutral-500 underline"
+>
+  Gradient Lab ↗
+</a>
+
+
+---
+
+## 1. Gradient Banding은 뭐고 왜 생기는 걸까
+
+CSS의 `linear-gradient()`는 지정한 **color stop** 사이의 색을 계산해 연속적인 색 변화처럼 보이는 이미지를 만든다.
+
+1. 일반 CSS gradient
+
+<div className="my-8 grid overflow-hidden rounded-xl border border-neutral-800 md:grid-cols-2">
+  <pre className="m-0 overflow-x-auto bg-[#111] p-5 text-sm leading-6 text-neutral-300">
+    <code>{`background: linear-gradient(
+  135deg,
+  #101828 0%,
+  #38455f 35%,
+  #74819c 70%,
+  #cbd3df 100%
+);`}</code>
+  </pre>
+
+  <div className="min-h-64 bg-neutral-950 p-5">
+    <div
+      className="h-full min-h-56 rounded-lg"
+      style={{
+        background:
+          'linear-gradient(135deg, #101828 0%, #38455f 35%, #74819c 70%, #cbd3df 100%)',
+      }}
+    />
+  </div>
+</div>
+
+디지털 환경에서 표현되는 색에는 정해진 단계가 있다.
+
+특히 제한된 bit depth에서는 미세한 색 변화를 표현할 수 있는 단계가 부족해질 수 있다.
+
+그러면 원래는 부드럽게 이어져야 할 영역이 몇 개의 비슷한 색으로 양자화되고, 그 경계가 눈에 띄기 시작한다.
+
+이렇게 Gradient의 색 변화가 연속적이지 않고 **띠처럼 구분되어 보이는 현상**이 Gradient Banding이다.
+
+특히 **밝기 변화가 작고 넓은 영역에 걸쳐 천천히 변하는 Gradient**에서는 각 단계가 차지하는 면적이 커질 수 있어 banding을 발견하기 쉽다.
+
+---
+
+## 2. 색 공간을 바꿔보기
+
+Gradient의 결과는 색의 개수만으로 결정되지 않는다.
+
+**두 색 사이의 값을 어떤 색 공간에서 계산하는가**에 따라서도 미세하지만 중간색이 달라질 수 있다.
+
+CSS Gradient에서는 `in <color-space>` 문법을 사용해 색 공간을 명시할 수 있다.
+
+| 색 공간 | 특징 | 예시 |
+| --- | --- | --- |
+| `sRGB` | 웹에서 기본적으로 사용하는 색 공간으로, 일반적인 RGB 값으로 색을 계산한다. | `linear-gradient(in srgb, red, blue)` |
+| `sRGB-linear` | sRGB의 값을 선형화한 뒤 계산해 빛의 물리적인 혼합에 더 가까운 결과를 만든다. | `linear-gradient(in srgb-linear, red, blue)` |
+| `Oklab` | 사람의 시각적 인지를 고려해 밝기와 색의 변화가 비교적 균일하게 느껴지도록 설계된 색 공간이다. | `linear-gradient(in Oklab, red, blue)` |
+| `OKLCH` | Oklab을 밝기·채도·색상으로 표현해 자연스러운 색 변화와 색상 제어에 유리하다. | `linear-gradient(in oklch, red, blue)` |
+
+현재 css 색 공간 기본값은 `Oklab`이나, 레거시인 `sRGB` 표기만 사용하고 있는 경우에는 `sRGB`를 사용한다.
+그럼 많이 쓰이는 `sRGB`와 `Oklab`을 직접 지정해 비교해보자.
+
+### sRGB
+
+<div className="my-8 grid overflow-hidden rounded-xl border border-neutral-800 md:grid-cols-2">
+  <pre className="m-0 overflow-x-auto bg-[#111] p-5 text-sm leading-6 text-neutral-300">
+    <code>{`background: linear-gradient(
+  135deg in srgb,
+  #101828 0%,
+  #38455f 35%,
+  #74819c 70%,
+  #cbd3df 100%
+);`}</code>
+  </pre>
+
+  <div className="min-h-64 bg-neutral-950 p-5">
+    <div
+      className="h-full min-h-56 rounded-lg"
+      style={{
+        background:
+          'linear-gradient(135deg in srgb, #101828 0%, #38455f 35%, #74819c 70%, #cbd3df 100%)',
+      }}
+    />
+  </div>
+</div>
+
+### Oklab
+
+<div className="my-8 grid overflow-hidden rounded-xl border border-neutral-800 md:grid-cols-2">
+  <pre className="m-0 overflow-x-auto bg-[#111] p-5 text-sm leading-6 text-neutral-300">
+    <code>{`background: linear-gradient(
+  135deg in Oklab,
+  #101828 0%,
+  #38455f 35%,
+  #74819c 70%,
+  #cbd3df 100%
+);`}</code>
+  </pre>
+
+  <div className="min-h-64 bg-neutral-950 p-5">
+    <div
+      className="h-full min-h-56 rounded-lg"
+      style={{
+        background:
+          'linear-gradient(135deg in Oklab, #101828 0%, #38455f 35%, #74819c 70%, #cbd3df 100%)',
+      }}
+    />
+  </div>
+</div>
+
+Oklab은 인간이 느끼는 색의 차이를 보다 균일하게 다루기 위해 만들어진 **perceptual color space**이다.
+
+따라서 단순히 RGB 각 채널의 숫자만 기준으로 중간값을 만드는 것과는 다른 색 변화가 만들어질 수 있다.
+
+그러나 Oklab이 banding을 없애는 것은 아니다. **어떤 중간색을 만들 것인가**에 대한 계산 방식이다.
+
+---
+
+## 3. 중간 Color Stop 추가하기
+
+아니면 Color Stop을 추가하는 건 어떨까?
+
+color stop을 4개에서 7개로 늘려보자.
+
+<div className="my-8 grid overflow-hidden rounded-xl border border-neutral-800 md:grid-cols-2">
+  <pre className="m-0 overflow-x-auto bg-[#111] p-5 text-sm leading-6 text-neutral-300">
+    <code>{`background: linear-gradient(
+  135deg,
+  #101828 0%,
+  #243149 17%,
+  #38455f 35%,
+  #56627d 52%,
+  #74819c 70%,
+  #9faabd 85%,
+  #cbd3df 100%
+);`}</code>
+  </pre>
+
+  <div className="min-h-64 bg-neutral-950 p-5">
+    <div
+      className="h-full min-h-56 rounded-lg"
+      style={{
+        background: `linear-gradient(
+          135deg,
+          #101828 0%,
+          #243149 17%,
+          #38455f 35%,
+          #56627d 52%,
+          #74819c 70%,
+          #9faabd 85%,
+          #cbd3df 100%
+        )`,
+      }}
+    />
+  </div>
+</div>
+
+Color Stop을 늘리면 **색 변화의 경로와 속도를 직접 세밀하게 조절**할 수 있다.
+
+하지만 stop을 많이 넣는다고 해서 기술적으로 banding이 사라지는 것은 아니다.
+
+각 stop 사이에서는 다시 색상 계산이 일어나기 때문이다.
+
+따라서 이 방법은 **banding 제거법이라기보다 Gradient의 색 변화 자체를 디자인하는 방법**에 가깝다.
+
+---
+
+## 4. Noise 얹기
+
+Banding을 직접적으로 덜 눈에 띄게 만들고 싶다면 접근 방법이 달라진다.
+
+Gradient 자체를 바꾸는 대신 그 위에 아주 미세한 **Noise**를 추가해볼 수 있다.
+
+<div className="my-8 grid overflow-hidden rounded-xl border border-neutral-800 md:grid-cols-2">
+  <pre className="m-0 overflow-x-auto bg-[#111] p-5 text-sm leading-6 text-neutral-300">
+    <code>{`<div className="relative h-full w-full">
+  <div className="gradient" />
+
+  <svg className="absolute inset-0 h-full w-full opacity-[0.12]">
+    <filter id="gradient-noise">
+      <feTurbulence
+        type="fractalNoise"
+        baseFrequency="0.8"
+        numOctaves="4"
+        stitchTiles="stitch"
+      />
+    </filter>
+
+    <rect
+      width="100%"
+      height="100%"
+      filter="url(#gradient-noise)"
+    />
+  </svg>
+</div>`}</code>
+  </pre>
+
+  <div className="relative min-h-64 overflow-hidden bg-neutral-950 p-5">
+    <div
+      className="absolute inset-5 overflow-hidden rounded-lg"
+      style={{
+        background:
+          'linear-gradient(135deg, #101828 0%, #38455f 35%, #74819c 70%, #cbd3df 100%)',
+      }}
+    >
+      <svg
+        className="pointer-events-none absolute inset-0 h-full w-full opacity-[0.12]"
+        preserveAspectRatio="none"
+      >
+        <filter id="article-gradient-noise">
+          <feTurbulence
+            type="fractalNoise"
+            baseFrequency="0.8"
+            numOctaves="4"
+            stitchTiles="stitch"
+          />
+        </filter>
+
+        <rect
+          width="100%"
+          height="100%"
+          filter="url(#article-gradient-noise)"
+        />
+      </svg>
+    </div>
+  </div>
+</div>
+
+여기서는 SVG의 `<feTurbulence>`를 사용했다.
+SVG는 필터 기능이 있어서 이미지에 여러 그래픽 효과를 적용할 수 있는데 이걸 이용하는 것이다.
+
+```tsx
+<feTurbulence
+  type="fractalNoise"
+  baseFrequency="0.8"
+  numOctaves="4"
+  stitchTiles="stitch"
+/>
+```
+- `<feTurbulence />`
+SVG Filter에는 여러 종류의 filter primitive가 있는데 그 중 하나이다.
+
+| 속성 | 값 | 기본값 | 특징 |
+| --- | --- | --- | --- |
+| `type` | `fractalNoise` | `turbulence` | 밝고 어두운 변화가 자연스럽게 이어지는 노이즈. 부드러운 그레인이나 구름 같은 질감 |
+|  | `turbulence` |  | 변화가 더 강하고 능선이 두드러지는 노이즈. 물결이나 대리석 같은 질감 |
+| `baseFrequency` | `0` 이상 숫자 1개 | `0` | 노이즈의 기본 주파수. 값이 높을수록 패턴이 작고 촘촘해지고, 낮을수록 크고 넓어짐. |
+|  | 숫자 2개<br />예: `0.05 0.1` |  | X축과 Y축의 주파수를 각각 지정. |
+| `numOctaves` | 음수가 아닌 정수 | `1` | 서로 다른 주파수의 노이즈를 몇 단계 합성할지 지정. 값이 커질수록 세부적인 질감이 추가되지만 브라우저/GPU 연산량도 증가함. |
+| `stitchTiles` | `noStitch` | `noStitch` | 노이즈의 양쪽 경계를 연결하지 않는다. 반복해서 배치할 경우 경계가 드러날 수 있음. |
+|  | `stitch` |  | 타일의 경계가 자연스럽게 이어지도록 노이즈를 생성. |
+
+Gradient 자체의 색 단계가 늘어난 것은 아니다.
+
+대신 픽셀에 작은 변화를 만들어 **일정하게 이어지던 banding의 경계를 시각적으로 흐트러뜨리는 것**이다.
+
+## 5. Blur 얹기
+
+Gradient에 `blur`를 적용해보자.
+
+<div className="my-8 grid overflow-hidden rounded-xl border border-neutral-800 md:grid-cols-2">
+  <pre className="m-0 overflow-x-auto bg-[#111] p-5 text-sm leading-6 text-neutral-300">
+    <code>{`<div className="relative h-full w-full overflow-hidden">
+  <div
+    className="absolute -inset-8 blur-2xl"
+    style={{
+      background:
+        'linear-gradient(135deg, #101828 0%, #38455f 35%, #74819c 70%, #cbd3df 100%)',
+    }}
+  />
+</div>`}</code>
+  </pre>
+
+  <div className="relative min-h-64 overflow-hidden bg-neutral-950 p-5">
+    <div className="absolute inset-5 overflow-hidden rounded-lg">
+      <div
+        className="absolute -inset-8 blur-2xl"
+        style={{
+          background:
+            'linear-gradient(135deg, #101828 0%, #38455f 35%, #74819c 70%, #cbd3df 100%)',
+        }}
+      />
+    </div>
+  </div>
+</div>
+
+Gradient를 결과 영역보다 조금 더 크게 만든 것은 blur 때문에 가장자리의 색이 안쪽으로 끌려 들어오는 것을 피하기 위해서다.
+
+하지만 `linear-gradient()`는 애초에 color stop 사이를 연속적으로 계산하고 있다.
+
+그래서 **단순한 선형 Gradient에 blur를 추가한다고 banding 문제가 해결되는 것은 아니다.**
+
+오히려 blur는 뒤에서 살펴볼 여러 개의 Gradient나 blob처럼 **서로 다른 색 영역의 경계를 섞을 때** 더 유용하다.
+
+## 6. 여러 Gradient를 겹쳐보자
+
+지금까지는 하나의 직선 위에서 색이 변하는 `linear-gradient()`를 사용했다.
+
+하지만 CSS에서는 여러 Gradient를 하나의 background에 겹칠 수도 있다.
+
+<div className="my-8 grid overflow-hidden rounded-xl border border-neutral-800 md:grid-cols-2">
+  <pre className="m-0 overflow-x-auto bg-[#111] p-5 text-sm leading-6 text-neutral-300">
+    <code>{`background:
+  radial-gradient(
+    circle at 20% 20%,
+    rgba(56, 69, 95, 0.65),
+    transparent 45%
+  ),
+  radial-gradient(
+    circle at 80% 80%,
+    rgba(203, 211, 223, 0.35),
+    transparent 50%
+  ),
+  linear-gradient(
+    135deg,
+    #101828 0%,
+    #38455f 35%,
+    #74819c 70%,
+    #cbd3df 100%
+  );`}</code>
+  </pre>
+
+  <div className="min-h-64 bg-neutral-950 p-5">
+    <div
+      className="h-full min-h-56 rounded-lg"
+      style={{
+        background: `
+          radial-gradient(
+            circle at 20% 20%,
+            rgba(56, 69, 95, 0.65),
+            transparent 45%
+          ),
+          radial-gradient(
+            circle at 80% 80%,
+            rgba(203, 211, 223, 0.35),
+            transparent 50%
+          ),
+          linear-gradient(
+            135deg,
+            #101828 0%,
+            #38455f 35%,
+            #74819c 70%,
+            #cbd3df 100%
+          )
+        `,
+      }}
+    />
+  </div>
+</div>
+
+맨 아래에는 기존 `linear-gradient()`를 두고 그 위에 두 개의 반투명 `radial-gradient()`를 겹쳤다.
+
+이 방식은 Noise처럼 banding을 숨기는 기술은 아니지만 이전 처럼 단순히 순서대로 색이 변하는 느낌이 아니라 **여러 방향에서 색이 퍼지고 섞이는 공간적인 Gradient**를 만들 수 있다.
+
+그래서 몽환적인 배경이나 glow, blob 형태의 배경처럼 Gradient 자체를 시각적 요소로 적극적으로 사용할 때 활용하기 좋다.
+
+## 7. Dithering와 Noise의 차이점
+
+Noise와 Dithering은 겉으로 보면 비슷하다.
+
+둘 다 작은 픽셀 변화가 보이기 때문이다.
+
+하지만 목적에 차이가 있다.
+
+**Noise**는 랜덤한 변화를 추가해 규칙적인 경계를 흐트러뜨리는 접근이다.
+
+반면 **Dithering**은 사용할 수 있는 색이 제한되어 있을 때 서로 다른 색의 픽셀을 공간적으로 배치해서 **실제로 존재하지 않는 중간색이 있는 것처럼 지각하게 만드는 기법**이다. 마치 점묘화같은 것..
+
+CSS 패턴을 이용해 dithering과 비슷한 질감을 만들어볼 수는 있다.
+
+<div className="my-8 grid overflow-hidden rounded-xl border border-neutral-800 md:grid-cols-2">
+  <pre className="m-0 overflow-x-auto bg-[#111] p-5 text-sm leading-6 text-neutral-300">
+    <code>{`backgroundImage:
+  'radial-gradient(
+    circle,
+    white 0.6px,
+    transparent 0.7px
+  )';
+
+backgroundSize: '3px 3px';
+opacity: 0.12;`}</code>
+  </pre>
+
+  <div className="relative min-h-64 overflow-hidden bg-neutral-950 p-5">
+    <div
+      className="absolute inset-5 overflow-hidden rounded-lg"
+      style={{
+        background:
+          'linear-gradient(135deg, #101828 0%, #38455f 35%, #74819c 70%, #cbd3df 100%)',
+      }}
+    >
+      <div
+        className="absolute inset-0 opacity-[0.12]"
+        style={{
+          backgroundImage:
+            'radial-gradient(circle, white 0.6px, transparent 0.7px)',
+          backgroundSize: '3px 3px',
+        }}
+      />
+    </div>
+  </div>
+</div>
+
+하지만 이 예제는 **진짜 dithering 알고리즘은 아니다.**
+
+단순히 일정한 점 패턴을 Gradient 위에 올려 dithering과 비슷한 시각적 특성을 관찰하기 위한 예제다.
+
+실제 dithering에는 **Ordered/Bayer Dithering**, **Error Diffusion**, **Floyd–Steinberg Dithering** 등 여러 방식이 있다.
+
+
+## 8. Oklab + Fine Noise
+
+그러면 Oklab에 Noise를 얹어보자
+
+1. **Oklab**으로 색 변화 자체를 지각적으로 자연스럽게 만들고
+2. **Fine Noise**로 남아 있는 규칙적인 색 경계를 흐트러뜨린다.
+
+<div className="my-8 grid overflow-hidden rounded-xl border border-neutral-800 md:grid-cols-2">
+  <pre className="m-0 overflow-x-auto bg-[#111] p-5 text-sm leading-6 text-neutral-300">
+    <code>{`<div
+  style={{
+    background:
+      'linear-gradient(135deg in Oklab, #101828 0%, #38455f 35%, #74819c 70%, #cbd3df 100%)',
+  }}
+>
+  <svg className="absolute inset-0 h-full w-full opacity-[0.05]">
+    <filter id="fine-noise">
+      <feTurbulence
+        type="fractalNoise"
+        baseFrequency="1.2"
+        numOctaves="3"
+        stitchTiles="stitch"
+      />
+    </filter>
+
+    <rect
+      width="100%"
+      height="100%"
+      filter="url(#fine-noise)"
+    />
+  </svg>
+</div>`}</code>
+  </pre>
+
+  <div className="relative min-h-64 overflow-hidden bg-neutral-950 p-5">
+    <div
+      className="absolute inset-5 overflow-hidden rounded-lg"
+      style={{
+        background:
+          'linear-gradient(135deg in Oklab, #101828 0%, #38455f 35%, #74819c 70%, #cbd3df 100%)',
+      }}
+    >
+      <svg
+        className="pointer-events-none absolute inset-0 h-full w-full opacity-[0.05]"
+        preserveAspectRatio="none"
+      >
+        <filter id="article-Oklab-fine-noise">
+          <feTurbulence
+            type="fractalNoise"
+            baseFrequency="1.2"
+            numOctaves="3"
+            stitchTiles="stitch"
+          />
+        </filter>
+
+        <rect
+          width="100%"
+          height="100%"
+          filter="url(#article-Oklab-fine-noise)"
+        />
+      </svg>
+    </div>
+  </div>
+</div>
+
+둘은 역할이 다르기 때문에 함께 사용할 수 있다.
+
+| 방법 | 무엇을 바꾸는가 | Banding에 대한 역할 |
+| --- | --- | --- |
+| 기본 Gradient | color stop 사이의 색을 보간 | 기준 |
+| Oklab | 색을 계산하는 보간 공간 | 직접적인 제거 방법은 아님 |
+| Color Stop 추가 | 중간색과 색 변화의 경로 | 직접적인 제거 방법은 아님 |
+| Noise | 픽셀의 규칙적인 경계 | 경계를 눈에 덜 띄게 함 |
+| Fine Noise | 더 약한 Noise | 질감을 억제하면서 경계를 분산 |
+| Blur | 주변 픽셀과의 혼합 | 단순 Gradient에서는 효과가 제한적 |
+| Multi-layer | Gradient의 공간적 구성 | 색 변화 자체를 더 복잡하게 만듦 |
+| Dithering | 제한된 색의 공간적 배치 | 중간색을 시각적으로 시뮬레이션 |
+| Oklab + Fine Noise | 보간 + 미세한 Noise | 서로 다른 두 접근을 함께 사용 |
+
+## 9. 결론
+
+처음에는 단순히 **"Gradient 경계를 더 부드럽게 만드는 방법"** 을 알아보고자 했다.
+
+그런데 찾아보니 단순히 경계를 없앤다기보다는 다른 시각으로 문제를 풀어볼 수 있었다.
+
+- 색과 밝기가 변하는 과정 자체가 어색하다면 **색 공간과 Color Stop**을 살펴볼 수 있다.
+
+- 단순한 직선 Gradient가 밋밋하다면 **여러 개의 linear/radial Gradient를 겹쳐** 색이 공간적으로 섞이도록 만들 수 있다.
+
+- 색의 단계가 띠처럼 눈에 들어오는 것이 문제라면 **Noise나 실제 Dithering**처럼 quantization의 경계를 시각적으로 분산하는 방법이 있다.
+
+- Gradient 위에 질감을 거의 드러내고 싶지 않다면 **Fine Noise**처럼 아주 작은 opacity로 사용하는 방법도 있다.
+
+결국 *부드러운 Gradient*라는 표현 안에는 서로 다른 문제가 섞여 있었다.
+
+**색을 어떤 방식으로 계산하는가**,
+**표현 가능한 색 단계가 충분한가**,
+**그 단계의 경계가 눈에 보이는가**,
+**Gradient 자체가 어떤 공간적 형태를 가지는가**를 나눠서 보는 편이 더 정확하다.
+
+또한 **완벽하게 매끈한 Gradient가 항상 더 좋은 디자인인 것은 아니라는 것**이다.
+
+Noise나 Dithering은 원래 제한된 색 표현을 보완하기 위한 방법이지만, 그 자체가 하나의 texture가 될 수도 있다.
+
+## 참고
+
+- [MDN — Using CSS gradients](https://developer.mozilla.org/en-US/docs/Web/CSS/Guides/Images/Using_gradients)
+- [MDN — linear-gradient()](https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Values/gradient/linear-gradient)
+- [MDN — color-interpolation-method](https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Values/color-interpolation-method)
+- [MDN — Oklab](https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Values/color_value/Oklab)
+- [MDN — feTurbulence](https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/feTurbulence)
+- [MDN — image-rendering](https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Properties/image-rendering)
+- [web.dev — Gradients](https://web.dev/learn/css/gradients)
+- [W3C — CSS Color Module Level 4](https://www.w3.org/TR/css-color-4/)
+- [Adobe — Control dither in gradients](https://helpx.adobe.com/illustrator/desktop/paint-and-fill/create-and-edit-gradients/control-dither-in-gradients.html)
+- [Adobe — Color depth and gradient banding](https://www.adobe.com/learn/after-effects/web/choose-the-right-color-depth)

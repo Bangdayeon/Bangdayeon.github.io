@@ -27,7 +27,7 @@ export async function PostView({
   const locale = await serverLocale();
 
   return (
-    <main className="mx-auto w-full max-w-[720px] px-4 py-10 sm:px-6">
+    <main className="mx-auto w-full max-w-[1152px] px-4 py-10 sm:px-6">
       <article>
         <header className="border-line mb-8 border-b pb-6">
           <p className="mb-3 flex flex-wrap items-center gap-x-2 gap-y-1">

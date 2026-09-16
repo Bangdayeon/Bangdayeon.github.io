@@ -192,6 +192,9 @@ export async function MdxContent({
       ),
     },
     options: {
+      // 저장소에서 직접 작성한 MDX의 코드 문자열과 style={{ ... }}를 보존한다.
+      // 기본값(true)은 표현식을 제거해 코드 · 렌더 비교 예제를 빈칸으로 만든다.
+      blockJS: false,
       mdxOptions: {
         // unified 는 [플러그인, 옵션] 을 받아 자기가 호출한다. 미리 호출해서
         // 넘기면 트랜스포머가 플러그인 자리에 앉아 tree 대신 옵션을 받는다.
