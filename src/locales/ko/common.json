@@ -95,6 +95,7 @@
   },
   "profile": {
     "region": "프로필",
+    "links": "바깥 링크",
     "noViews": "조회수 집계 전",
     "views": "조회"
   },

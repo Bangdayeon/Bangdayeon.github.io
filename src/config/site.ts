@@ -1,7 +1,14 @@
-/** 사이트 명칭. metadata(title)와 헤더 로고 옆 제목이 같은 값을 본다. */
-export const SITE_NAME = 'DEVELOPER BANGDY';
+import type { Locale } from '@/i18n.config';
 
-export const SITE_DESCRIPTION = "'나' 아카이브";
+export const SITE_NAME: Record<Locale, string> = {
+  ko: '개발자 방디',
+  en: 'DEVELOPER BANGDY',
+};
+
+export const SITE_DESCRIPTION: Record<Locale, string> = {
+  ko: '내 아카이브 공간 만들기',
+  en: "An archive of 'me'",
+};
 
 export const SHOW_LANG_SWITCH: boolean = true;
 

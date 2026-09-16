@@ -2,7 +2,7 @@
 
 import { useT } from 'next-i18next/client';
 
-import type { Profile } from '@/config/profile';
+import type { Profile, ProfileLink } from '@/config/profile';
 
 import { asset } from '@/lib/base-path';
 import { cn } from '@/lib/cn';
@@ -89,6 +89,43 @@ export function SidebarProfile({
       </div>
 
       <p className="text-body-sm text-ink">{profile.bio}</p>
+
+      {profile.links && profile.links.length > 0 && (
+        <ProfileLinks links={profile.links} label={t('profile.links')} />
+      )}
     </section>
+  );
+}
+
+/**
+ * 소개 아래 바깥 링크 — GitHub · 만든 앱.
+ *
+ * 아이콘 대신 글자다. 링크가 늘어도 마크를 하나씩 그려야 하는 부담이 없고
+ * (README 규약: 아이콘 라이브러리 미사용), 무엇으로 가는지 읽어 보지 않아도
+ * 아는 아이콘은 GitHub 정도뿐이다.
+ *
+ * 사이트 밖으로 나가므로 LocaleLink 가 아니라 맨 <a> 다 — 언어 접두사를
+ * 붙일 주소가 아니다. 새 탭으로 여는 김에 noreferrer 까지 붙인다
+ * (noopener 는 target=_blank 면 요즘 브라우저가 알아서 걸지만, 명시해 둔다).
+ */
+function ProfileLinks({ links, label }: { links: ProfileLink[]; label: string }) {
+  return (
+    <ul aria-label={label} className="flex flex-wrap items-center justify-center gap-x-3 gap-y-1">
+      {links.map(link => (
+        <li key={link.href}>
+          <a
+            href={link.href}
+            target="_blank"
+            rel="noopener noreferrer"
+            className={cn(
+              'text-meta text-ink-muted hover:text-primary-ink rounded hover:underline',
+              'focus-visible:outline-focus focus-visible:outline-2'
+            )}
+          >
+            {link.label}
+          </a>
+        </li>
+      ))}
+    </ul>
   );
 }

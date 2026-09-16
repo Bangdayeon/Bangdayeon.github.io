@@ -105,6 +105,7 @@
   },
   "profile": {
     "region": "Profile",
+    "links": "Links",
     "noViews": "No views yet",
     "views": "views"
   },

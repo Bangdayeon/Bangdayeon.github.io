@@ -37,6 +37,45 @@
 @custom-variant palette-neon (&:where(.palette-neon *));
 @custom-variant palette-retro (&:where(.palette-retro *));
 
+/**
+ * 가로로 미는 판(아카이브 잔디밭)의 스크롤바.
+ *
+ * 브라우저 기본 막대는 판보다 굵고 진해서, 옆으로 밀린다는 사실보다 막대
+ * 자체가 먼저 보인다. 얇은 막대 · 투명한 홈 · 둥근 손잡이로 낮춘다.
+ *
+ * 두 벌을 쓰지만 한 번에 한 벌만 산다. 크로미움 121+ 은 표준 속성
+ * (scrollbar-width · scrollbar-color)과 ::-webkit-scrollbar 를 둘 다 알아듣는데,
+ * 표준 속성이 하나라도 있으면 그쪽이 이기고 의사요소는 통째로 무시된다 —
+ * 그래서 표준 속성은 의사요소를 모르는 브라우저(파이어폭스)에만 내준다.
+ * 손잡이 색은 border + background-clip 으로 안쪽만 칠해 홈에 여백을 남긴다.
+ */
+@utility scrollbar-slim {
+  &::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background-color: var(--color-line-strong);
+    background-clip: content-box;
+    border: 2px solid transparent;
+    border-radius: 999px;
+  }
+
+  &:hover::-webkit-scrollbar-thumb {
+    background-color: var(--color-ink-subtle);
+  }
+
+  @supports not selector(::-webkit-scrollbar) {
+    scrollbar-width: thin;
+    scrollbar-color: var(--color-line-strong) transparent;
+  }
+}
+
 @layer base {
   html {
     /* 가로 모드 전환 시 모바일 브라우저가 본문 글자를 임의로 키우는 것을 막는다. */
