@@ -15,16 +15,7 @@ import {
 import { loadEnvLocal } from './env';
 import { syncRedirects } from './redirects';
 
-/**
- * src/content/**\/*.mdx → src/data/{index,search,stats}.json
- *
- * 프로덕션 빌드가 읽는 산출물을 만든다 (dev 는 content 를 직접 읽으므로 이
- * 스크립트가 필요 없다). 검증에 하나라도 걸리면 여기서 멈춘다 — 깨진 글이
- * 배포까지 흘러가는 것보다 빌드가 실패하는 편이 낫다.
- *
- * draft 는 여기서 탈락한다. 산출물에 아예 없으므로 URL 을 직접 쳐도 404 다.
- */
-
+// create data that production build can read (excluding drafts)
 const DATA_DIR = path.join(process.cwd(), 'src', 'data');
 
 function write(name: string, value: unknown) {
@@ -50,13 +41,11 @@ function main() {
     parsed.push(result);
   }
 
-  // 같은 글의 두 언어판은 id 가 같다 (…-slug.mdx · …-slug.en.mdx) — 같은 글이니
-  // 주소도 하나여야 하기 때문이다. 그래서 언어까지 묶어서 센다. id 만 보면
-  // 번역을 하나 붙이는 순간 멀쩡한 글이 "두 번 있다"로 빌드를 멈춘다.
+  // same file name but only ko/en is have same id
   const seen = new Set<string>();
   for (const { post } of parsed) {
     const key = `${post.id}:${post.locale}`;
-    // 확장자만 다른 같은 글이 가장 흔한 원인이다 (.md 와 .mdx 를 둘 다 받는다).
+    // check file extension
     if (seen.has(key)) {
       errors.push(
         `  ${post.id} (${post.locale}) 가 두 번 있다 — .md 와 .mdx 로 둘 다 있는 건 아닌지`

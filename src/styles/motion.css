@@ -1,55 +1,36 @@
-/* ==========================================================================
-   모션 토큰
-   --------------------------------------------------------------------------
-   키프레임은 @theme 안에 둔다. 그래야 --animate-* 를 참조하는 유틸리티가
-   실제로 쓰일 때만 CSS 에 실린다.
-
-   절대 규칙 10 (prefers-reduced-motion) 은 globals.css 가 전역으로 처리한다.
-   duration 이 0.01ms 로 잘리고 fill-mode 가 both 라서, 모션을 끈 사용자에게는
-   애니메이션 없이 최종 상태(원래 크기 · opacity 1)가 곧바로 보인다.
-   ========================================================================== */
+/* MOTION TOKENS */
 
 @theme {
-  /* 좌측 네비 활성 도트.
-     아주 작은 점이 먼저 찍히고, 아래에서 위로 차오른 뒤 표면이 두어 번
-     꿀렁이다 멎는다. 차오르는 방향은 transform-origin 유틸리티(origin-bottom)가
-     정한다.
-
-     크기는 거의 흔들지 않는다 (최대 ±4%). 물컹한 느낌은 border-radius 를
-     비대칭으로 굴려 만든다 — 가로로 늘였다 줄이면 점이 아니라 젤리가 튕기는
-     것처럼 보인다.
-
-     구간마다 animation-timing-function 을 따로 준다. 하나로 묶으면 차오르는
-     구간과 잦아드는 구간이 같은 속도로 움직여 감쇠가 사라진다. */
+  /* navigation bar active dot pudding animation */
   --animate-pudding-rise: pudding-rise 680ms both;
 
   @keyframes pudding-rise {
-    /* 점 하나 (1.4px) */
+    /* one dot (1.4px) */
     0% {
       opacity: 0;
       transform: scale(0.12);
       border-radius: 50%;
       animation-timing-function: cubic-bezier(0.4, 0, 0.5, 1);
     }
-    /* 점이 먼저 눈에 들어온다 */
+    /* show dot first */
     16% {
       opacity: 1;
       transform: scale(0.26);
       animation-timing-function: cubic-bezier(0.2, 0.65, 0.3, 1);
     }
-    /* 차오르며 윗면이 살짝 부푼다 */
+    /* rises with a slightly domed top */
     48% {
       transform: scale(0.97, 1.04);
       border-radius: 46% 54% 52% 48% / 58% 56% 44% 42%;
       animation-timing-function: ease-in-out;
     }
-    /* 표면이 반대로 한 번 */
+    /* reverse */
     63% {
       transform: scale(1.03, 0.97);
       border-radius: 56% 44% 45% 55% / 43% 46% 54% 57%;
       animation-timing-function: ease-in-out;
     }
-    /* 이후로는 진폭을 절반씩 줄여 잦아든다 */
+    /* gradually settles with the amplitude halving each time */
     77% {
       transform: scale(0.99, 1.02);
       border-radius: 47% 53% 54% 46% / 54% 52% 48% 46%;
@@ -66,12 +47,7 @@
     }
   }
 
-  /* 모바일 네비 서랍. 왼쪽에서 밀려 들어온다 — 들어오는 방향이 곧 "원래 왼쪽에
-     있던 것"이라는 말이라, 넓은 화면의 좌측 칸과 같은 물건으로 읽힌다.
-
-     닫힐 때는 애니메이션이 없다. 닫는 순간 React 가 노드를 지워서 나가는
-     프레임을 그릴 대상이 남지 않는다 — 남기려면 "닫히는 중" 상태를 하나 더
-     들어야 하고, 그건 서랍 하나에 치를 값이 아니다. */
+  /* mobile navigation bar */
   --animate-drawer-in: drawer-in 180ms cubic-bezier(0.2, 0.7, 0.3, 1) both;
 
   @keyframes drawer-in {

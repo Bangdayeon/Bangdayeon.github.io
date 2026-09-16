@@ -3,52 +3,22 @@
 @import './colors.css';
 @import './typography.css';
 @import './motion.css';
-
-/* retro 팔레트의 모양(각진 모서리 · 베벨 · 폰트). 색이 아니라서 colors.css 가
-   아니라 따로 선다 — 그 파일의 "팔레트는 램프만 갈아끼운다" 규칙을 지키려고
-   격리해 둔 것이다. 파일 머리말에 @layer 를 쓰지 않는 이유가 적혀 있다. */
 @import './retro.css';
 
-/* 다크모드는 직접 구현한다 (UI 라이브러리 미사용).
-   색 토큰은 colors.css 에서 자동 전환되므로 이 variant 는
-   토큰으로 표현되지 않는 일회성 케이스에만 쓴다 (예: 이미지 밝기).
-   Tailwind v4 는 config 파일 없이 CSS 에서 선언한다. */
 @custom-variant dark (&:where(.dark, .dark *));
 
-/* 테마 · 언어 선택 버튼의 활성 칸은 JS 상태가 아니라 <html> 을 보고 칠한다.
-   head 의 인라인 스크립트가 첫 페인트 전에 class / lang 을 복원하므로,
-   새로고침 직후에 엉뚱한 칸이 잠깐 켜졌다 바뀌는 일이 없다. */
 @custom-variant theme-system (&:where(:root:not(.dark):not(.light) *));
 @custom-variant theme-light (&:where(.light *));
 @custom-variant theme-dark (&:where(.dark *));
 @custom-variant lang-ko (&:where(:root:lang(ko) *));
 @custom-variant lang-en (&:where(:root:lang(en) *));
 
-/* 색 팔레트도 같은 방식이다. vivid 는 기본값이라 클래스가 없다 (theme-system 과
-   같은 규칙). 그래서 palette-vivid 는 부정 목록이다 — 팔레트를 하나 늘릴 때마다
-   :not() 을 같이 붙여야 하고, 빠뜨리면 새 팔레트에서도 Vivid 칸에 테가 남는다.
-
-   palette-neon · palette-retro 는 활성 칸을 칠하는 것 말고 하나를 더 한다.
-   그 팔레트에서 못 쓰는 테마 칸(neon 은 시스템 · 라이트, retro 는 시스템 · 다크)을
-   흐리고 막는 것도 이 variant 다 — disabled 속성은 CSS 가 붙일 수 없어서 JS 를
-   기다려야 하고, 그러면 하이드레이션 전 한 프레임 동안 잠긴 칸이 멀쩡해 보인다. */
 @custom-variant palette-vivid (&:where(:root:not(.palette-soft):not(.palette-neon):not(.palette-retro) *));
 @custom-variant palette-soft (&:where(.palette-soft *));
 @custom-variant palette-neon (&:where(.palette-neon *));
 @custom-variant palette-retro (&:where(.palette-retro *));
 
-/**
- * 가로로 미는 판(아카이브 잔디밭)의 스크롤바.
- *
- * 브라우저 기본 막대는 판보다 굵고 진해서, 옆으로 밀린다는 사실보다 막대
- * 자체가 먼저 보인다. 얇은 막대 · 투명한 홈 · 둥근 손잡이로 낮춘다.
- *
- * 두 벌을 쓰지만 한 번에 한 벌만 산다. 크로미움 121+ 은 표준 속성
- * (scrollbar-width · scrollbar-color)과 ::-webkit-scrollbar 를 둘 다 알아듣는데,
- * 표준 속성이 하나라도 있으면 그쪽이 이기고 의사요소는 통째로 무시된다 —
- * 그래서 표준 속성은 의사요소를 모르는 브라우저(파이어폭스)에만 내준다.
- * 손잡이 색은 border + background-clip 으로 안쪽만 칠해 홈에 여백을 남긴다.
- */
+/* archive's scroll bar */
 @utility scrollbar-slim {
   &::-webkit-scrollbar {
     width: 8px;
@@ -88,9 +58,7 @@
     font-family: var(--font-sans);
   }
 
-  /* Tailwind v4 의 preflight 는 button 의 커서를 default 로 되돌린다.
-     컴포넌트마다 cursor-pointer 를 붙이는 대신 여기서 한 번에 정한다 —
-     "누를 수 있으면 손가락" 이라는 규칙을 새 컴포넌트가 빠뜨릴 수 없게. */
+  /* make button's cursor pointer */
   button:not(:disabled),
   summary,
   label[for],
@@ -104,8 +72,7 @@
     cursor: not-allowed;
   }
 
-  /* 검색 입력의 기본 X 아이콘은 브라우저마다 모양이 다르고 못생겼다.
-     지우고 SearchLauncher 가 직접 그린 버튼을 쓴다. */
+  /* remove default input's x icon and use custom */
   input[type='search']::-webkit-search-cancel-button,
   input[type='search']::-webkit-search-decoration {
     -webkit-appearance: none;
@@ -117,7 +84,6 @@
     color: var(--color-primary-on);
   }
 
-  /* 절대 규칙 10: prefers-reduced-motion 대응 */
   @media (prefers-reduced-motion: reduce) {
     *,
     *::before,
