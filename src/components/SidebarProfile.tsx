@@ -77,9 +77,7 @@ export function SidebarProfile({
         <p className="text-title-sm text-ink-strong break-keep">{profile.name}</p>
 
         <p className="text-meta">
-          {views === null ? (
-            <span className="text-ink-muted">{t('profile.noViews')}</span>
-          ) : (
+          {views === null ? null : (
             <>
               <span className="text-ink font-semibold">{formatCount(views)}</span>{' '}
               <span className="text-ink-muted">{t('profile.views')}</span>

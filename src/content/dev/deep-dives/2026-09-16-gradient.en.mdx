@@ -1,0 +1,556 @@
+---
+title: "Why Does a Gradient Look Banded?"
+date: 2026-09-16
+summary: "The causes of banding seen in CSS gradients, and how to reduce it"
+tags: [css, gradient, front-end]
+draft: false
+---
+
+If you look closely at websites, you'll sometimes notice that a gradient isn't perfectly smooth — the colors appear to break into **visible layers or steps**.
+
+This phenomenon is called **Gradient Banding**.
+
+So why does this happen, and how can it be mitigated on the web?
+
+Using the same base colors across a gradient, I compared several approaches directly.
+
+> [!note] How pronounced a rendered gradient appears can vary slightly depending on the monitor, browser, GPU, and display color depth.
+
+---
+
+## 0. Preview of the gradient results
+In a small preview, subtle differences or banding in a gradient may not be very visible, so I made a separate page where the same conditions can be compared on a larger screen.
+
+<a
+  href="/playground/gradient"
+  target="_blank"
+  rel="noopener noreferrer"
+  className="text-sm font-medium transition hover:text-neutral-500 underline"
+>
+  Gradient Lab ↗
+</a>
+
+---
+
+## 1. What is Gradient Banding, and why does it happen?
+
+CSS's `linear-gradient()` calculates the colors between specified **color stops** to create an image that looks like a continuous color transition.
+
+1. A normal CSS gradient
+
+<div className="my-8 grid overflow-hidden rounded-xl border border-neutral-800 md:grid-cols-2">
+  <pre className="m-0 overflow-x-auto bg-[#111] p-5 text-sm leading-6 text-neutral-300">
+    <code>{`background: linear-gradient(
+  135deg,
+  #101828 0%,
+  #38455f 35%,
+  #74819c 70%,
+  #cbd3df 100%
+);`}</code>
+  </pre>
+
+  <div className="min-h-64 bg-neutral-950 p-5">
+    <div
+      className="h-full min-h-56 rounded-lg"
+      style={{
+        background:
+          'linear-gradient(135deg, #101828 0%, #38455f 35%, #74819c 70%, #cbd3df 100%)',
+      }}
+    />
+  </div>
+</div>
+
+Colors expressed in a digital environment have a fixed number of steps.
+
+In particular, with limited bit depth, there may not be enough steps available to express subtle color changes.
+
+As a result, an area that should transition smoothly gets quantized into a handful of similar colors, and the boundaries between them start to stand out.
+
+This phenomenon — where a gradient's color transition isn't continuous but instead appears **divided into visible bands** — is Gradient Banding.
+
+It's especially easy to spot in gradients with **small brightness changes that shift slowly across a large area**, since each step ends up covering a larger visual area.
+
+---
+
+## 2. Trying different color spaces
+
+A gradient's result isn't determined by the number of colors alone.
+
+**Which color space the values between two colors are calculated in** can also produce subtly different intermediate colors.
+
+In CSS gradients, you can specify the color space using the `in <color-space>` syntax.
+
+| Color Space | Characteristics | Example |
+| --- | --- | --- |
+| `sRGB` | The default color space used on the web; colors are calculated using standard RGB values. | `linear-gradient(in srgb, red, blue)` |
+| `sRGB-linear` | Linearizes sRGB values before calculating, producing a result closer to the physical mixing of light. | `linear-gradient(in srgb-linear, red, blue)` |
+| `Oklab` | Designed with human visual perception in mind, so changes in brightness and color feel relatively uniform. | `linear-gradient(in Oklab, red, blue)` |
+| `OKLCH` | Expresses Oklab as lightness, chroma, and hue, making it advantageous for natural color transitions and hue control. | `linear-gradient(in oklch, red, blue)` |
+
+The current default color space in CSS is `Oklab`, but if only the legacy `sRGB` notation is being used, `sRGB` applies instead.
+Let's compare `sRGB` and `Oklab`, the two most commonly used, by specifying them directly.
+
+### sRGB
+
+<div className="my-8 grid overflow-hidden rounded-xl border border-neutral-800 md:grid-cols-2">
+  <pre className="m-0 overflow-x-auto bg-[#111] p-5 text-sm leading-6 text-neutral-300">
+    <code>{`background: linear-gradient(
+  135deg in srgb,
+  #101828 0%,
+  #38455f 35%,
+  #74819c 70%,
+  #cbd3df 100%
+);`}</code>
+  </pre>
+
+  <div className="min-h-64 bg-neutral-950 p-5">
+    <div
+      className="h-full min-h-56 rounded-lg"
+      style={{
+        background:
+          'linear-gradient(135deg in srgb, #101828 0%, #38455f 35%, #74819c 70%, #cbd3df 100%)',
+      }}
+    />
+  </div>
+</div>
+
+### Oklab
+
+<div className="my-8 grid overflow-hidden rounded-xl border border-neutral-800 md:grid-cols-2">
+  <pre className="m-0 overflow-x-auto bg-[#111] p-5 text-sm leading-6 text-neutral-300">
+    <code>{`background: linear-gradient(
+  135deg in Oklab,
+  #101828 0%,
+  #38455f 35%,
+  #74819c 70%,
+  #cbd3df 100%
+);`}</code>
+  </pre>
+
+  <div className="min-h-64 bg-neutral-950 p-5">
+    <div
+      className="h-full min-h-56 rounded-lg"
+      style={{
+        background:
+          'linear-gradient(135deg in Oklab, #101828 0%, #38455f 35%, #74819c 70%, #cbd3df 100%)',
+      }}
+    />
+  </div>
+</div>
+
+Oklab is a **perceptual color space** created to handle color differences the way humans actually perceive them.
+
+So it can produce a different kind of color transition than simply computing an intermediate value from the raw numbers of each RGB channel.
+
+However, Oklab doesn't eliminate banding. It's a calculation method for **which intermediate colors get produced**.
+
+---
+
+## 3. Adding intermediate color stops
+
+What if we just add more color stops?
+
+Let's increase the number of stops from 4 to 7.
+
+<div className="my-8 grid overflow-hidden rounded-xl border border-neutral-800 md:grid-cols-2">
+  <pre className="m-0 overflow-x-auto bg-[#111] p-5 text-sm leading-6 text-neutral-300">
+    <code>{`background: linear-gradient(
+  135deg,
+  #101828 0%,
+  #243149 17%,
+  #38455f 35%,
+  #56627d 52%,
+  #74819c 70%,
+  #9faabd 85%,
+  #cbd3df 100%
+);`}</code>
+  </pre>
+
+  <div className="min-h-64 bg-neutral-950 p-5">
+    <div
+      className="h-full min-h-56 rounded-lg"
+      style={{
+        background: `linear-gradient(
+          135deg,
+          #101828 0%,
+          #243149 17%,
+          #38455f 35%,
+          #56627d 52%,
+          #74819c 70%,
+          #9faabd 85%,
+          #cbd3df 100%
+        )`,
+      }}
+    />
+  </div>
+</div>
+
+Adding more color stops lets you **finely control the path and pace of the color transition**.
+
+But adding more stops doesn't technically make banding disappear.
+
+That's because color calculation happens again between each pair of stops.
+
+So this method is better understood as **a way to design the gradient's color transition itself, rather than a way to remove banding**.
+
+---
+
+## 4. Adding noise
+
+If you want to make banding directly less noticeable, the approach needs to change.
+
+Instead of changing the gradient itself, you can add a very subtle **noise** layer on top of it.
+
+<div className="my-8 grid overflow-hidden rounded-xl border border-neutral-800 md:grid-cols-2">
+  <pre className="m-0 overflow-x-auto bg-[#111] p-5 text-sm leading-6 text-neutral-300">
+    <code>{`<div className="relative h-full w-full">
+  <div className="gradient" />
+
+  <svg className="absolute inset-0 h-full w-full opacity-[0.12]">
+    <filter id="gradient-noise">
+      <feTurbulence
+        type="fractalNoise"
+        baseFrequency="0.8"
+        numOctaves="4"
+        stitchTiles="stitch"
+      />
+    </filter>
+
+    <rect
+      width="100%"
+      height="100%"
+      filter="url(#gradient-noise)"
+    />
+  </svg>
+</div>`}</code>
+  </pre>
+
+  <div className="relative min-h-64 overflow-hidden bg-neutral-950 p-5">
+    <div
+      className="absolute inset-5 overflow-hidden rounded-lg"
+      style={{
+        background:
+          'linear-gradient(135deg, #101828 0%, #38455f 35%, #74819c 70%, #cbd3df 100%)',
+      }}
+    >
+      <svg
+        className="pointer-events-none absolute inset-0 h-full w-full opacity-[0.12]"
+        preserveAspectRatio="none"
+      >
+        <filter id="article-gradient-noise">
+          <feTurbulence
+            type="fractalNoise"
+            baseFrequency="0.8"
+            numOctaves="4"
+            stitchTiles="stitch"
+          />
+        </filter>
+
+        <rect
+          width="100%"
+          height="100%"
+          filter="url(#article-gradient-noise)"
+        />
+      </svg>
+    </div>
+  </div>
+</div>
+
+Here, SVG's `<feTurbulence>` is used.
+SVG has filter capabilities that let you apply various graphical effects to an image, and this takes advantage of that.
+
+```tsx
+<feTurbulence
+  type="fractalNoise"
+  baseFrequency="0.8"
+  numOctaves="4"
+  stitchTiles="stitch"
+/>
+```
+- `<feTurbulence />`
+There are several kinds of filter primitives in SVG filters, and this is one of them.
+
+| Attribute | Value | Default | Characteristics |
+| --- | --- | --- | --- |
+| `type` | `fractalNoise` | `turbulence` | Noise where bright and dark variations flow naturally into each other. Produces a soft grain or cloud-like texture. |
+|  | `turbulence` |  | Noise with sharper, more pronounced ridges. Produces a wave or marble-like texture. |
+| `baseFrequency` | A single number ≥ `0` | `0` | The base frequency of the noise. Higher values make the pattern smaller and denser; lower values make it larger and broader. |
+|  | Two numbers, e.g. `0.05 0.1` |  | Specifies the X-axis and Y-axis frequencies separately. |
+| `numOctaves` | A non-negative integer | `1` | How many layers of different-frequency noise to composite together. Higher values add more detailed texture, but also increase browser/GPU computation. |
+| `stitchTiles` | `noStitch` | `noStitch` | Doesn't connect the two edges of the noise. Boundaries can show up when tiled repeatedly. |
+|  | `stitch` |  | Generates noise so that the tile's edges connect seamlessly. |
+
+The number of color steps in the gradient itself hasn't increased.
+
+Instead, it creates small variations at the pixel level to **visually break up the boundaries of what was a consistent band**.
+
+## 5. Adding blur
+
+Let's try applying `blur` to the gradient.
+
+<div className="my-8 grid overflow-hidden rounded-xl border border-neutral-800 md:grid-cols-2">
+  <pre className="m-0 overflow-x-auto bg-[#111] p-5 text-sm leading-6 text-neutral-300">
+    <code>{`<div className="relative h-full w-full overflow-hidden">
+  <div
+    className="absolute -inset-8 blur-2xl"
+    style={{
+      background:
+        'linear-gradient(135deg, #101828 0%, #38455f 35%, #74819c 70%, #cbd3df 100%)',
+    }}
+  />
+</div>`}</code>
+  </pre>
+
+  <div className="relative min-h-64 overflow-hidden bg-neutral-950 p-5">
+    <div className="absolute inset-5 overflow-hidden rounded-lg">
+      <div
+        className="absolute -inset-8 blur-2xl"
+        style={{
+          background:
+            'linear-gradient(135deg, #101828 0%, #38455f 35%, #74819c 70%, #cbd3df 100%)',
+        }}
+      />
+    </div>
+  </div>
+</div>
+
+The gradient is made slightly larger than the result area so that blur doesn't pull the edge colors inward.
+
+But `linear-gradient()` already calculates colors continuously between color stops in the first place.
+
+So **simply adding blur to a plain linear gradient doesn't solve the banding problem.**
+
+Blur is actually more useful when **mixing the boundaries between different color regions**, as with multiple overlapping gradients or blobs, which we'll look at next.
+
+## 6. Overlapping multiple gradients
+
+So far we've only used `linear-gradient()`, where color changes along a single straight line.
+
+But in CSS, you can also layer multiple gradients on top of one another in a single background.
+
+<div className="my-8 grid overflow-hidden rounded-xl border border-neutral-800 md:grid-cols-2">
+  <pre className="m-0 overflow-x-auto bg-[#111] p-5 text-sm leading-6 text-neutral-300">
+    <code>{`background:
+  radial-gradient(
+    circle at 20% 20%,
+    rgba(56, 69, 95, 0.65),
+    transparent 45%
+  ),
+  radial-gradient(
+    circle at 80% 80%,
+    rgba(203, 211, 223, 0.35),
+    transparent 50%
+  ),
+  linear-gradient(
+    135deg,
+    #101828 0%,
+    #38455f 35%,
+    #74819c 70%,
+    #cbd3df 100%
+  );`}</code>
+  </pre>
+
+  <div className="min-h-64 bg-neutral-950 p-5">
+    <div
+      className="h-full min-h-56 rounded-lg"
+      style={{
+        background: `
+          radial-gradient(
+            circle at 20% 20%,
+            rgba(56, 69, 95, 0.65),
+            transparent 45%
+          ),
+          radial-gradient(
+            circle at 80% 80%,
+            rgba(203, 211, 223, 0.35),
+            transparent 50%
+          ),
+          linear-gradient(
+            135deg,
+            #101828 0%,
+            #38455f 35%,
+            #74819c 70%,
+            #cbd3df 100%
+          )
+        `,
+      }}
+    />
+  </div>
+</div>
+
+The original `linear-gradient()` sits at the bottom, with two semi-transparent `radial-gradient()`s layered on top of it.
+
+This isn't a banding-hiding technique like noise, but instead of a color simply transitioning in one direction like before, it creates a **spatial gradient where colors spread and blend from multiple directions**.
+
+That makes it well-suited for dreamy backgrounds, or glow/blob-style backgrounds where the gradient itself is used as an active visual element.
+
+## 7. The difference between dithering and noise
+
+At first glance, noise and dithering look similar.
+
+Both involve small, visible pixel-level variation.
+
+But their purposes differ.
+
+**Noise** is an approach that adds random variation to break up regular boundaries.
+
+**Dithering**, on the other hand, is a technique for when the available colors are limited — it spatially arranges pixels of different colors so that **a middle color that doesn't actually exist is perceived as if it were there**. Sort of like pointillism.
+
+You can use CSS patterns to create a texture similar to dithering.
+
+<div className="my-8 grid overflow-hidden rounded-xl border border-neutral-800 md:grid-cols-2">
+  <pre className="m-0 overflow-x-auto bg-[#111] p-5 text-sm leading-6 text-neutral-300">
+    <code>{`backgroundImage:
+  'radial-gradient(
+    circle,
+    white 0.6px,
+    transparent 0.7px
+  )';
+
+backgroundSize: '3px 3px';
+opacity: 0.12;`}</code>
+  </pre>
+
+  <div className="relative min-h-64 overflow-hidden bg-neutral-950 p-5">
+    <div
+      className="absolute inset-5 overflow-hidden rounded-lg"
+      style={{
+        background:
+          'linear-gradient(135deg, #101828 0%, #38455f 35%, #74819c 70%, #cbd3df 100%)',
+      }}
+    >
+      <div
+        className="absolute inset-0 opacity-[0.12]"
+        style={{
+          backgroundImage:
+            'radial-gradient(circle, white 0.6px, transparent 0.7px)',
+          backgroundSize: '3px 3px',
+        }}
+      />
+    </div>
+  </div>
+</div>
+
+But this example is **not a real dithering algorithm.**
+
+It simply overlays a regular dot pattern on top of the gradient, as an example for observing a visual quality similar to dithering.
+
+Real dithering includes several methods, such as **Ordered/Bayer Dithering**, **Error Diffusion**, and **Floyd–Steinberg Dithering**.
+
+## 8. Oklab + Fine Noise
+
+So let's layer noise on top of Oklab.
+
+1. Use **Oklab** to make the color transition itself perceptually natural, and
+2. use **Fine Noise** to break up any remaining regular color boundaries.
+
+<div className="my-8 grid overflow-hidden rounded-xl border border-neutral-800 md:grid-cols-2">
+  <pre className="m-0 overflow-x-auto bg-[#111] p-5 text-sm leading-6 text-neutral-300">
+    <code>{`<div
+  style={{
+    background:
+      'linear-gradient(135deg in Oklab, #101828 0%, #38455f 35%, #74819c 70%, #cbd3df 100%)',
+  }}
+>
+  <svg className="absolute inset-0 h-full w-full opacity-[0.05]">
+    <filter id="fine-noise">
+      <feTurbulence
+        type="fractalNoise"
+        baseFrequency="1.2"
+        numOctaves="3"
+        stitchTiles="stitch"
+      />
+    </filter>
+
+    <rect
+      width="100%"
+      height="100%"
+      filter="url(#fine-noise)"
+    />
+  </svg>
+</div>`}</code>
+  </pre>
+
+  <div className="relative min-h-64 overflow-hidden bg-neutral-950 p-5">
+    <div
+      className="absolute inset-5 overflow-hidden rounded-lg"
+      style={{
+        background:
+          'linear-gradient(135deg in Oklab, #101828 0%, #38455f 35%, #74819c 70%, #cbd3df 100%)',
+      }}
+    >
+      <svg
+        className="pointer-events-none absolute inset-0 h-full w-full opacity-[0.05]"
+        preserveAspectRatio="none"
+      >
+        <filter id="article-Oklab-fine-noise">
+          <feTurbulence
+            type="fractalNoise"
+            baseFrequency="1.2"
+            numOctaves="3"
+            stitchTiles="stitch"
+          />
+        </filter>
+
+        <rect
+          width="100%"
+          height="100%"
+          filter="url(#article-Oklab-fine-noise)"
+        />
+      </svg>
+    </div>
+  </div>
+</div>
+
+Since the two play different roles, they can be used together.
+
+| Method | What it changes | Role regarding banding |
+| --- | --- | --- |
+| Basic gradient | Interpolates color between color stops | Baseline |
+| Oklab | The interpolation space used to calculate color | Not a direct fix |
+| Adding color stops | The intermediate colors and the path of the transition | Not a direct fix |
+| Noise | Regular pixel boundaries | Makes boundaries less visible |
+| Fine noise | Weaker noise | Suppresses texture while still dispersing boundaries |
+| Blur | Blending with surrounding pixels | Limited effect on a plain gradient |
+| Multi-layer | The spatial composition of the gradient | Makes the color transition itself more complex |
+| Dithering | Spatial arrangement of a limited palette | Visually simulates intermediate colors |
+| Oklab + Fine Noise | Interpolation + subtle noise | Combines two different approaches |
+
+## 9. Conclusion
+
+I started out simply wanting to find **"a way to make gradient boundaries softer."**
+
+But as I looked into it, I found there were different ways to frame the problem rather than just "removing the boundary."
+
+- If the process of color and brightness changing feels awkward, you can look at the **color space and color stops**.
+
+- If a simple straight-line gradient feels flat, you can **overlay multiple linear/radial gradients** so the colors blend spatially.
+
+- If the problem is that color steps are visible as bands, there are ways to visually disperse the quantization boundaries, like **noise or actual dithering**.
+
+- If you want the texture on top of the gradient to be almost imperceptible, there's also the option of using **fine noise** at a very low opacity.
+
+In the end, the phrase *"smooth gradient"* turned out to bundle together several distinct problems.
+
+It's more accurate to separate out:
+**how the color is calculated**,
+**whether enough color steps can be represented**,
+**whether the boundaries between those steps are visible**, and
+**what spatial form the gradient itself takes**.
+
+Also, **a perfectly smooth gradient isn't always better design.**
+
+Noise and dithering were originally meant to compensate for limited color representation, but they can also become a texture in their own right.
+
+## References
+
+- [MDN — Using CSS gradients](https://developer.mozilla.org/en-US/docs/Web/CSS/Guides/Images/Using_gradients)
+- [MDN — linear-gradient()](https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Values/gradient/linear-gradient)
+- [MDN — color-interpolation-method](https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Values/color-interpolation-method)
+- [MDN — Oklab](https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Values/color_value/Oklab)
+- [MDN — feTurbulence](https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/feTurbulence)
+- [MDN — image-rendering](https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Properties/image-rendering)
+- [web.dev — Gradients](https://web.dev/learn/css/gradients)
+- [W3C — CSS Color Module Level 4](https://www.w3.org/TR/css-color-4/)
+- [Adobe — Control dither in gradients](https://helpx.adobe.com/illustrator/desktop/paint-and-fill/create-and-edit-gradients/control-dither-in-gradients.html)
+- [Adobe — Color depth and gradient banding](https://www.adobe.com/learn/after-effects/web/choose-the-right-color-depth)
